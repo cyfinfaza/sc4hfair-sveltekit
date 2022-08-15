@@ -1,6 +1,11 @@
 {
 	"name": "sc4hfair-sveltekit",
+	"private": true,
 	"version": "0.0.1",
+	"contributors": [
+		"Cy Westbrook <cyfinfaza@gmail.com>",
+		"Calum Dingwall (https://github.com/caburum)"
+	],
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
@@ -28,5 +33,12 @@
 		"svelte-markdown": "^0.2.3",
 		"svelte-preprocess": "^4.10.7",
 		"vite-plugin-svelte-svg": "^2.0.2"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/cyfinfaza/sc4hfair-sveltekit"
+	},
+	"bugs": {
+		"url": "https://github.com/cyfinfaza/sc4hfair-sveltekit/issues"
 	}
 }

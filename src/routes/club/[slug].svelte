@@ -1,5 +1,5 @@
 <script context="module">
-	import { getClubs } from '../../logic/contentful.js';
+	import { getClubs } from 'logic/contentful.js';
 	export async function load({ fetch }) {
 		const resp = await getClubs(fetch);
 		// console.log(resp);
@@ -9,19 +9,23 @@
 
 <script>
 	import { page } from '$app/stores';
-	import Layout from '../../components/Layout.svelte';
-	import LinkButton from '../../components/LinkButton.svelte';
-	import SvelteMarkdown from 'svelte-markdown'
-	import {canWebShare, share} from "../../logic/webshare"
+	import Layout from 'components/Layout.svelte';
+	import LinkButton from 'components/LinkButton.svelte';
+	import { canWebShare, share } from 'logic/webshare';
+	import SvelteMarkdown from 'svelte-markdown';
+
 	export let clubs;
+
 	const isBrowser = typeof window !== 'undefined';
-	const slug = $page.params.slug
-	const club = clubs.find((club) => club.slug === slug)
-	console.log(club)
+	const slug = $page.params.slug;
+	const club = clubs.find((club) => club.slug === slug);
 </script>
 
 <Layout title={club.name}>
-	<div class="horizPanel" style="whitespace: nowrap; justify-content: flex-start; margin-top: 16px;">
+	<div
+		class="horizPanel"
+		style="whitespace: nowrap; justify-content: flex-start; margin-top: 16px;"
+	>
 		<LinkButton label="See all clubs" icon="groups" href="/clubs" inline />
 		<LinkButton label="View interest list" icon="list" href="/interests" inline />
 	</div>

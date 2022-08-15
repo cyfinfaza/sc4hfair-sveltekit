@@ -1,5 +1,5 @@
 <script context="module">
-	import { queryContentful } from '../logic/contentful.js';
+	import { queryContentful } from 'logic/contentful.js';
 	const query = `{
 	scheduledEventCollection(order:sys_firstPublishedAt_DESC) {
 		items {
@@ -20,11 +20,11 @@
 </script>
 
 <script>
-	import Layout from '../components/Layout.svelte';
-	import tentSlugs from '../data/tentSlugs.json';
-	import ToggleButton from '../components/ToggleButton.svelte';
-	import EventBox, { eventIsFuture } from '../components/EventBox.svelte';
-	import { exactSearch } from '../logic/search';
+	import Layout from 'components/Layout.svelte';
+	import tentSlugs from 'data/tentSlugs.json';
+	import ToggleButton from 'components/ToggleButton.svelte';
+	import EventBox, { eventIsFuture } from 'components/EventBox.svelte';
+	import { exactSearch } from 'logic/search.js';
 	export let events;
 	// console.log(events);
 

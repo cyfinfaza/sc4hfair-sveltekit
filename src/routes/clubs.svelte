@@ -1,5 +1,5 @@
 <script context="module">
-	import { queryContentful } from '../logic/contentful.js';
+	import { queryContentful } from 'logic/contentful.js';
 	const query = `{
 	clubCollection {
 		items {
@@ -23,9 +23,9 @@
 </script>
 
 <script>
-	import Layout from '../components/Layout.svelte';
-	import { exactSearch } from '../logic/search';
-	import ClubBox from '../components/ClubBox.svelte';
+	import Layout from 'components/Layout.svelte';
+	import { exactSearch } from 'logic/search.js';
+	import ClubBox from 'components/ClubBox.svelte';
 	export let clubs;
 	// console.log(clubs);
 
@@ -33,8 +33,7 @@
 
 	let searchQuery = isBrowser ? localStorage.getItem('searchQuery') || '' : '';
 
-	$: isBrowser &&
-		window.sessionStorage.setItem('clubs_search_query', JSON.stringify(searchQuery));
+	$: isBrowser && window.sessionStorage.setItem('clubs_search_query', JSON.stringify(searchQuery));
 
 	let results = [];
 	$: results = exactSearch(

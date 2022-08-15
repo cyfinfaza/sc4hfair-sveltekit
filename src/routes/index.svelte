@@ -1,5 +1,5 @@
 <script context="module">
-	import { queryContentful } from '../logic/contentful.js';
+	import { queryContentful } from 'logic/contentful.js';
 	const query = `{
 	postCollection(order:sys_firstPublishedAt_DESC) {
 		items {
@@ -17,11 +17,11 @@
 </script>
 
 <script>
-	import LinkButton from '../components/LinkButton.svelte';
-	import Layout from '../components/Layout.svelte';
-	import Post from '../components/Post.svelte';
-	import { theme } from '../logic/theming';
-	import { menuOpen } from '../logic/stores';
+	import LinkButton from 'components/LinkButton.svelte';
+	import Layout from 'components/Layout.svelte';
+	import Post from 'components/Post.svelte';
+	import { theme } from 'logic/theming.js';
+	import { menuOpen } from 'logic/stores.js';
 	export let posts;
 </script>
 

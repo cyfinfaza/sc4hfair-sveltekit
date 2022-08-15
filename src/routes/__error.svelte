@@ -5,7 +5,7 @@
 </script>
 
 <script>
-	import Layout from '../components/Layout.svelte';
+	import Layout from 'components/Layout.svelte';
 	export let error;
 	export let status;
 	// console.log(error);

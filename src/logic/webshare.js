@@ -1,15 +1,9 @@
-export function canWebShare() {
-	if(navigator.share){
-		return true;
-	} else {
-		return false;
-	}
-}
+export const canWebShare = () => navigator.share;
 
-export function share(title, url){
-	if(navigator.share){
-		navigator.share({title, url}).catch(()=>console.error("Share failed"))
+export function share(title, url) {
+	if (navigator.share) {
+		navigator.share({ title, url }).catch(() => console.error('Share failed'));
 	} else {
-		console.error("navigator.share unavailable")
+		console.error('navigator.share unavailable');
 	}
 }
