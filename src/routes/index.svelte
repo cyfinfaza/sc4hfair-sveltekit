@@ -24,7 +24,7 @@
 	export let posts;
 </script>
 
-<Layout title="Home">
+<Layout>
 	<h1 class="center">Welcome to the Somerset County 4-H Fair.</h1>
 	<div class="horizPanel">
 		<LinkButton label="Schedule" icon="event_note" href="/schedule" />
