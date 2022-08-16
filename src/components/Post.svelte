@@ -1,7 +1,6 @@
 <script>
 	import SvelteMarkdown from 'svelte-markdown';
-	import { onMount } from 'svelte';
-	import DateTime from '../components/DateTime.svelte';
+	import DateTime from 'components/DateTime.svelte';
 
 	export let data;
 	export let index = 0;
@@ -10,10 +9,10 @@
 <div class="container" style:animation-delay={index * 0.1 + 's'}>
 	<h3 class="title">{data.title}</h3>
 	<SvelteMarkdown source={data.contentText} />
-	<DateTime class="date" date={data.sys.publishedAt} fromNow withTitle />
+	<DateTime date={data.sys.publishedAt} fromNow withTitle />
 </div>
 
-<style>
+<style lang="scss">
 	.container {
 		width: 100%;
 		border-radius: 8px;
@@ -22,26 +21,26 @@
 		margin-bottom: 16px;
 		box-sizing: border-box;
 		animation: zoomin 0.5s backwards ease;
-	}
 
-	.container :global(img) {
-		width: 100%;
-		border-radius: 4px;
-	}
+		& :global(img) {
+			width: 100%;
+			border-radius: 4px;
+		}
 
-	.container > *:last-child {
-		margin-bottom: 0;
+		& :global(time) {
+			opacity: 0.75;
+			font-size: smaller;
+		}
+
+		& > *:last-child {
+			margin-bottom: 0;
+		}
 	}
 
 	.title {
 		margin: 0;
 		text-align: center;
 		font-size: 1.25em;
-	}
-
-	.date {
-		opacity: 0.75;
-		font-size: smaller;
 	}
 
 	@keyframes zoomin {

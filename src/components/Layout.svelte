@@ -1,5 +1,5 @@
 <script>
-	import Header from './Header.svelte';
+	import Header from 'components/Header.svelte';
 
 	export let title = '';
 	export let description = '';

@@ -1,64 +1,57 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
-	import { menuOpen } from '../logic/stores';
+	import { menuOpen } from 'logic/stores';
 
-	import '../styles/button.css';
-	export let label = undefined;
-	export let href = undefined;
-	export let icon = undefined;
-	export let iconStyle = undefined;
-	export let header = false;
-	export let acrylic = false;
-	export let lightFont = false;
-	export let disabled = false;
-	export let alert = false;
-	export let accent = false;
+	import 'styles/button.css';
+
+	export let label = undefined; // text displayed on button
+	export let href = undefined; // navigates to a url, use on:click for custom js
+	export let icon = undefined; // material icon name, use slot="iconElement" for a custom element
+	export let header = false; // large header button (for main pages)
+	export let headerSmall = false; // normal button size with header color
+	export let noCloseHeader = false; // don't close the header when clicked
+	export let acrylic = false; // translucent and blurred backdrop
+	export let lightFont = false; // light font weight (not bold)
+	export let disabled = false; // prevent click and navigation
+	export let alert = false; // blinking yellow border
+	export let active = false; // green background
 
 	const dispatch = createEventDispatcher();
-	function onClick() {
-		if(header) $menuOpen = false;
-		dispatch('click')
+	function onClick(e) {
+		if (disabled) {
+			e.preventDefault();
+		} else {
+			if ((header || headerSmall) && !noCloseHeader) $menuOpen = false;
+			dispatch('click');
+		}
 	}
+
+	let elementType = href ? 'a' : 'button';
 </script>
 
-{#if href}
-	<a
-		{href}
-		on:click={onClick}
-		class="container button"
-		class:alert
-		class:header
-		class:acrylic
-		class:accent
-	>
-		{#if icon}
-			<span class="material-icons icon" style={iconStyle}>{icon}</span>
-		{:else}
+<svelte:element
+	this={elementType}
+	{href}
+	on:click={onClick}
+	class="container button"
+	class:alert
+	class:header
+	class:headerSmall
+	class:acrylic
+	class:active
+	disabled={disabled || null}
+>
+	{#if icon}
+		<span class="material-icons icon">{icon}</span>
+	{:else}
+		<div class="iconElementContainer">
 			<slot name="iconElement" />
-		{/if}
-		{#if label}
-			<span class:lightFont class="label">{label}</span>
-		{/if}
-	</a>
-{:else}
-	<button
-		on:click={onClick}
-		class="container button"
-		class:alert
-		class:header
-		class:acrylic
-		class:accent
-	>
-		{#if icon}
-			<span class="material-icons icon" style={iconStyle}>{icon}</span>
-		{:else}
-			<slot name="iconElement" />
-		{/if}
-		{#if label}
-			<span class:lightFont class="label">{label}</span>
-		{/if}
-	</button>
-{/if}
+		</div>
+	{/if}
+	{#if label}
+		<span class:lightFont={lightFont || headerSmall} class="label">{label}</span>
+	{/if}
+</svelte:element>
 
 <style>
 	/* link button */
@@ -78,11 +71,11 @@
 		user-select: none;
 	}
 
-	.container > * + * {
+	.container > *:not(.iconElementContainer) + * {
 		margin-left: 4px !important;
 	}
 
-	a.container {
+	:global(a).container {
 		text-decoration: none;
 		color: unset;
 	}
@@ -108,7 +101,7 @@
 		font-weight: unset;
 	}
 
-	.container .iconElementContainer > * {
+	.container .iconElementContainer > :global(*) {
 		fill: var(--text);
 		width: var(--linkbutton-icon-size);
 		height: var(--linkbutton-icon-size);
@@ -151,5 +144,9 @@
 		padding-left: 8px;
 		line-height: 1em;
 		display: flex;
+	}
+
+	.headerSmall {
+		background-color: var(--navbar-accent);
 	}
 </style>

@@ -20,15 +20,12 @@
 	import LinkButton from 'components/LinkButton.svelte';
 	import Layout from 'components/Layout.svelte';
 	import Post from 'components/Post.svelte';
-	import { theme } from 'logic/theming.js';
 	import { menuOpen } from 'logic/stores.js';
 	export let posts;
 </script>
 
 <Layout title="Home">
 	<h1 class="center">Welcome to the Somerset County 4-H Fair.</h1>
-	<button on:click={() => ($theme = 'dark')}>Dark</button>
-	<button on:click={() => ($theme = 'light')}>Light</button>
 	<div class="horizPanel">
 		<LinkButton label="Schedule" icon="event_note" href="/schedule" />
 		<LinkButton label="Map" icon="map" href="/map" />

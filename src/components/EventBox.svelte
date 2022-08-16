@@ -11,10 +11,10 @@
 </script>
 
 <script>
-	import LinkButton from './LinkButton.svelte';
-	import { share, canWebShare } from '../logic/webshare';
-	import DateTime from './DateTime.svelte';
-	import tentSlugs from '../data/tentSlugs.json';
+	import { share, canWebShare } from 'logic/webshare';
+	import LinkButton from 'components/LinkButton.svelte';
+	import DateTime from 'components/DateTime.svelte';
+	import tentSlugs from 'data/tentSlugs.json';
 	export let event;
 	export let index = 0;
 	export let starred;

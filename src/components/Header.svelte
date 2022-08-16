@@ -1,8 +1,12 @@
 <script>
-	import '../styles/button.css';
-	import LinkButton from './LinkButton.svelte';
-	import Logo from '../assets/logo.inline.svg';
-	import { menuOpen, isOnline } from '../logic/stores';
+	import 'styles/button.css';
+	import LinkButton from 'components/LinkButton.svelte';
+	import LoadingRing from 'components/LoadingRing.svelte';
+	import { navigating } from '$app/stores';
+	import Logo from 'assets/logo.svg';
+	import FourH from 'assets/4h.svg';
+	import { menuOpen, isOnline } from 'logic/stores';
+	import ThemeSwitcher from 'components/ThemeSwitcher.svelte';
 	export let offsetContent = false;
 </script>
 
@@ -13,16 +17,12 @@
 		style:background={$isOnline ? 'var(--navbar)' : 'var(--navbar-grey)'}
 	>
 		<div class="topBar">
-			<Logo
-				class="logo"
-				role="button"
-				onclick="window.location.href = '/'"
-				style="cursor: pointer; fill: currentColor;"
-			/>
+			<Logo role="button" onclick="window.location.href = '/'" />
 			<div class="horizPanel2" style:gap="12px">
 				{#if !$isOnline}
 					<span class="material-icons">cloud_off</span>
 				{/if}
+				<LoadingRing loading={$navigating} />
 				<button class="menuButton button" on:click={(_) => ($menuOpen = !$menuOpen)}>
 					<div class="menuIconContainer">
 						<i class="material-icons" class:inactive={$menuOpen}>menu</i>
@@ -35,8 +35,44 @@
 		<div class="menuArea">
 			<div class="menuGrid">
 				<LinkButton header label="Latest" icon="home" href="/" opaque={false} />
+				<LinkButton header disabled label="Map" icon="map" href="/map" opaque={false} />
 				<LinkButton header label="Schedule" icon="event_note" href="/schedule" opaque={false} />
 				<LinkButton header label="Clubs" icon="groups" href="/clubs" opaque={false} />
+				<LinkButton
+					disabled
+					header
+					label="Interest List"
+					icon="list_alt"
+					href="/interest-list"
+					opaque={false}
+				/>
+				<LinkButton
+					disabled
+					header
+					label="Scavenger Hunt"
+					icon="travel_explore"
+					href="/scavenger-hunt"
+					opaque={false}
+				/>
+			</div>
+			<div class="menuBottom">
+				<ThemeSwitcher header />
+				<LinkButton disabled label="Settings" icon="settings" href="/settings" headerSmall />
+				<LinkButton label="App feedback" href="/feedback" icon="message" headerSmall />
+				<LinkButton
+					disabled
+					label="Fair sponsors"
+					icon="monetization_on"
+					href="/sponsors"
+					headerSmall
+				/>
+				<LinkButton label="About 4-H" href="https://4histops.org" headerSmall>
+					<svelte:fragment slot="iconElement">
+						<FourH
+							style="height: 100%; fill: currentColor; transition: fill var(--theme-transition);"
+						/>
+					</svelte:fragment>
+				</LinkButton>
 			</div>
 		</div>
 	</div>
@@ -70,6 +106,13 @@
 		justify-content: space-between;
 		padding: 16px;
 		box-sizing: border-box;
+
+		& > :global(svg) {
+			height: 100%;
+			fill: currentColor;
+			transition: fill var(--theme-transition);
+			cursor: pointer;
+		}
 	}
 
 	.menuArea {
@@ -104,16 +147,9 @@
 		justify-content: center;
 		gap: 12px;
 
-		> * {
+		> :global(*) {
 			white-space: nowrap;
 		}
-	}
-
-	.headerLogo {
-		height: 100%;
-		/* fill: var(--navbar-text); */
-		fill: var(--text);
-		transition: fill var(--theme-transition);
 	}
 
 	.menuButton {

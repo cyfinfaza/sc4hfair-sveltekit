@@ -18,8 +18,8 @@ export const themes = [
 export const theme = writable(
 	(isBrowser &&
 		(window.localStorage.getItem('theme') ||
-			(window.matchMedia('(prefers-color-scheme: light)').matches && 'theme-light'))) ||
-		'theme-dark'
+			(window.matchMedia('(prefers-color-scheme: dark)').matches && 'theme-dark'))) ||
+		'theme-light'
 );
 
 theme.subscribe((newTheme) => {

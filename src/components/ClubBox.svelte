@@ -1,6 +1,6 @@
 <script>
 	import SvelteMarkdown from 'svelte-markdown';
-	import LinkButton from './LinkButton.svelte';
+	import LinkButton from 'components/LinkButton.svelte';
 	export let club;
 	let slugList = [];
 </script>
