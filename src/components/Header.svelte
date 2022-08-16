@@ -35,7 +35,7 @@
 		<div class="menuArea">
 			<div class="menuGrid">
 				<LinkButton header label="Latest" icon="home" href="/" opaque={false} />
-				<LinkButton header disabled label="Map" icon="map" href="/map" opaque={false} />
+				<LinkButton header label="Map" icon="map" href="/map" opaque={false} />
 				<LinkButton header label="Schedule" icon="event_note" href="/schedule" opaque={false} />
 				<LinkButton header label="Clubs" icon="groups" href="/clubs" opaque={false} />
 				<LinkButton
