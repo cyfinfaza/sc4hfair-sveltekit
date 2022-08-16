@@ -34,30 +34,22 @@
 		</div>
 		<div class="menuArea">
 			<div class="menuGrid">
-				<LinkButton header label="Latest" icon="home" href="/" opaque={false} />
-				<LinkButton header label="Map" icon="map" href="/map" opaque={false} />
-				<LinkButton header label="Schedule" icon="event_note" href="/schedule" opaque={false} />
-				<LinkButton header label="Clubs" icon="groups" href="/clubs" opaque={false} />
-				<LinkButton
-					disabled
-					header
-					label="Interest List"
-					icon="list_alt"
-					href="/interest-list"
-					opaque={false}
-				/>
+				<LinkButton header label="Latest" icon="home" href="/" />
+				<LinkButton header label="Map" icon="map" href="/map" />
+				<LinkButton header label="Schedule" icon="event_note" href="/schedule" />
+				<LinkButton header label="Clubs" icon="groups" href="/clubs" />
+				<LinkButton disabled header label="Interest List" icon="list_alt" href="/interest-list" />
 				<LinkButton
 					disabled
 					header
 					label="Scavenger Hunt"
 					icon="travel_explore"
 					href="/scavenger-hunt"
-					opaque={false}
 				/>
 			</div>
 			<div class="menuBottom">
 				<ThemeSwitcher header />
-				<LinkButton disabled label="Settings" icon="settings" href="/settings" headerSmall />
+				<LinkButton label="Settings" icon="settings" href="/settings" headerSmall />
 				<LinkButton label="App feedback" href="/feedback" icon="message" headerSmall />
 				<LinkButton
 					disabled

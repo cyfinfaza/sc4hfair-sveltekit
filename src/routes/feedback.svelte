@@ -22,7 +22,7 @@
 		formData.append('entry.1901667750', name);
 		formData.append('entry.614631811', email);
 		formData.append('entry.1550740052', comment);
-		formData.append('entry.118251261', __VERSION__);
+		formData.append('entry.118251261', `${__COMMIT__}/${__BRANCH__}`);
 		formData.append('entry.87818926', navigator.userAgent);
 
 		fetch(

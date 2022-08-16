@@ -15,6 +15,7 @@
 	export let disabled = false; // prevent click and navigation
 	export let alert = false; // blinking yellow border
 	export let active = false; // green background
+	export let danger = false; // red background
 
 	const dispatch = createEventDispatcher();
 	function onClick(e) {
@@ -39,6 +40,7 @@
 	class:headerSmall
 	class:acrylic
 	class:active
+	class:danger
 	disabled={disabled || null}
 >
 	{#if icon}
