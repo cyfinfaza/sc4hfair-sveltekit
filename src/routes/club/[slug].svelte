@@ -13,12 +13,23 @@
 	import LinkButton from 'components/LinkButton.svelte';
 	import { canWebShare, share } from 'logic/webshare';
 	import SvelteMarkdown from 'svelte-markdown';
+	import {
+		interestsSlugs,
+		addInterest,
+		removeInterest,
+		initSupabaseClient,
+	} from 'logic/supabase.js';
+	import { onMount } from 'svelte';
 
 	export let clubs;
 
 	const isBrowser = typeof window !== 'undefined';
 	const slug = $page.params.slug;
 	const club = clubs.find((club) => club.slug === slug);
+
+	onMount(async () => {
+		await initSupabaseClient();
+	});
 </script>
 
 <Layout title={club.name}>
@@ -31,18 +42,18 @@
 	</div>
 	<h1 style="text-transform: uppercase;">{club.name}</h1>
 	<div class="optionsButtonsPanel">
-		{#if false}
+		{#if ($interestsSlugs || []).includes(club.slug)}
 			<LinkButton
 				label="Remove from interest list"
 				icon="remove"
-				on:click={() => im.current.removeInterest(club.slug)}
+				on:click={() => removeInterest(club.slug)}
 				lightFont
 			/>
 		{:else}
 			<LinkButton
 				label="Add to interest list"
 				icon="add"
-				on:click={() => im.current.addInterest(club.slug)}
+				on:click={() => addInterest(club.slug)}
 				lightFont
 			/>
 		{/if}

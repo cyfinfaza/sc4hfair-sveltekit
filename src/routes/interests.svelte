@@ -26,7 +26,15 @@
 	import Layout from 'components/Layout.svelte';
 	import { exactSearch } from 'logic/search.js';
 	import ClubBox from 'components/ClubBox.svelte';
-	import { interestsSlugs, session, initSupabaseClient, login, logout } from 'logic/supabase.js';
+	import {
+		interestsSlugs,
+		session,
+		initSupabaseClient,
+		login,
+		logout,
+		addInterest,
+		removeInterest,
+	} from 'logic/supabase.js';
 	import { onMount } from 'svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import SignInButtons from 'components/SignInButtons.svelte';
@@ -42,8 +50,23 @@
 	let results = [];
 	$: if ($interestsSlugs) results = clubs.filter((club) => $interestsSlugs.indexOf(club.slug) > -1);
 
+	let reqLoginMessage = false;
+
+	$: if ($session) reqLoginMessage = false;
+
 	onMount(async () => {
 		await initSupabaseClient();
+		var searcher = new URLSearchParams(window.location.search);
+		const [add, remove] = [searcher.get('add'), searcher.get('remove')];
+		if (add) {
+			addInterest(add);
+		}
+		if (remove) {
+			removeInterest(remove);
+		}
+		if (searcher.get('reqLoginMessage') && !$session) {
+			reqLoginMessage = true;
+		}
 	});
 
 	$: console.log('Interests: ', $interestsSlugs);
@@ -61,6 +84,9 @@
 				You are not signed in.
 			{/if}
 		</p>
+		{#if reqLoginMessage}
+			<p style="color: red;">Sign in to add this item to your interest list.</p>
+		{/if}
 		<p class="horizPanel" style="white-space: nowrap;">
 			{#if $session}
 				<LinkButton label="Add Clubs to List" icon="open_in_new" href="/clubs" />
