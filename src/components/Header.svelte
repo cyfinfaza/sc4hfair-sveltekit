@@ -7,10 +7,10 @@
 	import FourH from 'assets/4h.svg';
 	import { menuOpen, isOnline } from 'logic/stores';
 	import ThemeSwitcher from 'components/ThemeSwitcher.svelte';
-	export let offsetContent = false;
+	export let offsetContent = true;
 </script>
 
-<div class="invisible">
+<div class="invisible" style:height={offsetContent ? null : 0}>
 	<div
 		class="visible"
 		style:height={$menuOpen ? '100vh' : ''}

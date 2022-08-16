@@ -28,6 +28,8 @@
 	"type": "module",
 	"dependencies": {
 		"luxon": "^3.0.1",
+		"mapbox-gl": "^2.9.2",
+		"polylabel": "^1.1.0",
 		"sanitize-html": "^2.7.1",
 		"sass": "^1.54.4",
 		"svelte-markdown": "^0.2.3",

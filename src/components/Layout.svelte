@@ -33,7 +33,7 @@
 	class="content"
 	id="content"
 	class:noPadding
-	class:padTop={fixedHeightContent && !noHeaderPadding}
+	class:padTop={!noHeaderPadding}
 	class:fixedHeightContent
 >
 	<div class:fullWidth>
@@ -65,7 +65,8 @@
 	}
 
 	.content > div.fullWidth {
-		width: unset;
+		width: 100%;
+		max-width: unset;
 	}
 
 	.content > div {
