@@ -1,7 +1,7 @@
 <script context="module">
 	import { queryContentful } from 'logic/contentful.js';
 	const query = `{
-	scheduledEventCollection(order:sys_firstPublishedAt_DESC) {
+	scheduledEventCollection(order:sys_firstPublishedAt_DESC, where: {time_gt: "${new Date().toISOString()}"}) {
 		items {
 			sys {
 				id
