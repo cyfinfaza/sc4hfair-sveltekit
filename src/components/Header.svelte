@@ -38,7 +38,7 @@
 				<LinkButton header label="Map" icon="map" href="/map" />
 				<LinkButton header label="Schedule" icon="event_note" href="/schedule" />
 				<LinkButton header label="Clubs" icon="groups" href="/clubs" />
-				<LinkButton header label="Interest List" icon="list_alt" href="/interest-list" />
+				<LinkButton header label="Interest List" icon="list_alt" href="/interests" />
 				<LinkButton header label="Scavenger Hunt" icon="travel_explore" href="/scavenger-hunt" />
 			</div>
 			<div class="menuBottom">
