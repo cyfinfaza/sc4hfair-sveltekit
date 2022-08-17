@@ -8,6 +8,9 @@
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import Modal from 'components/Modal.svelte';
+	import SignInButtons from 'components/SignInButtons.svelte';
+	import { onMount } from 'svelte';
+	import { session, initSupabaseClient, logout } from 'logic/supabase.js';
 
 	function isInfoFormDisabled(a, b) {
 		// only check certain properties
@@ -21,48 +24,69 @@
 		graduation: '',
 	});
 	let cloudForm = form; // @todo: add cloud functionality
-	$: console.log($form);
+	$: console.log($form, cloudForm);
+	$: console.log(isInfoFormDisabled($form, cloudForm));
+	$: console.log($session);
+
+	let client;
 
 	let confirmReset = ''; // @todo: modal for confirmation
 
 	let showingAdditionalBuildInfo = false;
+
+	onMount(async (_) => {
+		client = await initSupabaseClient();
+	});
+
+	$: {
+		(function (s) {
+			if (s) {
+				cloudForm = s.user.user_metadata;
+				$form = { ...cloudForm };
+			}
+		})($session);
+	}
 </script>
 
 <Layout title="Settings">
 	<h1>Account</h1>
-	<!-- <p>You are signed in as {session?.user.email}</p> -->
-	<p>
-		<LinkButton label="Sign out" icon="logout" on:click={() => im.current.logout()} />
-	</p>
-	<h2>
-		Additional information <small>(optional)</small>
-	</h2>
-	<table style={{ width: '100%', margin: '1rem 0' }}>
-		<tbody>
-			<LabeledInput {form} name="fullName" label="Full name" />
-			<LabeledInput {form} name="preferredEmail" label="Preferred email" type="email" />
-			<LabeledInput {form} name="phone" label="Phone number" type="tel" />
-			<LabeledInput
-				{form}
-				name="graduation"
-				label="Graduation year"
-				type="number"
-				min="1900"
-				max="2099"
-				step="1"
-			/>
-		</tbody>
-	</table>
-	<LinkButton
-		label="Save"
-		icon="save"
-		on:click={() => {
-			// im.current.supabase.auth.update({ data: form });
-			// setCloudForm(form);
-		}}
-		disabled={isInfoFormDisabled(form, cloudForm)}
-		alert={!isInfoFormDisabled(form, cloudForm)}
-	/>
+	{#if $session}
+		<p>You are signed in as <strong>{$session?.user?.email}</strong></p>
+		<p>
+			<LinkButton label="Sign out" icon="logout" on:click={() => logout()} />
+		</p>
+		<h2>
+			Additional information <small>(optional)</small>
+		</h2>
+		<table style={{ width: '100%', margin: '1rem 0' }}>
+			<tbody>
+				<LabeledInput {form} name="fullName" label="Full name" />
+				<LabeledInput {form} name="preferredEmail" label="Preferred email" type="email" />
+				<LabeledInput {form} name="phone" label="Phone number" type="tel" />
+				<LabeledInput
+					{form}
+					name="graduation"
+					label="Graduation year"
+					type="number"
+					min="1900"
+					max="2099"
+					step="1"
+				/>
+			</tbody>
+		</table>
+		<LinkButton
+			label="Save"
+			icon="save"
+			on:click={() => {
+				client.auth.update({ data: $form });
+				cloudForm = { ...$form };
+			}}
+			disabled={isInfoFormDisabled($form, cloudForm)}
+			alert={!isInfoFormDisabled($form, cloudForm)}
+		/>
+	{:else}
+		<SignInButtons />
+	{/if}
 
 	<h1>Install as app</h1>
 	{#if browser && isStandalone()}

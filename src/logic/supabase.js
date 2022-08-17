@@ -8,7 +8,7 @@ export const interestsSlugs = writable();
 
 export async function initSupabaseClient() {
 	if (!client) {
-		client = createClient(
+		client = await createClient(
 			'https://gahyqgeshbvyajzukktr.supabase.co',
 			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYyMjIzMjcyMywiZXhwIjoxOTM3ODA4NzIzfQ.qeJRUDnHvCdSTo6LQUCbwe6XQFSLsi2l4_3oD9189u8'
 		);
