@@ -1,7 +1,7 @@
 <script>
 	import SvelteMarkdown from 'svelte-markdown';
 	import LinkButton from 'components/LinkButton.svelte';
-	import { interestsSlugs } from 'logic/supabase.js';
+	import { interestsSlugs, removeInterest } from 'logic/supabase.js';
 	export let club;
 	let slugList = [];
 </script>
@@ -14,7 +14,12 @@
 			<LinkButton label="Map" icon="place" href={`/map?locate=${club.tent}`} lightFont />
 		{/if}
 		{#if ($interestsSlugs || []).indexOf(club.slug) > -1}
-			<LinkButton label="Remove" icon="remove" lightFont />
+			<LinkButton
+				label="Remove"
+				icon="remove"
+				on:click={(_) => removeInterest(club.slug)}
+				lightFont
+			/>
 		{:else}
 			<LinkButton label="Add" icon="add" href={`/interests?add=${club.slug}`} lightFont />
 		{/if}
