@@ -2,7 +2,7 @@
 	import { browser } from '$app/env';
 	import { goto } from '$app/navigation';
 	import { writable } from 'svelte/store';
-	import { isStandalone } from 'logic/getPlatform.js';
+	import { isStandalone } from 'logic/platform.js';
 	import InstallInstructions from 'components/InstallInstructions.svelte';
 	import LabeledInput from 'components/LabeledInput.svelte';
 	import Layout from 'components/Layout.svelte';
