@@ -15,7 +15,11 @@ const config = {
 			styles: 'src/styles/*',
 		},
 	},
-	preprocess: sveltePreprocess(),
+	preprocess: [
+		sveltePreprocess({
+			postcss: true,
+		}),
+	],
 };
 
 export default config;

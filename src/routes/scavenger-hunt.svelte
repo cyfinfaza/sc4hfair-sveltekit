@@ -249,9 +249,9 @@
 			height: unset;
 			width: unset;
 		}
-		> p {
+		p {
 			width: 100%;
-			font-weight: unset;
+			font-weight: normal;
 		}
 	}
 </style>

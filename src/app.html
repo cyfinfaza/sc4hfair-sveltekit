@@ -1,21 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="%sveltekit.assets%/favicon-32x32.png" />
+		<meta name="viewport" content="width=device-width" />
+		%sveltekit.head%
+	</head>
 
-<head>
-	<meta charset="utf-8" />
-	<link rel="icon" href="%sveltekit.assets%/favicon-32x32.png" />
-	<meta name="viewport" content="width=device-width" />
-	%sveltekit.head%
-</head>
-
-<body>
-	<script>
-		document.body.classList.add(
-			localStorage.getItem('theme') ||
-			(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'theme-dark' : 'theme-light')
-		);
-	</script>
-	<div>%sveltekit.body%</div>
-</body>
-
+	<body>
+		<script>
+			document.body.classList.add(
+				localStorage.getItem('theme') ||
+					(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'theme-dark' : 'theme-light')
+			);
+		</script>
+		<div>%sveltekit.body%</div>
+	</body>
 </html>
