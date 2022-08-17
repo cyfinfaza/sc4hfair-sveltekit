@@ -13,6 +13,7 @@
 	import { session, initSupabaseClient, logout } from 'logic/supabase.js';
 
 	function isInfoFormDisabled(a, b) {
+		if (!a || !b) return true;
 		// only check certain properties
 		return ['fullName', 'preferredEmail', 'phone', 'graduation'].every((key) => a[key] === b[key]);
 		// return JSON.stringify(a) === JSON.stringify(b)
@@ -23,18 +24,18 @@
 		phone: '',
 		graduation: '',
 	});
-	let cloudForm = form; // @todo: add cloud functionality
+	let cloudForm;
 	$: console.log($form, cloudForm);
 	$: console.log(isInfoFormDisabled($form, cloudForm));
 	$: console.log($session);
 
 	let client;
 
-	let confirmReset = ''; // @todo: modal for confirmation
+	let confirmReset = ''; // modal for confirmation
 
 	let showingAdditionalBuildInfo = false;
 
-	onMount(async (_) => {
+	onMount(async () => {
 		client = await initSupabaseClient();
 	});
 

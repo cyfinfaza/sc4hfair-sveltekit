@@ -1,12 +1,22 @@
 <script>
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
+	import { session, initSupabaseClient } from 'logic/supabase.js';
+	import { onMount } from 'svelte';
 
 	let errorText = '',
 		formSubmitted = false,
 		name,
 		email,
 		comment;
+
+	onMount(initSupabaseClient);
+	let formPrefilled = false;
+	$: if (!formPrefilled && $session?.user?.user_metadata) {
+		formPrefilled = true;
+		if (!name) name = $session.user.user_metadata.fullName;
+		if (!email) email = $session.user.user_metadata.preferredEmail;
+	}
 
 	function submit() {
 		if (!comment) {
@@ -32,13 +42,7 @@
 				method: 'post',
 				mode: 'no-cors',
 			}
-		).then((response) => {
-			// console.log(response)
-			name = '';
-			email = '';
-			comment = '';
-			formSubmitted = true;
-		});
+		).then(() => (formSubmitted = true));
 	}
 </script>
 
@@ -57,20 +61,22 @@
 	{/if}
 </Layout>
 
-<style>
-	p[contenteditable]:empty::before {
-		opacity: 0.5;
-		content: attr(placeholder);
-	}
-	p[contenteditable]:is(:focus, :active) {
-		outline: none;
-		border-bottom-color: var(--accent);
-	}
+<style lang="scss">
 	p[contenteditable] {
 		cursor: text;
 		border: none;
 		border-bottom: solid 2px var(--light-translucent);
 		transition: 60ms;
+
+		&:empty::before {
+			opacity: 0.5;
+			content: attr(placeholder);
+		}
+		&:focus,
+		&:active {
+			outline: none;
+			border-bottom-color: var(--accent);
+		}
 	}
 	h2 span {
 		color: red;
