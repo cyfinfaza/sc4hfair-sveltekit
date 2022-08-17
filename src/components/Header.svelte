@@ -23,7 +23,7 @@
 					<span class="material-icons">cloud_off</span>
 				{/if}
 				<LoadingRing loading={$navigating} />
-				<button class="menuButton button" on:click={(_) => ($menuOpen = !$menuOpen)}>
+				<button type="button" class="menuButton button" on:click={(_) => ($menuOpen = !$menuOpen)}>
 					<div class="menuIconContainer">
 						<i class="material-icons" class:inactive={$menuOpen}>menu</i>
 						<i class="material-icons" class:inactive={!$menuOpen}>close</i>

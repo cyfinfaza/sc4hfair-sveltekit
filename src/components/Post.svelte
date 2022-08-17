@@ -1,6 +1,7 @@
 <script>
 	import SvelteMarkdown from 'svelte-markdown';
 	import DateTime from 'components/DateTime.svelte';
+	import ContentfulImage from 'components/ContentfulImage.svelte';
 
 	export let data;
 	export let index = 0;
@@ -8,7 +9,7 @@
 
 <div class="container" style:animation-delay={index * 0.1 + 's'}>
 	<h3 class="title">{data.title}</h3>
-	<SvelteMarkdown source={data.contentText} />
+	<SvelteMarkdown source={data.contentText} renderers={{ image: ContentfulImage }} />
 	<DateTime date={data.sys.publishedAt} fromNow withTitle />
 </div>
 
