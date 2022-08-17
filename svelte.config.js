@@ -7,14 +7,13 @@ const config = {
 		adapter: adapter(),
 		// https://kit.svelte.dev/faq#aliases
 		alias: {
-			'assets': 'src/assets',
-			'components': 'src/components',
-			'data': 'src/data',
-			'logic': 'src/logic',
-			'routes': 'src/routes',
-			'styles': 'src/styles',
-		}
-
+			assets: 'src/assets/*',
+			components: 'src/components/*',
+			data: 'src/data/*',
+			logic: 'src/logic/*',
+			routes: 'src/routes/*',
+			styles: 'src/styles/*',
+		},
 	},
 	preprocess: sveltePreprocess(),
 };
