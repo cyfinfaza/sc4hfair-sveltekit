@@ -4,7 +4,10 @@ import sveltePreprocess from 'svelte-preprocess';
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	kit: {
-		adapter: adapter(),
+		adapter: adapter({
+			pages: 'build',
+			assets: 'build',
+		}),
 		// https://kit.svelte.dev/faq#aliases
 		alias: {
 			assets: 'src/assets/*',
