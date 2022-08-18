@@ -92,7 +92,6 @@
 		}
 		> h2 {
 			font-size: 1.2rem;
-			color: var(--text);
 			display: flex;
 			align-items: center;
 			flex-wrap: wrap;
@@ -107,5 +106,6 @@
 		padding: 3px 6px;
 		background-color: var(--navbar-accent);
 		text-transform: uppercase;
+		transition: background-color var(--theme-transition);
 	}
 </style>
