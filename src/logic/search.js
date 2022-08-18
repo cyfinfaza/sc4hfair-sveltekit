@@ -2,6 +2,10 @@
 
 export function exactSearch(objList, priorityKey, secondaryKeys, query) {
 	function prepare(text) {
+		if (typeof text !== 'string'){
+			console.error("exactSearch error: cannot prepare non-string", text);
+			text = '';
+		}
 		return text
 			.toLowerCase()
 			.normalize('NFKD')

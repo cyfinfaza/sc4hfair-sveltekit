@@ -73,7 +73,7 @@
 				};
 			}),
 		'title',
-		['description.description', 'tentName'],
+		['description', 'tentName'],
 		searchQuery
 	).filter((element) => !showingOnlyStarredEvents || starredEvents.includes(element.sys.id));
 </script>

@@ -39,12 +39,7 @@
 	$: results = exactSearch(
 		clubs,
 		'name',
-		[
-			'description.description',
-			'meetingWhen.meetingWhen',
-			'meetingLocation.meetingLocation',
-			'grades',
-		],
+		['description', 'meetingWhen', 'meetingLocation', 'grades'],
 		searchQuery
 	);
 </script>
