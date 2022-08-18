@@ -51,7 +51,7 @@ function staleWhileEtagRevalidate(event) {
 					resp = await fetch(event.request);
 				} catch (e) {
 					console.log('FETCH ERROR: ', e);
-					return cache.match('/offline');
+					return cache.match('/offline/');
 				}
 				event.waitUntil(cache.put(event.request, resp.clone()));
 				return resp;
@@ -74,7 +74,7 @@ function networkFirst(event) {
 				if (cachedResponse) {
 					return cachedResponse;
 				} else {
-					return cache.match('/offline');
+					return cache.match('/offline/');
 				}
 			}
 			event.waitUntil(cache.put(event.request, resp.clone()));
