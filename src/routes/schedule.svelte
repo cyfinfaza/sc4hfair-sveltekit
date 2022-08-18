@@ -14,7 +14,6 @@
 }`;
 	export async function load({ fetch }) {
 		const resp = await queryContentful(fetch, query);
-		// console.log(resp);
 		return { props: { events: resp.scheduledEventCollection?.items } };
 	}
 </script>
@@ -23,10 +22,12 @@
 	import Layout from 'components/Layout.svelte';
 	import tentSlugs from 'data/tentSlugs.json';
 	import ToggleButton from 'components/ToggleButton.svelte';
-	import EventBox, { eventIsFuture } from 'components/EventBox.svelte';
+	import EventBox from 'components/EventBox.svelte';
+	import { eventIsFuture } from 'logic/scheduling.js';
 	import { exactSearch } from 'logic/search.js';
+	import { browser } from '$app/env';
+
 	export let events;
-	// console.log(events);
 
 	const eventTentsList = events.reduce(
 		(last, current) => {
@@ -38,15 +39,13 @@
 		['All']
 	);
 
-	const isBrowser = typeof window !== 'undefined';
-
 	let selectedTent = 'All';
 	let showingPast = true;
 	let searchQuery = '';
-	let starredEvents = isBrowser ? JSON.parse(localStorage.getItem('starredEvents')) || [] : [];
+	let starredEvents = (browser && JSON.parse(localStorage.getItem('starredEvents'))) || [];
 	let showingOnlyStarredEvents = false;
 
-	$: isBrowser && window.localStorage.setItem('starredEvents', JSON.stringify(starredEvents));
+	$: browser && window.localStorage.setItem('starredEvents', JSON.stringify(starredEvents));
 
 	function toggleStarredEvent(id) {
 		if (starredEvents.includes(id)) {
@@ -63,17 +62,16 @@
 				(element) =>
 					((selectedTent === 'All' || selectedTent === element.tent) &&
 						(eventIsFuture(element) || showingPast)) ||
-					(isBrowser && window.location?.hash === '#' + element.id)
+					(browser && window.location?.hash === '#' + element.id)
 			)
 			.map((element) => {
 				return {
 					...element,
 					tentName: tentSlugs[element.tent] || element.tent,
-					description: { description: element.description?.description || '' },
 				};
 			}),
 		'title',
-		['description', 'tentName'],
+		['tentName'],
 		searchQuery
 	).filter((element) => !showingOnlyStarredEvents || starredEvents.includes(element.sys.id));
 </script>

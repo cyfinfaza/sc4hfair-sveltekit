@@ -26,7 +26,6 @@
 	});
 	let cloudForm;
 	$: console.log($form, cloudForm);
-	$: console.log(isInfoFormDisabled($form, cloudForm));
 	$: console.log($session);
 
 	let client;
@@ -59,7 +58,7 @@
 		<h2>
 			Additional information <small>(optional)</small>
 		</h2>
-		<table style={{ width: '100%', margin: '1rem 0' }}>
+		<table style="width: 100%; margin: 1rem 0;">
 			<tbody>
 				<LabeledInput {form} name="fullName" label="Full name" />
 				<LabeledInput {form} name="preferredEmail" label="Preferred email" type="email" />

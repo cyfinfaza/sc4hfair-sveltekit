@@ -1,7 +1,7 @@
 <script>
 	import LinkButton from 'components/LinkButton.svelte';
 	import { getContext } from 'svelte/internal';
-	export let listMode;
+	export let listMode = false;
 	export let sponsor;
 	let sponsors = getContext('sponsors');
 
@@ -43,7 +43,6 @@
 					href={sponsor.link}
 					label="Visit"
 					icon="open_in_new"
-					inline
 					headerSmall
 					noCloseHeader
 				/>

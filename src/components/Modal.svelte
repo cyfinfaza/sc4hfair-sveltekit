@@ -8,7 +8,6 @@
 	export let danger = true; // when you're deleting something
 
 	const close = (e, confirmed = false) => {
-		console.log(e);
 		// only close if its not actually the modal
 		if (
 			e === null ||
@@ -18,7 +17,6 @@
 			if (confirmed) dispatch('confirm'); // when confirming
 			else dispatch('close'); // when cancelling
 			show = false;
-			console.trace('closing modal');
 		}
 	};
 </script>

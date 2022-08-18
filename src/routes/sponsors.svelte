@@ -9,12 +9,11 @@
 <script>
 	import Layout from 'components/Layout.svelte';
 	import SponsorSpot from 'components/SponsorSpot.svelte';
-	export let sponsors;
 
-	const isBrowser = typeof window !== 'undefined';
+	export let sponsors;
 </script>
 
-<Layout title="Clubs">
+<Layout title="Sponsors">
 	<div class="center">
 		<h1>Sponsors</h1>
 		<p>The 4-H fair is made possible by our sponsors.</p>

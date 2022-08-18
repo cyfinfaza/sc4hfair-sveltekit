@@ -27,19 +27,19 @@ export async function getClubs(fetch) {
 			await queryContentful(
 				fetch,
 				`{
-			clubCollection {
-				items {
-					slug
-					name
-					meetingLocation
-					clubWebsite
-					description
-					grades
-					meetingWhen
-					listingWebsite
-					}
+	clubCollection {
+		items {
+			slug
+			name
+			meetingLocation
+			clubWebsite
+			description
+			grades
+			meetingWhen
+			listingWebsite
 			}
-		}`
+	}
+}`
 			)
 		).clubCollection.items;
 	}
@@ -54,21 +54,21 @@ export async function getSponsors(fetch) {
 			await queryContentful(
 				fetch,
 				`{
-			sponsorSpotCollection {
-				items {
-					heading
-					image {
-						url
-					}
-					description
-					link
-					tier
-					sys {
-						id
-					}
-				}
+	sponsorSpotCollection {
+		items {
+			heading
+			image {
+				url
 			}
-		}`
+			description
+			link
+			tier
+			sys {
+				id
+			}
+		}
+	}
+}`
 			)
 		).sponsorSpotCollection.items;
 	}

@@ -23,17 +23,15 @@
 </script>
 
 <script>
+	import ClubBox from 'components/ClubBox.svelte';
 	import Layout from 'components/Layout.svelte';
 	import { exactSearch } from 'logic/search.js';
-	import ClubBox from 'components/ClubBox.svelte';
+	import { browser } from '$app/env';
+
 	export let clubs;
-	// console.log(clubs);
 
-	const isBrowser = typeof window !== 'undefined';
-
-	let searchQuery = isBrowser ? localStorage.getItem('searchQuery') || '' : '';
-
-	$: isBrowser && window.sessionStorage.setItem('clubs_search_query', JSON.stringify(searchQuery));
+	let searchQuery = (browser && window.sessionStorage.getItem('clubs_searchQuery')) || '';
+	$: browser && window.sessionStorage.setItem('clubs_searchQuery', searchQuery);
 
 	let results = [];
 	$: results = exactSearch(
@@ -54,7 +52,9 @@
 	</div>
 	<div class="filterOptions">
 		<input type="text" placeholder="Search" bind:value={searchQuery} />
-		<button style:display={searchQuery != ''} on:click={(_) => (searchQuery = '')}>Clear</button>
+		<button style:display={searchQuery ? null : 'none'} on:click={(_) => (searchQuery = '')}
+			>Clear</button
+		>
 	</div>
 	<div class="columnCentered">
 		{#each results as club}

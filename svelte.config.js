@@ -1,7 +1,7 @@
 import adapter from '@sveltejs/adapter-static';
 import sveltePreprocess from 'svelte-preprocess';
 
-/** @type {import('@sveltejs/k1it').Config} */
+/** @type {import('@sveltejs/kit').Config} */
 const config = {
 	kit: {
 		adapter: adapter(),
@@ -15,7 +15,7 @@ const config = {
 			styles: 'src/styles/*',
 		},
 		prerender: {
-			default: true
+			default: true,
 		},
 	},
 	preprocess: [

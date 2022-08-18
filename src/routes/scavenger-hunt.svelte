@@ -74,17 +74,15 @@
 		}
 	});
 
-	$: {
-		if (compatible) {
-			if (scanning)
-				qrScanner.start().catch((e) => {
-					console.error(e);
-					compatible = false;
-				});
-			else {
-				scannerMessage = '';
-				qrScanner.stop();
-			}
+	$: if (compatible) {
+		if (scanning)
+			qrScanner.start().catch((e) => {
+				console.error(e);
+				compatible = false;
+			});
+		else {
+			scannerMessage = '';
+			qrScanner.stop();
 		}
 	}
 
@@ -136,7 +134,7 @@
 			hunt, though only one prize may be claimed per person.
 		</p>
 		<p>Hints used: {$hintsUsed.length}</p>
-		{#each clues as clue, index}
+		{#each clues as _, index}
 			<ClueBox {index} />
 		{/each}
 		<ClueBox winner />

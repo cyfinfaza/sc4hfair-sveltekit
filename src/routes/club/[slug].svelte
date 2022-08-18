@@ -2,7 +2,6 @@
 	import { getClubs } from 'logic/contentful.js';
 	export async function load({ fetch }) {
 		const resp = await getClubs(fetch);
-		// console.log(resp);
 		return { props: { clubs: resp } };
 	}
 </script>
@@ -11,7 +10,7 @@
 	import { page } from '$app/stores';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
-	import { canWebShare, share } from 'logic/webshare';
+	import { canWebShare, share } from 'logic/webshare.js';
 	import SvelteMarkdown from 'svelte-markdown';
 	import {
 		interestsSlugs,
@@ -23,7 +22,6 @@
 
 	export let clubs;
 
-	const isBrowser = typeof window !== 'undefined';
 	const slug = $page.params.slug;
 	const club = clubs.find((club) => club.slug === slug);
 
@@ -37,8 +35,8 @@
 		class="horizPanel"
 		style="whitespace: nowrap; justify-content: flex-start; margin-top: 16px;"
 	>
-		<LinkButton label="See all clubs" icon="groups" href="/clubs" inline />
-		<LinkButton label="View interest list" icon="list" href="/interests" inline />
+		<LinkButton label="See all clubs" icon="groups" href="/clubs" />
+		<LinkButton label="View interest list" icon="list" href="/interests" />
 	</div>
 	<h1 style="text-transform: uppercase;">{club.name}</h1>
 	<div class="optionsButtonsPanel">
@@ -65,7 +63,7 @@
 				lightFont
 			/>
 		{/if}
-		{#if isBrowser && canWebShare()}
+		{#if canWebShare()}
 			<LinkButton
 				label="Share"
 				icon="share"

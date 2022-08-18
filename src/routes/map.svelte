@@ -21,7 +21,6 @@
 }`;
 	export async function load({ fetch }) {
 		const resp = await queryContentful(fetch, query);
-		// console.log(resp);
 		return {
 			props: { events: resp.scheduledEventCollection?.items, clubs: resp.clubCollection?.items },
 		};
@@ -29,44 +28,57 @@
 </script>
 
 <script>
+	import mapboxgl from 'mapbox-gl';
+	import 'mapbox-gl/dist/mapbox-gl.css';
+	import polylabel from 'polylabel';
+	import { onMount, onDestroy } from 'svelte';
+
+	import DateTime from 'components/DateTime.svelte';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import Tabs from 'components/Tabs.svelte';
-	import { theme } from 'logic/theming';
-	import { eventIsFuture } from 'components/EventBox.svelte';
-	import mapboxgl from 'mapbox-gl';
-	import 'mapbox-gl/dist/mapbox-gl.css';
-	import 'styles/map.addon.css';
-	import polylabel from 'polylabel';
+	import { theme } from 'logic/theming.js';
+	import { eventIsFuture } from 'logic/scheduling.js';
+
 	import mapbox_theme_light from 'data/mapbox-color-themes/theme-light';
 	import mapbox_theme_dark from 'data/mapbox-color-themes/theme-dark';
-	import { onMount } from 'svelte';
-	import DateTime from 'components/DateTime.svelte';
 
 	export let events;
 	export let clubs;
 
 	// the source/layer that contains our features
-	const source = 'composite',
+	const style = 'mapbox://styles/cyfinfaza/cl6idgfjs004x16p9y241804x',
+		source = 'composite',
 		sourceLayer = 'Fair_Tents_2022_with_names', // the name of the tileset
 		sourceLayerId = 'Tents Flat'; // the name of the layer in the style that has the tileset
 
 	mapboxgl.accessToken =
 		'pk.eyJ1IjoiY3lmaW5mYXphIiwiYSI6ImNrYXBwN2N4ZTEyd3gycHF0bHhzZXIwcWEifQ.8Dx5dx27ity49fAGyZNzPQ';
 
-	let mapContainer;
-	let map;
-	let geolocate;
-	let mapLng = -74.677043;
-	let mapLat = 40.577636;
-	let mapZoom = 16;
-	let isMapLoaded = false;
-	let trackUserLocationActive = false;
-	let selectedFeature = null;
-	let previouslySelectedFeature = null;
+	// location of the fair to center to
+	const fairLng = -74.677043,
+		fairLat = 40.577636,
+		fairZoom = 16;
 
-	let filteredEventData = [];
-	let filteredClubData = [];
+	// mapbox
+	let /** @type {HTMLDivElement} */
+		mapContainer,
+		/** @type {import('mapbox-gl').Map} */
+		map,
+		isMapLoaded = false;
+
+	// user locating
+	/** @type {import('mapbox-gl').GeolocateControl} */
+	let geolocate,
+		trackUserLocationActive = false;
+
+	// feature popup info
+	let selectedFeature = null,
+		previouslySelectedFeature = null,
+		filteredEventData = [],
+		filteredClubData = [];
+
+	let easterEggCount = 0;
 
 	const mapboxColorThemes = {
 		light: mapbox_theme_light,
@@ -80,41 +92,63 @@
 		});
 	}
 
-	$: {
-		if (isMapLoaded) {
-			previouslySelectedFeature &&
-				map.setFeatureState(
-					{
-						source: previouslySelectedFeature.source,
-						id: previouslySelectedFeature.id,
-						sourceLayer: previouslySelectedFeature.sourceLayer,
-					},
-					{
-						click: false,
-					}
-				);
-			console.log(selectedFeature);
-			console.log(events);
-			if (selectedFeature) {
-				map.setFeatureState(
-					{
-						source: selectedFeature.source,
-						id: selectedFeature.id,
-						sourceLayer: selectedFeature.sourceLayer,
-					},
-					{
-						click: true,
-					}
-				);
-				previouslySelectedFeature = selectedFeature;
-				console.log('setting filteredeventdata');
-				filteredEventData = events.filter(
-					(event) => event.tent === selectedFeature?.properties.slug && eventIsFuture(event)
-				);
-				filteredClubData = clubs.filter((club) => club.tent === selectedFeature?.properties.slug);
-			} else {
-				previouslySelectedFeature = null;
-			}
+	$: if (isMapLoaded) {
+		previouslySelectedFeature &&
+			map.setFeatureState(
+				{
+					source: previouslySelectedFeature.source,
+					id: previouslySelectedFeature.id,
+					sourceLayer: previouslySelectedFeature.sourceLayer,
+				},
+				{
+					click: false,
+				}
+			);
+		if (selectedFeature) {
+			map.setFeatureState(
+				{
+					source: selectedFeature.source,
+					id: selectedFeature.id,
+					sourceLayer: selectedFeature.sourceLayer,
+				},
+				{
+					click: true,
+				}
+			);
+			previouslySelectedFeature = selectedFeature;
+			filteredEventData = events.filter(
+				(event) => event.tent === selectedFeature?.properties.slug && eventIsFuture(event)
+			);
+			filteredClubData = clubs.filter((club) => club.tent === selectedFeature?.properties.slug);
+		} else {
+			previouslySelectedFeature = null;
+		}
+	}
+
+	function selectFeature(slug) {
+		let query = map.querySourceFeatures(source, {
+			sourceLayer: sourceLayer,
+			filter: ['==', 'slug', slug], // check feature slug
+		});
+		if (query.length !== 0) {
+			// assuming that the biggest id is actually the one shown because otherwise i have no idea how to get the correct one
+			let element = query.reduce((a, b) => (a.id > b.id ? a : b));
+			console.log(element, query);
+
+			map.flyTo({
+				center: polylabel(element.geometry.coordinates), // use the center of the feature
+				zoom: 18.5,
+				speed: 2.7, // this is done once on page load so make it go fast
+			});
+			map.once('moveend', () => {
+				selectedFeature = {
+					source,
+					sourceLayer,
+					...element,
+				};
+			});
+		} else {
+			console.warn('No feature found for slug:', toLocate);
 		}
 	}
 
@@ -122,47 +156,23 @@
 		if (map) return; // Initialize map only once
 		map = new mapboxgl.Map({
 			container: mapContainer,
-			style: 'mapbox://styles/cyfinfaza/cl6idgfjs004x16p9y241804x',
-			center: [mapLng, mapLat],
-			zoom: mapZoom,
+			style,
+			center: [fairLng, fairLat],
+			zoom: fairZoom,
 			attributionControl: false,
 		});
 
 		map.on('load', (_) => {
 			isMapLoaded = true;
 			changeTheme($theme);
-			theme.subscribe((next) => {
+			const unsubscribe = theme.subscribe((next) => {
 				changeTheme(next);
 			});
+			onDestroy(unsubscribe);
 
 			// Locate a tent by its slug
 			let toLocate = new URLSearchParams(window.location.search).get('locate');
-			if (toLocate) {
-				let query = map.querySourceFeatures(source, {
-					sourceLayer: sourceLayer,
-					filter: ['==', 'slug', toLocate], // check tent slug
-				});
-				if (query.length !== 0) {
-					// assuming that the biggest id is actually the one shown because otherwise i have no idea how to get the correct one
-					let element = query.reduce((a, b) => (a.id > b.id ? a : b));
-					console.log(element, query);
-
-					map.flyTo({
-						center: polylabel(element.geometry.coordinates), // use the center of the tent
-						zoom: 18.5,
-						speed: 2.7, // this is done once on page load so make it go fast
-					});
-					map.once('moveend', () => {
-						selectedFeature = {
-							source,
-							sourceLayer,
-							...element,
-						};
-					});
-				} else {
-					console.warn('No tent found for', toLocate);
-				}
-			}
+			if (toLocate) selectFeature(toLocate);
 		});
 
 		window.map = map;
@@ -191,7 +201,7 @@
 		});
 		map.addControl(scale);
 
-		map.on('click', sourceLayerId, function (e) {
+		map.on('click', sourceLayerId, (e) => {
 			const feature = e.features[0];
 			console.log(selectedFeature, feature);
 			selectedFeature = feature;
@@ -200,14 +210,15 @@
 </script>
 
 <Layout title="Map" noPadding noHeaderPadding fixedHeightContent fullWidth>
-	<div class="controlsContainer">
+	<div class="controls">
 		<LinkButton
 			label="Center on fair"
 			icon="place"
 			on:click={() => {
+				easterEggCount++;
 				map.flyTo({
-					center: [mapLng, mapLat],
-					zoom: mapZoom,
+					center: [fairLng, fairLat],
+					zoom: fairZoom,
 				});
 			}}
 			lightFont
@@ -223,7 +234,7 @@
 			acrylic
 		/>
 	</div>
-	<div class="mapContainer" bind:this={mapContainer} />
+	<div class="mapContainer" class:easterEgg={easterEggCount >= 50} bind:this={mapContainer} />
 	<div
 		class="tentInfo"
 		class:hidden={!selectedFeature}
@@ -264,7 +275,7 @@
 								{/each}
 							</ul>
 						{:else}
-							<p>No events found</p>
+							<p>No future events found</p>
 						{/if}
 					{:else if key === 'clubs'}
 						{#if filteredClubData.length}
@@ -292,7 +303,7 @@
 		overflow: hidden;
 	}
 
-	.controlsContainer {
+	.controls {
 		position: absolute;
 		width: 100%;
 		box-sizing: border-box;
@@ -371,7 +382,7 @@
 	// 	}
 	// }
 
-	.mapContainer.easterEgg canvas {
+	.easterEgg :global(canvas) {
 		background-color: red;
 		animation: hueRotate 3s infinite;
 	}
@@ -382,6 +393,21 @@
 		}
 		100% {
 			filter: hue-rotate(360deg);
+		}
+	}
+
+	:global {
+		.mapboxgl-map {
+			font-family: inherit;
+		}
+
+		.mapboxgl-ctrl-scale {
+			background-color: var(--light-blur);
+			backdrop-filter: var(--backdrop-blur);
+			border-radius: 5px 5px 0 0;
+			color: var(--text);
+			border: none;
+			border-bottom: 2px solid var(--text);
 		}
 	}
 </style>

@@ -1,4 +1,6 @@
-export const canWebShare = () => navigator.share;
+import { browser } from '$app/env';
+
+export const canWebShare = () => browser && navigator.share;
 
 export function share(title, url) {
 	if (navigator.share) {

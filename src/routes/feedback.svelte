@@ -15,7 +15,7 @@
 	$: if (!formPrefilled && $session?.user?.user_metadata) {
 		formPrefilled = true;
 		if (!name) name = $session.user.user_metadata.fullName;
-		if (!email) email = $session.user.user_metadata.preferredEmail;
+		if (!email) email = $session.user.user_metadata.preferredEmail || $session.user.user_metadata.email;
 	}
 
 	function submit() {

@@ -1,5 +1,5 @@
 {
-	"extends": "./.svelte-kit/tsconfig.json", // this is generated from svelte.config.js
+	"extends": "./.svelte-kit/tsconfig.json", // this is generated from svelte.config.js using "svelte-kit sync"
 	"compilerOptions": {
 		"outDir": "", // idk it makes it work
 		"allowJs": true,
