@@ -237,12 +237,8 @@
 							<ul>
 								{#each filteredEventData as event}
 									<li key={event.id}>
-										<a href={'/schedule#' + event.id}>{event.title}</a>{' '}
-										<small>
-											(
-											<DateTime date={event.time} />
-											)
-										</small>
+										<a href={'/schedule#' + event.id}>{event.title}</a>
+										<small>(<DateTime date={event.time} />)</small>
 									</li>
 								{/each}
 							</ul>

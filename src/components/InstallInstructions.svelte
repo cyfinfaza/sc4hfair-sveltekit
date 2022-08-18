@@ -33,8 +33,8 @@
 			Tap <span class="material-icons">ios_share</span> (share button)
 		</li>
 		<li>
-			Scroll down until you see "Add to Home Screen{' '}
-			<span class="material-icons">add_box</span>" and click it
+			Scroll down until you see "Add to Home Screen <span class="material-icons">add_box</span>" and
+			click it
 		</li>
 		<li>Tap "Add" in the upper right corner</li>
 	</ol>

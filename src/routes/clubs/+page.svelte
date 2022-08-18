@@ -22,7 +22,7 @@
 	<div class="center">
 		<h1>Clubs</h1>
 		<p>
-			Tap the +Add button to add a club to your interest list.{' '}
+			Tap the +Add button to add a club to your interest list.
 			<a href="/interests">View interest list</a>
 		</p>
 	</div>

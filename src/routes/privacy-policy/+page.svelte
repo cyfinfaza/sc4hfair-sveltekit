@@ -6,8 +6,9 @@
 	<h1>Privacy Policy</h1>
 	<p>
 		Your privacy is important to us. It is Somerset County 4-H Fair App's policy to respect your
-		privacy regarding any information we may collect from you across our website,{' '}
-		<a href="/">sc4hfair</a>.
+		privacy regarding any information we may collect from you across our website, <a href="/"
+			>sc4hfair</a
+		>.
 	</p>
 	<p>
 		We only ask for personal information when we need it to provide services to you. We collect it
@@ -18,8 +19,7 @@
 		If you create an account, your name, email address, and profile picture (from the external
 		account you use to create it) will be stored. Accounts are managed by email address. Different
 		providers that share the same email address will always sign you in to the same account.
-		Additional account information may be managed in the{' '}
-		<a href="/settings">user settings</a>.
+		Additional account information may be managed in the <a href="/settings">user settings</a>.
 	</p>
 	<p>
 		Each page contains a client-side script that keeps track of your navigation through our site. We
@@ -33,11 +33,12 @@
 		as well as unauthorized access, disclosure, copying, use or modification.
 	</p>
 	<p>
-		We don't share any personally identifying information publicly or with third-parties besides{' '}
-		<a href="https://4histops.org/">Somerset County 4-H</a>, except when required to by law. If you
-		use the <a href="/interests">club interest manager</a>, your provided name, email address, phone
-		number, and other relavent information may be shared with leaders of the clubs you marked as
-		interested in.
+		We don't share any personally identifying information publicly or with third-parties besides <a
+			href="https://4histops.org/">Somerset County 4-H</a
+		>, except when required to by law. If you use the
+		<a href="/interests">club interest manager</a>, your provided name, email address, phone number,
+		and other relavent information may be shared with leaders of the clubs you marked as interested
+		in.
 	</p>
 	<p>
 		Our website may link to external sites that are not operated by us. Please be aware that we have
