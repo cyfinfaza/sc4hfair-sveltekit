@@ -13,6 +13,6 @@ if (isBrowser) {
 		else document.body.style.setProperty('--status-bar', '#888');
 		document
 			.querySelector('meta[name="theme-color"]')
-			.setAttribute('content', getComputedStyle(document.body).getPropertyValue('--status-bar'));
+			?.setAttribute('content', getComputedStyle(document.body).getPropertyValue('--status-bar'));
 	});
 }

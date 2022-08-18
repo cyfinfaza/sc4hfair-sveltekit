@@ -7,11 +7,13 @@ export const themes = [
 		id: 'theme-light',
 		name: 'Light theme',
 		icon: 'light_mode',
+		colorScheme: 'light',
 	},
 	{
 		id: 'theme-dark',
 		name: 'Dark theme',
 		icon: 'dark_mode',
+		colorScheme: 'dark',
 	},
 ];
 
@@ -33,5 +35,6 @@ theme.subscribe((newTheme) => {
 			if (className !== newTheme && className.startsWith('theme-'))
 				document.body.classList.remove(className);
 		});
+		document.documentElement.style.setProperty('color-scheme', newTheme.colorScheme);
 	}
 });

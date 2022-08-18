@@ -9,6 +9,7 @@
 <script>
 	import 'styles/global.css';
 	import 'styles/material-icons.css';
+	import 'styles/fonts.css';
 	import { setContext } from 'svelte';
 	export let sponsors;
 	setContext('sponsors', sponsors);

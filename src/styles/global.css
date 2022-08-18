@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Mono&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Mono&display=swap'); */
 /* @import url('https://fonts.googleapis.com/icon?family=Material+Icons'); */
 
 html {
@@ -35,7 +35,10 @@ body {
 	--grey-text: #333;
 	--button-shadow: 0 0 8px -3px #0008;
 	--image-dimmer-opacity: 0.6;
-	--image-dimmer: linear-gradient(rgba(255, 255, 255, var(--image-dimmer-opacity)), rgba(255, 255, 255, var(--image-dimmer-opacity)));
+	--image-dimmer: linear-gradient(
+		rgba(255, 255, 255, var(--image-dimmer-opacity)),
+		rgba(255, 255, 255, var(--image-dimmer-opacity))
+	);
 	--backdrop-blur: blur(12px);
 	--theme-transition: 0.5s ease;
 }
@@ -60,7 +63,10 @@ body.theme-dark {
 	/* --navbar-text: #fafafa; */
 	--navbar-accent: #0003;
 	--button-shadow: 0 0 8px -2px #000;
-	--image-dimmer: linear-gradient(rgba(0, 0, 0, var(--image-dimmer-opacity)), rgba(0, 0, 0, var(--image-dimmer-opacity)));
+	--image-dimmer: linear-gradient(
+		rgba(0, 0, 0, var(--image-dimmer-opacity)),
+		rgba(0, 0, 0, var(--image-dimmer-opacity))
+	);
 }
 
 /* * {
@@ -70,7 +76,11 @@ body.theme-dark {
 @supports (backdrop-filter: var(--backdrop-blur)) {
 	body {
 		--navbar: linear-gradient(var(--status-bar) 0%, #009959aa 64px, #00995988 128px) !important;
-		--navbar-grey: linear-gradient(var(--status-bar) 0%, #888888aa 64px, #88888888 128px) !important;
+		--navbar-grey: linear-gradient(
+			var(--status-bar) 0%,
+			#888888aa 64px,
+			#88888888 128px
+		) !important;
 		--light-blur: #fdfdfd33;
 	}
 
@@ -99,7 +109,10 @@ body {
 	background-color: var(--selection);
 }
 
-body, input, button, select {
+body,
+input,
+button,
+select {
 	font-family: 'DM Sans', sans-serif;
 	word-wrap: break-word;
 }
@@ -133,7 +146,9 @@ div {
 	align-items: center;
 }
 
-select, button, input {
+select,
+button,
+input {
 	color: inherit;
 	transition: color var(--theme-transition);
 	background-color: var(--light);
@@ -144,12 +159,14 @@ select, button, input {
 	outline: none;
 }
 
-button, input {
+button,
+input {
 	font-size: 1em;
 	padding: 0.3em;
 }
 
-code, pre {
+code,
+pre {
 	font-family: 'DM Mono', monospace;
 }
 
