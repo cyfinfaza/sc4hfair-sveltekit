@@ -1,11 +1,3 @@
-<script context="module">
-	import { getClubs } from 'logic/contentful.js';
-	export async function load({ fetch }) {
-		const resp = await getClubs(fetch);
-		return { props: { clubs: resp } };
-	}
-</script>
-
 <script>
 	import { page } from '$app/stores';
 	import Layout from 'components/Layout.svelte';
@@ -20,10 +12,10 @@
 	} from 'logic/supabase.js';
 	import { onMount } from 'svelte';
 
-	export let clubs;
+	export let data;
 
 	const slug = $page.params.slug;
-	const club = clubs.find((club) => club.slug === slug);
+	const club = data.clubs.find((club) => club.slug === slug);
 
 	onMount(async () => {
 		await initSupabaseClient();
@@ -78,21 +70,10 @@
 	<div class="clubDescription">
 		<SvelteMarkdown source={club.description} />
 	</div>
-	<p>
-		<strong>Where: </strong>
-		{club.meetingLocation}
-	</p>
-	<p>
-		<strong>When: </strong>
-		{club.meetingWhen}
-	</p>
-	<p>
-		<strong>Grades: </strong>
-		{club.grades}
-	</p>
-	<p>
-		<a href={club.listingWebsite}>View on 4histops.org</a>
-	</p>
+	<p><strong>Where:</strong> {club.meetingLocation}</p>
+	<p><strong>When:</strong> {club.meetingWhen}</p>
+	<p><strong>Grades:</strong> {club.grades}</p>
+	<p><a href={club.listingWebsite}>View on 4histops.org</a></p>
 </Layout>
 
 <style>

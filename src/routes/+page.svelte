@@ -1,21 +1,3 @@
-<script context="module">
-	import { queryContentful } from 'logic/contentful.js';
-	const query = `{
-	postCollection(order:sys_firstPublishedAt_DESC) {
-		items {
-			title
-			contentText
-			sys {
-				publishedAt
-			}
-		}
-	}
-}`;
-	export async function load({ fetch }) {
-		return { props: { posts: (await queryContentful(fetch, query)).postCollection?.items } };
-	}
-</script>
-
 <script>
 	import InstallInstructions from 'components/InstallInstructions.svelte';
 	import Layout from 'components/Layout.svelte';
@@ -25,7 +7,7 @@
 	import { menuOpen } from 'logic/stores.js';
 	import { onMount } from 'svelte';
 
-	export let posts;
+	export let data;
 
 	let showInstallBox = false;
 	onMount(() => {
@@ -62,7 +44,7 @@
 	</div>
 	<h2 class="center">Latest Updates</h2>
 	<div clas="columnCentered">
-		{#each posts as post, i}
+		{#each data.posts as post, i}
 			<Post data={post} index={i} />
 		{/each}
 	</div>

@@ -1,41 +1,17 @@
-<script context="module">
-	import { queryContentful } from 'logic/contentful.js';
-	const query = `{
-	clubCollection {
-		items {
-			slug
-				name
-				meetingLocation
-				clubWebsite
-				description
-				grades
-				meetingWhen
-				listingWebsite
-				tent
-		}
-	}
-}`;
-	export async function load({ fetch }) {
-		const resp = await queryContentful(fetch, query);
-		// console.log(resp);
-		return { props: { clubs: resp.clubCollection?.items } };
-	}
-</script>
-
 <script>
 	import ClubBox from 'components/ClubBox.svelte';
 	import Layout from 'components/Layout.svelte';
 	import { exactSearch } from 'logic/search.js';
 	import { browser } from '$app/env';
 
-	export let clubs;
+	export let data;
 
 	let searchQuery = (browser && window.sessionStorage.getItem('clubs_searchQuery')) || '';
 	$: browser && window.sessionStorage.setItem('clubs_searchQuery', searchQuery);
 
 	let results = [];
 	$: results = exactSearch(
-		clubs,
+		data.clubs,
 		'name',
 		['description', 'meetingWhen', 'meetingLocation', 'grades'],
 		searchQuery

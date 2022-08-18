@@ -1,6 +1,6 @@
 <script>
 	import { getContext } from 'svelte';
-	import LinkButton from './LinkButton.svelte';
+	import LinkButton from 'components/LinkButton.svelte';
 
 	const { atIndex, hintsUsed, addHintUsed, clues, startScanning } = getContext('sh');
 

@@ -1,35 +1,15 @@
-<script context="module">
-	import { queryContentful } from 'logic/contentful.js';
-	const query = `{
-	scheduledEventCollection(order:sys_firstPublishedAt_DESC) {
-		items {
-			sys {
-				id
-			}
-			title
-			time
-			tent
-		}
-	}
-}`;
-	export async function load({ fetch }) {
-		const resp = await queryContentful(fetch, query);
-		return { props: { events: resp.scheduledEventCollection?.items } };
-	}
-</script>
-
 <script>
 	import Layout from 'components/Layout.svelte';
 	import tentSlugs from 'data/tentSlugs.json';
 	import ToggleButton from 'components/ToggleButton.svelte';
-	import EventBox from 'components/EventBox.svelte';
+	import EventBox from './EventBox.svelte';
 	import { eventIsFuture } from 'logic/scheduling.js';
 	import { exactSearch } from 'logic/search.js';
 	import { browser } from '$app/env';
 
-	export let events;
+	export let data;
 
-	const eventTentsList = events.reduce(
+	const eventTentsList = data.events.reduce(
 		(last, current) => {
 			if (last.indexOf(current.tent) < 0 && current.tent && current.tent !== '---') {
 				return [...last, current.tent];
@@ -57,7 +37,7 @@
 
 	let results = [];
 	$: results = exactSearch(
-		events
+		data.events
 			.filter(
 				(element) =>
 					((selectedTent === 'All' || selectedTent === element.tent) &&

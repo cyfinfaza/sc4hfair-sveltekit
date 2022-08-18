@@ -1,32 +1,3 @@
-<script context="module">
-	import { queryContentful } from 'logic/contentful.js';
-	const query = `{
-	scheduledEventCollection(order:sys_firstPublishedAt_DESC, where: {time_gt: "${new Date().toISOString()}"}) {
-		items {
-			sys {
-				id
-			}
-			title
-			time
-			tent
-		}
-	}
-	clubCollection {
-		items {
-			name
-			slug
-			tent
-		}
-	}
-}`;
-	export async function load({ fetch }) {
-		const resp = await queryContentful(fetch, query);
-		return {
-			props: { events: resp.scheduledEventCollection?.items, clubs: resp.clubCollection?.items },
-		};
-	}
-</script>
-
 <script>
 	import mapboxgl from 'mapbox-gl';
 	import 'mapbox-gl/dist/mapbox-gl.css';
@@ -43,8 +14,7 @@
 	import mapbox_theme_light from 'data/mapbox-color-themes/theme-light';
 	import mapbox_theme_dark from 'data/mapbox-color-themes/theme-dark';
 
-	export let events;
-	export let clubs;
+	export let data;
 
 	// the source/layer that contains our features
 	const style = 'mapbox://styles/cyfinfaza/cl6idgfjs004x16p9y241804x',
@@ -116,10 +86,12 @@
 				}
 			);
 			previouslySelectedFeature = selectedFeature;
-			filteredEventData = events.filter(
+			filteredEventData = data.events.filter(
 				(event) => event.tent === selectedFeature?.properties.slug && eventIsFuture(event)
 			);
-			filteredClubData = clubs.filter((club) => club.tent === selectedFeature?.properties.slug);
+			filteredClubData = data.clubs.filter(
+				(club) => club.tent === selectedFeature?.properties.slug
+			);
 		} else {
 			previouslySelectedFeature = null;
 		}

@@ -4,7 +4,7 @@
 	// You win, come join the 4-H Computer Club
 
 	import QrScanner from 'qr-scanner';
-	import ClueBox from 'components/ClueBox.svelte';
+	import ClueBox from './ClueBox.svelte';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import clues from 'data/shClues.json';

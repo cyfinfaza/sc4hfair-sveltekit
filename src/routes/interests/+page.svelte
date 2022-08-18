@@ -1,26 +1,3 @@
-<script context="module">
-	import { queryContentful } from 'logic/contentful.js';
-	const query = `{
-	clubCollection {
-		items {
-			slug
-				name
-				meetingLocation
-				clubWebsite
-				description
-				grades
-				meetingWhen
-				listingWebsite
-				tent
-		}
-	}
-}`;
-	export async function load({ fetch }) {
-		const resp = await queryContentful(fetch, query);
-		return { props: { clubs: resp.clubCollection?.items } };
-	}
-</script>
-
 <script>
 	import ClubBox from 'components/ClubBox.svelte';
 	import Layout from 'components/Layout.svelte';
@@ -36,10 +13,11 @@
 	} from 'logic/supabase.js';
 	import { onMount } from 'svelte';
 
-	export let clubs;
+	export let data;
 
 	let results = [];
-	$: if ($interestsSlugs) results = clubs.filter((club) => $interestsSlugs.indexOf(club.slug) > -1);
+	$: if ($interestsSlugs)
+		results = data.clubs.filter((club) => $interestsSlugs.indexOf(club.slug) > -1);
 
 	let reqLoginMessage = false;
 	$: if ($session) reqLoginMessage = false;
