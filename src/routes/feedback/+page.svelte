@@ -1,6 +1,7 @@
 <script>
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
+	import { isOnline } from 'logic/stores.js';
 	import { session, initSupabaseClient } from 'logic/supabase.js';
 	import { onMount } from 'svelte';
 
@@ -15,7 +16,8 @@
 	$: if (!formPrefilled && $session?.user?.user_metadata) {
 		formPrefilled = true;
 		if (!name) name = $session.user.user_metadata.fullName;
-		if (!email) email = $session.user.user_metadata.preferredEmail || $session.user.user_metadata.email;
+		if (!email)
+			email = $session.user.user_metadata.preferredEmail || $session.user.user_metadata.email;
 	}
 
 	function submit() {
@@ -57,7 +59,7 @@
 		<h2>Comment<span>*</span></h2>
 		<p placeholder="Type your comment here" contenteditable bind:textContent={comment} />
 		<p style:color="red">{errorText}</p>
-		<LinkButton label="Submit" icon="send" on:click={submit} />
+		<LinkButton label="Submit" icon="send" on:click={submit} disabled={!$isOnline} />
 	{/if}
 </Layout>
 

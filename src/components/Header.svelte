@@ -39,15 +39,27 @@
 				<LinkButton header label="Map" icon="map" href="/map" />
 				<LinkButton header label="Schedule" icon="event_note" href="/schedule" />
 				<LinkButton header label="Clubs" icon="groups" href="/clubs" />
-				<LinkButton header label="Interest List" icon="list_alt" href="/interests" />
+				<LinkButton
+					header
+					disabled={!$isOnline}
+					label="Interest List"
+					icon="list_alt"
+					href="/interests"
+				/>
 				<LinkButton header label="Scavenger Hunt" icon="travel_explore" href="/scavenger-hunt" />
 			</div>
 			<div class="menuBottom">
 				<ThemeSwitcher header />
 				<LinkButton headerSmall label="Settings" icon="settings" href="/settings" />
-				<LinkButton headerSmall label="App feedback" icon="message" href="/feedback" />
+				<LinkButton
+					headerSmall
+					disabled={!$isOnline}
+					label="App feedback"
+					icon="message"
+					href="/feedback"
+				/>
 				<LinkButton headerSmall label="Fair sponsors" icon="monetization_on" href="/sponsors" />
-				<LinkButton headerSmall label="About 4-H" href="https://4histops.org">
+				<LinkButton headerSmall disabled={!$isOnline} label="About 4-H" href="https://4histops.org">
 					<svelte:fragment slot="iconElement">
 						<FourH
 							style="height: 100%; fill: currentColor; transition: fill var(--theme-transition);"

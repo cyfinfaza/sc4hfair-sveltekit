@@ -3,6 +3,7 @@
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import { canWebShare, share } from 'logic/webshare.js';
+	import { isOnline } from 'logic/stores';
 	import SvelteMarkdown from 'svelte-markdown';
 	import {
 		interestsSlugs,
@@ -35,6 +36,7 @@
 		{#if ($interestsSlugs || []).includes(club.slug)}
 			<LinkButton
 				label="Remove from interest list"
+				disabled={!$isOnline}
 				icon="remove"
 				on:click={() => removeInterest(club.slug)}
 				lightFont
@@ -42,6 +44,7 @@
 		{:else}
 			<LinkButton
 				label="Add to interest list"
+				disabled={!$isOnline}
 				icon="add"
 				on:click={() => addInterest(club.slug)}
 				lightFont

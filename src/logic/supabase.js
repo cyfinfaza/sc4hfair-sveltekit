@@ -1,8 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 import { writable } from 'svelte/store';
 
+/** @type {import('@supabase/supabase-js').SupabaseClient} */
 let client = null;
 
+/** @type {import('svelte/store').writable<import('@supabase/supabase-js').AuthSession>} */
 export const session = writable();
 export const interestsSlugs = writable();
 
@@ -43,21 +45,17 @@ export async function refresh() {
 		let { data: results, error } = await client.from('interests').select('*');
 		if (error) console.error(error);
 		console.log(results);
-		interestsSlugs.update((_) => results.map((result) => result.interest_slug));
+		interestsSlugs.update(() => results.map((result) => result.interest_slug));
 	} else {
-		interestsSlugs.update((_) => []);
+		interestsSlugs.update(() => []);
 	}
 }
 
 export async function login(provider, redirect = '/interests') {
 	// const { user, session, error } = await client.auth.signIn(
 	await client.auth.signIn(
-		{
-			provider: provider,
-		},
-		{
-			redirectTo: window.location.origin + redirect,
-		}
+		{ provider: provider },
+		{ redirectTo: window.location.origin + redirect }
 	);
 }
 

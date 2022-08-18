@@ -1,6 +1,7 @@
 <script>
 	import LinkButton from 'components/LinkButton.svelte';
 	import { getContext } from 'svelte/internal';
+	import { isOnline } from 'logic/stores.js';
 	export let listMode = false;
 	export let sponsor;
 	let sponsors = getContext('sponsors');
@@ -41,6 +42,7 @@
 			{#if sponsor.link}
 				<LinkButton
 					href={sponsor.link}
+					disabled={!$isOnline}
 					label="Visit"
 					icon="open_in_new"
 					headerSmall

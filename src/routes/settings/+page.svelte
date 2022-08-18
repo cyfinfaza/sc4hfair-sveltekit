@@ -3,11 +3,13 @@
 	import { goto } from '$app/navigation';
 	import { writable } from 'svelte/store';
 	import { isStandalone } from 'logic/platform.js';
+	import { isOnline } from 'logic/stores.js';
 	import InstallInstructions from 'components/InstallInstructions.svelte';
 	import LabeledInput from 'components/LabeledInput.svelte';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import Modal from 'components/Modal.svelte';
+	import NoOffline from 'components/NoOffline.svelte';
 	import SignInButtons from 'components/SignInButtons.svelte';
 	import { onMount } from 'svelte';
 	import { session, initSupabaseClient, logout } from 'logic/supabase.js';
@@ -81,9 +83,11 @@
 				client.auth.update({ data: $form });
 				cloudForm = { ...$form };
 			}}
-			disabled={isInfoFormDisabled($form, cloudForm)}
+			disabled={isInfoFormDisabled($form, cloudForm) || !$isOnline}
 			alert={!isInfoFormDisabled($form, cloudForm)}
 		/>
+	{:else if !$isOnline}
+		<NoOffline />
 	{:else}
 		<SignInButtons />
 	{/if}
@@ -137,7 +141,7 @@
 		>.
 	</p>
 	<p class="horizPanel2">
-		<LinkButton label="Send feedback" href="/feedback" icon="message" />
+		<LinkButton label="Send feedback" disabled={!$isOnline} href="/feedback" icon="message" />
 		<LinkButton label="Privacy Policy" href="/privacy-policy" icon="policy" />
 	</p>
 	<div style:opacity={0.5}>
