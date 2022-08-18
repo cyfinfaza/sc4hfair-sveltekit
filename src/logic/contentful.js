@@ -45,3 +45,33 @@ export async function getClubs(fetch) {
 	}
 	return clubs;
 }
+
+let sponsors = [];
+
+export async function getSponsors(fetch) {
+	console.log("GETTING SPONSORS")
+	if (sponsors.length === 0) {
+		sponsors = (
+			await queryContentful(
+				fetch,
+				`{
+			sponsorSpotCollection {
+				items {
+					heading
+					image {
+						url
+					}
+					description
+					link
+					tier
+					sys {
+						id
+					}
+				}
+			}
+		}`
+			)
+		).sponsorSpotCollection.items;
+	}
+	return sponsors;
+}

@@ -7,6 +7,7 @@
 	import FourH from 'assets/4h.svg';
 	import { menuOpen, isOnline } from 'logic/stores';
 	import ThemeSwitcher from 'components/ThemeSwitcher.svelte';
+	import SponsorSpot from 'components/SponsorSpot.svelte';
 	export let offsetContent = true;
 </script>
 
@@ -45,13 +46,7 @@
 				<ThemeSwitcher header />
 				<LinkButton headerSmall label="Settings" icon="settings" href="/settings" />
 				<LinkButton headerSmall label="App feedback" icon="message" href="/feedback" />
-				<LinkButton
-					disabled
-					headerSmall
-					label="Fair sponsors"
-					icon="monetization_on"
-					href="/sponsors"
-				/>
+				<LinkButton headerSmall label="Fair sponsors" icon="monetization_on" href="/sponsors" />
 				<LinkButton headerSmall label="About 4-H" href="https://4histops.org">
 					<svelte:fragment slot="iconElement">
 						<FourH
@@ -60,8 +55,8 @@
 					</svelte:fragment>
 				</LinkButton>
 			</div>
-			<div class="sponsorArea">
-				<!-- @todo: -->
+			<div class="dqpmdptSpot">
+				<SponsorSpot />
 			</div>
 		</div>
 	</div>
@@ -194,7 +189,7 @@
 		background-color: var(--navbar-accent);
 	}
 
-	.sponsorArea {
+	.dqpmdptSpot {
 		width: 100%;
 		max-width: 500px;
 		box-sizing: border-box;
