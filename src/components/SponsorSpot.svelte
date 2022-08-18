@@ -18,8 +18,6 @@
 			sponsor = filteredSponsors[Math.floor(Math.random() * filteredSponsors.length)];
 		}
 	}
-
-	$: console.log(sponsor);
 </script>
 
 {#if sponsor}

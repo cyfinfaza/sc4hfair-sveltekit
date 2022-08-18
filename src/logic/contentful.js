@@ -49,7 +49,6 @@ export async function getClubs(fetch) {
 let sponsors = [];
 
 export async function getSponsors(fetch) {
-	console.log("GETTING SPONSORS")
 	if (sponsors.length === 0) {
 		sponsors = (
 			await queryContentful(
