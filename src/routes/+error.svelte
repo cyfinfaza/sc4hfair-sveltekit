@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import Layout from 'components/Layout.svelte';
 
-	console.log(error);
+	console.log($page.error);
 </script>
 
 <Layout title="Error">

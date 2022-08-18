@@ -16,7 +16,7 @@ const query = `{
 	}
 }`;
 
-export async function load({ fetch }) {
-	const resp = await queryContentful(fetch, query);
+export async function load() {
+	const resp = await queryContentful(query);
 	return { clubs: resp.clubCollection?.items };
 }

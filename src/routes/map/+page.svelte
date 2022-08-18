@@ -123,7 +123,6 @@
 			console.warn('No feature found for slug:', toLocate);
 		}
 	}
-
 	onMount(() => {
 		if (map) return; // Initialize map only once
 		map = new mapboxgl.Map({
@@ -137,10 +136,9 @@
 		map.on('load', (_) => {
 			isMapLoaded = true;
 			changeTheme($theme);
-			const unsubscribe = theme.subscribe((next) => {
+			theme.subscribe((next) => {
 				changeTheme(next);
 			});
-			onDestroy(unsubscribe);
 
 			// Locate a tent by its slug
 			let toLocate = new URLSearchParams(window.location.search).get('locate');
@@ -148,8 +146,6 @@
 		});
 
 		window.map = map;
-		window.changeTheme = changeTheme;
-		window.mapboxColorThemes = mapboxColorThemes;
 
 		geolocate = new mapboxgl.GeolocateControl({
 			positionOptions: {

@@ -3,11 +3,27 @@
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import Post from 'components/Post.svelte';
+	import { queryContentful } from 'logic/contentful.js';
 	import { isStandalone } from 'logic/platform.js';
 	import { menuOpen } from 'logic/stores.js';
 	import { onMount } from 'svelte';
 
-	export let data;
+	const query = `{
+	postCollection(order:sys_firstPublishedAt_DESC) {
+		items {
+			title
+			contentText
+			sys {
+				publishedAt
+			}
+		}
+	}
+}`;
+
+	let posts = [];
+	onMount(async () => {
+		posts = (await queryContentful(query)).postCollection?.items;
+	});
 
 	let showInstallBox = false;
 	onMount(() => {
@@ -44,7 +60,7 @@
 	</div>
 	<h2 class="center">Latest Updates</h2>
 	<div clas="columnCentered">
-		{#each data.posts as post, i}
+		{#each posts as post, i}
 			<Post data={post} index={i} />
 		{/each}
 	</div>

@@ -1,4 +1,4 @@
-export async function queryContentful(fetch, query) {
+export async function queryContentful(query) {
 	const res = await fetch(
 		'https://graphql.contentful.com/content/v1/spaces/e34g9w63217k/?query=' +
 			encodeURIComponent(query),
@@ -12,21 +12,12 @@ export async function queryContentful(fetch, query) {
 			},
 		}
 	);
-
-	if (!res.ok) {
-		throw new Error(await res.text());
-	}
+	if (!res.ok) throw new Error(await res.text());
 	return (await res.json()).data;
 }
 
 let clubs = [];
-
-export async function getClubs(fetch) {
-	if (clubs.length === 0) {
-		clubs = (
-			await queryContentful(
-				fetch,
-				`{
+const clubQuery = `{
 	clubCollection {
 		items {
 			slug
@@ -39,21 +30,16 @@ export async function getClubs(fetch) {
 			listingWebsite
 			}
 	}
-}`
-			)
-		).clubCollection.items;
+}`;
+export async function getClubs() {
+	if (clubs.length === 0) {
+		clubs = (await queryContentful(clubQuery)).clubCollection.items;
 	}
 	return clubs;
 }
 
 let sponsors = [];
-
-export async function getSponsors(fetch) {
-	if (sponsors.length === 0) {
-		sponsors = (
-			await queryContentful(
-				fetch,
-				`{
+const sponsorQuery = `{
 	sponsorSpotCollection {
 		items {
 			heading
@@ -63,14 +49,12 @@ export async function getSponsors(fetch) {
 			description
 			link
 			tier
-			sys {
-				id
-			}
 		}
 	}
-}`
-			)
-		).sponsorSpotCollection.items;
+}`;
+export async function getSponsors() {
+	if (sponsors.length === 0) {
+		sponsors = (await queryContentful(sponsorQuery)).sponsorSpotCollection.items;
 	}
 	return sponsors;
 }
