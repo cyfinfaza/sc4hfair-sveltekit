@@ -1,5 +1,5 @@
 <script>
-	import { browser } from '$app/env';
+	import { browser, dev } from '$app/env';
 	import { goto } from '$app/navigation';
 	import { writable } from 'svelte/store';
 	import { isStandalone } from 'logic/platform.js';
@@ -13,7 +13,7 @@
 	import SignInButtons from 'components/SignInButtons.svelte';
 	import { onMount } from 'svelte';
 	import { session, initSupabaseClient, logout } from 'logic/supabase.js';
-	import { getSubscription } from 'logic/webpush';
+	import { getSubscription, subscribe, unsubscribe } from 'logic/webpush';
 
 	function isInfoFormDisabled(a, b) {
 		if (!a || !b) return true;
@@ -35,7 +35,7 @@
 
 	let confirmReset = ''; // modal for confirmation
 
-	let showingAdditionalBuildInfo = false;
+	let showingAdditionalBuildInfo = dev;
 
 	onMount(async () => {
 		client = await initSupabaseClient();
@@ -150,9 +150,9 @@
 		<code
 			role="button"
 			tabIndex={0}
-			on:click={() => (showingAdditionalBuildInfo = true)}
-			on:keydown={() => (showingAdditionalBuildInfo = true)}
-			style:cursor={showingAdditionalBuildInfo ? null : 'pointer'}
+			on:click={() => (showingAdditionalBuildInfo = !showingAdditionalBuildInfo)}
+			on:keydown={() => (showingAdditionalBuildInfo = !showingAdditionalBuildInfo)}
+			style:cursor="pointer"
 		>
 			{__COMMIT__}/{__BRANCH__}
 		</code>
@@ -193,15 +193,15 @@
 						});
 					}}
 				/>
-				<LinkButton
-					icon="notifications"
+				<!-- <LinkButton
+					icon="notifications_active"
 					label="Test notification"
 					on:click={async () => {
 						new window.Notification('Fair Update', {
 							body: 'The fair has been closed due to weather.',
 						});
 					}}
-				/>
+				/> -->
 				<LinkButton
 					icon="notifications"
 					label="Get notification subscription"
@@ -211,6 +211,20 @@
 						alert(JSON.stringify(sub));
 						console.log(JSON.stringify(sub));
 						console.log('got subscription');
+					}}
+				/>
+				<LinkButton
+					icon="notification_add"
+					label="Subscribe to notifications"
+					on:click={async () => {
+						console.log((await subscribe()).registered);
+					}}
+				/>
+				<LinkButton
+					icon="notifications_off"
+					label="Unubscribe from notifications"
+					on:click={async () => {
+						console.log(!(await unsubscribe()).registered);
 					}}
 				/>
 			</div>

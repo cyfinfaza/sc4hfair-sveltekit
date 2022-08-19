@@ -97,5 +97,10 @@ self.addEventListener('push', (e) => {
 	console.log('Push data', pushData);
 	if (pushData.type === 'notification') {
 		e.waitUntil(self.registration.showNotification(pushData.title, pushData.options));
+	} else if (pushData.type === 'test') {
+		const broadcast = new BroadcastChannel('push-test');
+		console.log('testing push');
+		broadcast.postMessage(pushData);
+		broadcast.close(); // allow channel to be garbage collected
 	}
 });

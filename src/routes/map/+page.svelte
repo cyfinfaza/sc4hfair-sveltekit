@@ -373,5 +373,9 @@
 			border: none;
 			border-bottom: 2px solid var(--text);
 		}
+
+		.mapboxgl-ctrl-top-right {
+			display: none;
+		}
 	}
 </style>

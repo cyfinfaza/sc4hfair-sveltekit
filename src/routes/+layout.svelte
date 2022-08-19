@@ -6,7 +6,7 @@
 	import 'styles/fonts.css';
 
 	export let data;
-	setContext('sponsors', data.sponsors);
+	setContext('sponsors', data?.sponsors || []);
 </script>
 
 <slot />
