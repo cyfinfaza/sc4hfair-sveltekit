@@ -10,6 +10,7 @@ import json
 from uuid import uuid4
 
 app = Flask(__name__)
+app.url_map.strict_slashes = False
 CORS(app)
 app.config.update(SESSION_COOKIE_SAMESITE='None', SESSION_COOKIE_SECURE=True)
 app.secret_key = '--------'
