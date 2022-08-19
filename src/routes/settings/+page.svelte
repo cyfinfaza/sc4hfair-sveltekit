@@ -13,6 +13,7 @@
 	import SignInButtons from 'components/SignInButtons.svelte';
 	import { onMount } from 'svelte';
 	import { session, initSupabaseClient, logout } from 'logic/supabase.js';
+	import { getSubscription } from 'logic/webpush';
 
 	function isInfoFormDisabled(a, b) {
 		if (!a || !b) return true;
@@ -190,6 +191,26 @@
 								window.caches.delete(key);
 							}
 						});
+					}}
+				/>
+				<LinkButton
+					icon="notifications"
+					label="Test notification"
+					on:click={async () => {
+						new window.Notification('Fair Update', {
+							body: 'The fair has been closed due to weather.',
+						});
+					}}
+				/>
+				<LinkButton
+					icon="notifications"
+					label="Get notification subscription"
+					on:click={async () => {
+						console.log('getting subscription');
+						const sub = await getSubscription();
+						alert(JSON.stringify(sub));
+						console.log(JSON.stringify(sub));
+						console.log('got subscription');
 					}}
 				/>
 			</div>
