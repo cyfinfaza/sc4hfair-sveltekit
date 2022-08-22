@@ -13,7 +13,12 @@ self.addEventListener('push', (e) => {
 	const pushData = e.data.json();
 	console.log('Push data', pushData);
 	if (pushData.type === 'notification') {
-		e.waitUntil(self.registration.showNotification(pushData.title, pushData.options));
+		e.waitUntil(
+			self.registration.showNotification(pushData.data.title, {
+				body: pushData.data.body,
+				...pushData.data.options,
+			})
+		);
 	} else if (pushData.type === 'test') {
 		const broadcast = new BroadcastChannel('push-test');
 		console.log('testing push');
