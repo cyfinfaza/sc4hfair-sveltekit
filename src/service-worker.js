@@ -99,6 +99,8 @@ self.addEventListener('push', (e) => {
 		e.waitUntil(
 			self.registration.showNotification(pushData.data.title, {
 				body: pushData.data.body,
+				icon: '/favicon.ico',
+				badge: '/4h-96x96.png',
 				...pushData.data.options,
 			})
 		);
