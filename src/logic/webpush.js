@@ -54,7 +54,7 @@ export async function subscribe(dry = false) {
 	};
 
 	// send subscription to server
-	const sub = await fetch('https://v2.sc4hfair.app/api/webpush/subscribe/' + (dry ? '?dry' : ''), {
+	const sub = await fetch('https://v2.sc4hfair.app/api/webpush/subscribe' + (dry ? '?dry' : ''), {
 		method: 'POST',
 		body: JSON.stringify({ subscription }),
 		headers: {
@@ -86,7 +86,7 @@ export async function unsubscribe() {
 	if (!subscription) throw new Error('No subscription');
 
 	// send subscription to server
-	const sub = await fetch('https://v2.sc4hfair.app/api/webpush/unsubscribe/', {
+	const sub = await fetch('https://v2.sc4hfair.app/api/webpush/unsubscribe', {
 		method: 'POST',
 		body: JSON.stringify({ subscription }),
 		headers: {

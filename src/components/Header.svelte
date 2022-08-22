@@ -1,13 +1,15 @@
 <script>
-	import 'styles/button.css';
+	import FourH from 'assets/4h.svg';
+	import Logo from 'assets/logo.svg';
 	import LinkButton from 'components/LinkButton.svelte';
 	import LoadingRing from 'components/LoadingRing.svelte';
-	import { navigating } from '$app/stores';
-	import Logo from 'assets/logo.svg';
-	import FourH from 'assets/4h.svg';
-	import { menuOpen, isOnline } from 'logic/stores';
-	import ThemeSwitcher from 'components/ThemeSwitcher.svelte';
 	import SponsorSpot from 'components/SponsorSpot.svelte';
+	import ThemeSwitcher from 'components/ThemeSwitcher.svelte';
+	import { menuOpen, isOnline } from 'logic/stores';
+	import { goto } from '$app/navigation';
+	import { navigating } from '$app/stores';
+	import 'styles/button.css';
+
 	export let offsetContent = true;
 </script>
 
@@ -18,7 +20,9 @@
 		style:background={$isOnline ? 'var(--navbar)' : 'var(--navbar-grey)'}
 	>
 		<div class="topBar">
-			<Logo role="button" onclick="window.location.href = '/'" />
+			<div on:click={() => goto('/')}>
+				<Logo role="button" />
+			</div>
 			<div class="horizPanel2" style:gap="12px">
 				{#if !$isOnline}
 					<span class="material-icons">cloud_off</span>
@@ -103,7 +107,7 @@
 		padding: 16px;
 		box-sizing: border-box;
 
-		& > :global(svg) {
+		:global(svg) {
 			height: 100%;
 			fill: currentColor;
 			transition: fill var(--theme-transition);

@@ -20,7 +20,7 @@ const config = {
 		prerender: {
 			default: true,
 		},
-		trailingSlash: 'always',
+		trailingSlash: 'never',
 	},
 	preprocess: [
 		sveltePreprocess({

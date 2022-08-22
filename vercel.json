@@ -2,6 +2,7 @@
 	"github": {
 		"silent": true
 	},
-	"trailingSlash": true,
+	"cleanUrls": true,
+	"trailingSlash": false,
 	"rewrites": [{ "source": "/api/webpush/(.*)", "destination": "/api/webpush" }]
 }
