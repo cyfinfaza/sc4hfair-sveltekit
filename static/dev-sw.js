@@ -16,6 +16,7 @@ self.addEventListener('push', (e) => {
 		e.waitUntil(
 			self.registration.showNotification(pushData.data.title, {
 				body: pushData.data.body,
+				icon: '/favicon.ico',
 				...pushData.data.options,
 			})
 		);
@@ -25,4 +26,22 @@ self.addEventListener('push', (e) => {
 		broadcast.postMessage(pushData);
 		broadcast.close(); // allow channel to be garbage collected
 	}
+});
+
+self.addEventListener('notificationclick', (event) => {
+	console.log('On notification click: ', event.notification.tag);
+	event.notification.close();
+	event.waitUntil(
+		clients
+			.matchAll({
+				type: 'window',
+			})
+			.then((clientList) => {
+				for (const client of clientList) {
+					console.log(client);
+					if (new URL(client.url).pathname === '/' && 'focus' in client) return client.focus();
+				}
+				if (clients.openWindow) return clients.openWindow('/');
+			})
+	);
 });
