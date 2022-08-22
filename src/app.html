@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" href="%sveltekit.assets%/favicon-32x32.png" />
-		<meta name="viewport" content="width=device-width" />
-		%sveltekit.head%
-	</head>
 
-	<body>
-		<script>
-			document.body.classList.add(
-				localStorage.getItem('theme') ||
-					(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'theme-dark' : 'theme-light')
-			);
-		</script>
-		<div>%sveltekit.body%</div>
-	</body>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width" />
+	<link rel="icon" href="%sveltekit.assets%/favicon-32x32.png" />
+	<link rel="manifest" href="/manifest.webmanifest" crossorigin="anonymous" />
+	%sveltekit.head%
+</head>
+
+<body>
+	<script>
+		document.body.classList.add(
+			localStorage.getItem('theme') ||
+			(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'theme-dark' : 'theme-light')
+		);
+	</script>
+	<div>%sveltekit.body%</div>
+</body>
+
 </html>
