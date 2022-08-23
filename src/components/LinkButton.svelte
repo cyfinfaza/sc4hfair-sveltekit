@@ -56,7 +56,7 @@
 	{/if}
 </svelte:element>
 
-<style>
+<style lang="scss">
 	/* link button */
 	.container {
 		display: inline-flex;
@@ -72,11 +72,14 @@
 		/* margin-inline-end: 8px; */
 		/* margin-block-end: 8px; */
 		user-select: none;
+		&:not(.header) {
+			gap: 4px;
+		}
 	}
 
-	.container > *:not(.iconElementContainer) + * {
+	/* .container > *:not(.iconElementContainer) + * {
 		margin-left: 4px !important;
-	}
+	} */
 
 	:global(a).container {
 		text-decoration: none;
@@ -113,7 +116,7 @@
 	.iconElementContainer {
 		display: flex;
 		align-items: center;
-		margin-right: 4px;
+		/* margin-right: 4px; */
 	}
 
 	/* header button */
