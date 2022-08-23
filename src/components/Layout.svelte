@@ -1,8 +1,10 @@
 <script>
 	import Header from 'components/Header.svelte';
+	import { menuOpen } from 'logic/stores';
 
 	import { fly } from 'svelte/transition';
 	import { quintOut, quintIn } from 'svelte/easing';
+	import { onMount } from 'svelte';
 
 	export let title = '';
 	export let description = '';
@@ -16,6 +18,13 @@
 	const AUTHOR = 'Somerset County 4-H';
 	const metaDescription = description || DESCRIPTION;
 	const animationDuration = 150;
+
+	onMount(() => {
+		window.addEventListener('keydown', (e) => {
+			if (e.key === 'm' && (e.ctrlKey || e.metaKey))
+				document.querySelector('#menuArea :is(input, button, a)').focus();
+		});
+	});
 </script>
 
 <svelte:head>
@@ -31,7 +40,13 @@
 	<meta name="theme-color" content="#009959" />
 </svelte:head>
 
-<a href="#content" class="skipToContentButton">Skip to content</a>
+<a href="#content" class="skipToContentButton" tabindex="0" on:click={() => ($menuOpen = false)}>
+	Skip to content <br />
+	<span style="text-decoration: none; display: inline-block;">
+		Using keyboard navigation? Use <kbd>Ctrl</kbd>+<kbd>M</kbd> or <kbd>Cmd</kbd>+<kbd>M</kbd> to quickly
+		open the menu.
+	</span>
+</a>
 <Header offsetContent={!noHeaderPadding && !fixedHeightContent} />
 {#key title}
 	<div
@@ -42,6 +57,7 @@
 		class:noPadding
 		class:padTop={!noHeaderPadding}
 		class:fixedHeightContent
+		on:focusin={() => ($menuOpen = false)}
 	>
 		<div class:fullWidth>
 			<slot />
@@ -86,7 +102,7 @@
 		top: 0;
 		width: 100%;
 		text-align: center;
-		z-index: 200;
+		z-index: 1000;
 		padding: 8px;
 		background-color: var(--light);
 		color: var(--text);

@@ -13,16 +13,24 @@
 	export let offsetContent = true;
 </script>
 
-<div class="invisible" style:height={offsetContent ? null : 0}>
+<div
+	class="invisible"
+	style:height={offsetContent ? null : 0}
+	on:keydown={(e) => {
+		if (e.key === 'Escape') {
+			menuOpen.set(false);
+		}
+	}}
+>
 	<div
 		class="visible"
 		style:height={$menuOpen ? '100vh' : ''}
 		style:background={$isOnline ? 'var(--navbar)' : 'var(--navbar-grey)'}
 	>
 		<div class="topBar">
-			<div on:click={() => goto('/')}>
-				<Logo role="button" />
-			</div>
+			<a href="/">
+				<Logo />
+			</a>
 			<div class="horizPanel2" style:gap="12px">
 				{#if !$isOnline}
 					<span class="material-icons">cloud_off</span>
@@ -37,7 +45,7 @@
 				</button>
 			</div>
 		</div>
-		<div class="menuArea">
+		<div class="menuArea" id="menuArea" on:focusin={() => ($menuOpen = true)}>
 			<div class="menuGrid">
 				<LinkButton header label="Latest" icon="home" href="/" />
 				<LinkButton header label="Map" icon="map" href="/map" />
@@ -163,15 +171,12 @@
 		border-radius: 8px;
 		/* color: var(--navbar-text); */
 		background-color: var(--navbar-accent);
+		// outline: none;
 		/* cursor: pointer; */
 		/* user-select: none; */
 		/* box-shadow: 0 0 6px 0px #0008; */
 		/* -webkit-tap-highlight-color: rgba(0, 0, 0, 0); */
 		/* transition: (filter, transform) 120ms ease; */
-
-		&:focus {
-			outline: none;
-		}
 
 		& > span {
 			margin-left: 6px;

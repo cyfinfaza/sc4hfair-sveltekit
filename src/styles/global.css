@@ -166,7 +166,8 @@ input {
 }
 
 code,
-pre {
+pre,
+kbd {
 	font-family: 'DM Mono', monospace;
 }
 
@@ -212,4 +213,17 @@ hr {
 
 .material-icons {
 	vertical-align: text-bottom;
+}
+
+*:focus-visible {
+	outline: 2px solid var(--text-translucent);
+	outline-offset: 1px;
+}
+
+kbd {
+	background: var(--light-stackable);
+	padding: 2px 4px;
+	border-radius: 4px;
+	margin-inline: 1px;
+	font-size: 0.78em;
 }
