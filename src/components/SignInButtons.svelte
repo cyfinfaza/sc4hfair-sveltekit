@@ -63,7 +63,7 @@
 		flex-direction: column;
 		align-items: center;
 		// margin: 1rem 0;
-		border: 2px solid var(--light);
+		border: 2px solid var(--text-translucent);
 		box-sizing: border-box;
 		border-radius: 8px;
 		padding: 12px;

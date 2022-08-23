@@ -111,8 +111,6 @@
 			color: var(--bg);
 		}
 		hr {
-			border-color: var(--light);
-			border-width: 2px;
 			margin-top: 4px;
 			margin-bottom: 4px;
 		}
