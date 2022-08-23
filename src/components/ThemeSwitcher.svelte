@@ -34,7 +34,12 @@
 >
 	<svelte:fragment slot="iconElement">
 		{#key $theme}
-			<span class="material-icons icon" aria-label={currentTheme.name} bind:this={themeIcon}>
+			<span
+				class="material-icons icon"
+				aria-hidden="true"
+				aria-label={currentTheme.name}
+				bind:this={themeIcon}
+			>
 				{currentTheme.icon}
 			</span>
 		{/key}

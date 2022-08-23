@@ -33,13 +33,13 @@
 			</a>
 			<div class="horizPanel2" style:gap="12px">
 				{#if !$isOnline}
-					<span class="material-icons">cloud_off</span>
+					<span class="material-icons" aria-hidden="true">cloud_off</span>
 				{/if}
 				<LoadingRing loading={$navigating} />
 				<button type="button" class="menuButton button" on:click={(_) => ($menuOpen = !$menuOpen)}>
 					<div class="menuIconContainer">
-						<i class="material-icons" class:inactive={$menuOpen}>menu</i>
-						<i class="material-icons" class:inactive={!$menuOpen}>close</i>
+						<i class="material-icons" aria-hidden="true" class:inactive={$menuOpen}>menu</i>
+						<i class="material-icons" aria-hidden="true" class:inactive={!$menuOpen}>close</i>
 					</div>
 					<span>Menu</span>
 				</button>

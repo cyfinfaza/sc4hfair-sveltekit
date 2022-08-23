@@ -206,6 +206,7 @@
 	<div
 		class="tentInfo"
 		class:hidden={!selectedFeature}
+		aria-hidden={!selectedFeature}
 		class:short={filteredEventData.length === 0 && filteredClubData.length === 0}
 	>
 		<div>

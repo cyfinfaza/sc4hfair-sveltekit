@@ -11,8 +11,8 @@
 			(usually at the bottom)
 		</li>
 		<li>
-			If you don't see it, tap <span class="material-icons">more_vert</span> (menu), then tap "Add to
-			Home Screen" or "Install".
+			If you don't see it, tap <span class="material-icons" aria-hidden="true">more_vert</span> (menu),
+			then tap "Add to Home Screen" or "Install".
 		</li>
 	</ol>
 {:else if platform === 'android-other'}
@@ -30,11 +30,12 @@
 {:else if platform === 'ios'}
 	<ol>
 		<li>
-			Tap <span class="material-icons">ios_share</span> (share button)
+			Tap <span class="material-icons" aria-hidden="true">ios_share</span> (share button)
 		</li>
 		<li>
-			Scroll down until you see "Add to Home Screen <span class="material-icons">add_box</span>" and
-			click it
+			Scroll down until you see "Add to Home Screen <span class="material-icons" aria-hidden="true"
+				>add_box</span
+			>" and click it
 		</li>
 		<li>Tap "Add" in the upper right corner</li>
 	</ol>

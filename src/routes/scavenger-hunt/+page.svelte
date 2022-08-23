@@ -141,7 +141,11 @@
 	</div>
 
 	<!-- this div needs to always be rendered so the qr library doesn't die -->
-	<div class="scanner" class:hidden={!scanning || !compatible}>
+	<div
+		class="scanner"
+		class:hidden={!scanning || !compatible}
+		aria-hidden={!scanning || compatible}
+	>
 		<div>
 			<!-- svelte-ignore a11y-media-has-caption -->
 			<video bind:this={videoElement} />
@@ -158,7 +162,11 @@
 		</div>
 	</div>
 	<!-- copy of scanner box for uncompatible devices -->
-	<div class="scanner fallback" class:hidden={!scanning || compatible}>
+	<div
+		class="scanner fallback"
+		class:hidden={!scanning || compatible}
+		aria-hidden={!scanning || compatible}
+	>
 		<div class="scannerOverlay">
 			<LinkButton label="Close" icon="close" on:click={() => (scanning = false)} acrylic />
 			<div class="scannerMessage">

@@ -45,7 +45,7 @@
 	disabled={disabled || null}
 >
 	{#if icon}
-		<span class="material-icons icon">{icon}</span>
+		<span class="material-icons icon" aria-hidden="true">{icon}</span>
 	{:else}
 		<div class="iconElementContainer">
 			<slot name="iconElement" />
