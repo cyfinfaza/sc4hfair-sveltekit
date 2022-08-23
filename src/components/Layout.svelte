@@ -1,6 +1,9 @@
 <script>
 	import Header from 'components/Header.svelte';
 
+	import { fly } from 'svelte/transition';
+	import { quintOut, quintIn } from 'svelte/easing';
+
 	export let title = '';
 	export let description = '';
 	export let noPadding = false;
@@ -12,6 +15,7 @@
 	const DESCRIPTION = 'The Somerset County 4-H Fair App';
 	const AUTHOR = 'Somerset County 4-H';
 	const metaDescription = description || DESCRIPTION;
+	const animationDuration = 150;
 </script>
 
 <svelte:head>
@@ -29,17 +33,21 @@
 
 <a href="#content" class="skipToContentButton">Skip to content</a>
 <Header offsetContent={!noHeaderPadding && !fixedHeightContent} />
-<div
-	class="content"
-	id="content"
-	class:noPadding
-	class:padTop={!noHeaderPadding}
-	class:fixedHeightContent
->
-	<div class:fullWidth>
-		<slot />
+{#key title}
+	<div
+		in:fly={{ duration: animationDuration, delay: animationDuration, y: 50, quintOut }}
+		out:fly={{ duration: animationDuration, y: -50, quintIn }}
+		class="content"
+		id="content"
+		class:noPadding
+		class:padTop={!noHeaderPadding}
+		class:fixedHeightContent
+	>
+		<div class:fullWidth>
+			<slot />
+		</div>
 	</div>
-</div>
+{/key}
 
 <style>
 	.content {
