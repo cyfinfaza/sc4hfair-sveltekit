@@ -2,33 +2,37 @@
 	import LinkButton from 'components/LinkButton.svelte';
 	import { checkNotificationStatus, subscribe, unsubscribe } from 'logic/webpush';
 	import { onMount } from 'svelte';
+	import { isOnline } from 'logic/stores.js';
 	let loading = 'Loading notification status...';
 	let notificationStatus = false;
 	let subscriptionError = null;
 
 	async function checkSubscription() {
-		notificationStatus = await checkNotificationStatus();
-	}
-
-	onMount(async () => {
 		try {
-			await checkSubscription();
+			notificationStatus = await checkNotificationStatus();
 			loading = null;
 		} catch (e) {
 			subscriptionError = e;
 			loading = 'Notifications unavailable';
 		}
-	});
+	}
+
+	$: {
+		if ($isOnline) {
+			checkSubscription();
+		}
+	}
 </script>
 
 <div class="notificationEnableButton">
 	<LinkButton
-		label={loading ||
+		label={(!$isOnline && 'Notifications unavailable offline') ||
+			loading ||
 			(notificationStatus
 				? 'Notifications enabled (tap to disable)'
 				: 'Notifications disabled (tap to enable)')}
 		icon={notificationStatus ? 'notifications' : 'notifications_off'}
-		disabled={loading !== null}
+		disabled={loading !== null || !$isOnline}
 		active={notificationStatus}
 		on:click={async () => {
 			if (loading !== null) return;

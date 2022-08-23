@@ -19,7 +19,7 @@ export async function getSubscription() {
 	const registration = await Promise.race([
 		navigator.serviceWorker.ready,
 		new Promise((_, reject) =>
-			setTimeout(() => reject('No service worker detected within 10s'), 10000)
+			setTimeout(() => reject('No service worker detected within 30s'), 30000)
 		),
 	]);
 	await registration.pushManager.subscribe({
