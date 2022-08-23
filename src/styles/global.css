@@ -170,6 +170,12 @@ pre {
 	font-family: 'DM Mono', monospace;
 }
 
+hr {
+	border-color: var(--light);
+	border-width: 2px;
+	width: 100%;
+}
+
 .horizPanel {
 	display: flex;
 	gap: 8px;
