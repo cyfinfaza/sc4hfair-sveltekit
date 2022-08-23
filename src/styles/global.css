@@ -171,7 +171,8 @@ pre {
 }
 
 hr {
-	border: 1px solid var(--text-translucent);
+	height: 2px;
+	border: none;
 	background-color: var(--text-translucent);
 	border-radius: 1px;
 	width: 100%;
