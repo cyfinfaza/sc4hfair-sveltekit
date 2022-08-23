@@ -7,6 +7,8 @@
 	import { isStandalone } from 'logic/platform.js';
 	import { menuOpen } from 'logic/stores.js';
 	import { onMount } from 'svelte';
+	import { checkNotificationStatus, subscribe } from 'logic/webpush';
+	import NotificationEnableButton from 'components/NotificationEnableButton.svelte';
 
 	const query = `{
 	postCollection(order:sys_firstPublishedAt_DESC) {
@@ -25,28 +27,39 @@
 		posts = (await queryContentful(query)).postCollection?.items;
 	});
 
-	let showInstallBox = false;
+	let showSetupBox = false;
 	onMount(() => {
-		if (!isStandalone() && localStorage.getItem('installBox') !== '1') showInstallBox = true;
+		if (localStorage.getItem('installBox') !== '1') showSetupBox = true;
 	});
 </script>
 
 <Layout>
 	<h1 class="center">Welcome to the Somerset County 4-H Fair.</h1>
-	{#if showInstallBox}
+	{#if showSetupBox}
 		<div class="installBox">
-			<strong>Finish installing the fair app by adding it to your home screen:</strong>
+			<h3 style="text-align: center">Finish setting up the fair app</h3>
+			<hr />
+			<strong>Add the fair app to your homescreen:</strong>
 			<InstallInstructions />
+			{#await checkNotificationStatus() then registered}
+				{#if true}
+					<strong>Enable notifications about fair updates:</strong>
+					<p style="display: flex; align-items: center; gap: 8px;">
+						<NotificationEnableButton />
+					</p>
+				{/if}
+			{/await}
+			<hr />
 			<p>
 				<strong>
-					You can find these instructions later in <a href="/settings">settings</a>.
+					You can find these options later in <a href="/settings">settings</a>.
 				</strong>
 				<LinkButton
 					icon="close"
 					label="Dismiss"
 					acrylic
 					on:click={() => {
-						showInstallBox = false;
+						showSetupBox = false;
 						localStorage.setItem('installBox', '1');
 					}}
 				/>
@@ -88,6 +101,20 @@
 			:global(button) {
 				white-space: nowrap;
 			}
+		}
+		.numberCircle {
+			padding: 8px;
+			box-sizing: border-box;
+			height: 1em;
+			border-radius: 0.5em;
+			background-color: var(--text);
+			color: var(--bg);
+		}
+		hr {
+			border-color: var(--light);
+			border-width: 2px;
+			margin-top: 4px;
+			margin-bottom: 4px;
 		}
 	}
 </style>

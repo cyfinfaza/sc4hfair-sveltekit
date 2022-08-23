@@ -14,6 +14,7 @@
 	import { onMount } from 'svelte';
 	import { session, initSupabaseClient, logout } from 'logic/supabase.js';
 	import { getSubscription, subscribe, unsubscribe } from 'logic/webpush';
+	import NotificationEnableButton from 'components/NotificationEnableButton.svelte';
 
 	function isInfoFormDisabled(a, b) {
 		if (!a || !b) return true;
@@ -93,13 +94,16 @@
 		<SignInButtons />
 	{/if}
 
-	<h1>Install as app</h1>
+	<h1>Add to homescreen</h1>
 	{#if browser && isStandalone()}
-		<p>This site is already installed as an app.</p>
+		<p>This site is already running in standalone mode.</p>
 	{:else}
-		<p>This site is not installed as an app, to do so:</p>
+		<p>To add the fair app to your homescreen:</p>
 		<InstallInstructions />
 	{/if}
+
+	<h1>Notifications</h1>
+	<NotificationEnableButton />
 
 	<h1>Clear data</h1>
 	<p class="horizPanel2">

@@ -1,5 +1,8 @@
 export function requestNotificationPermission() {
 	return new Promise((resolve, reject) => {
+		if (!('Notification' in window)) {
+			reject(new Error('Notifications are not supported'));
+		}
 		window.Notification.requestPermission(function (status) {
 			console.log('Notification permission status: ', status);
 			resolve(status);
@@ -11,11 +14,9 @@ export async function getSubscription() {
 	// debugger;
 	const permission = await requestNotificationPermission();
 	if (permission !== 'granted') {
-		console.error('Notification permission not granted', permission);
-		return;
+		throw new Error('Notification permission not granted');
 	}
 	const registration = await navigator.serviceWorker.ready;
-
 	await registration.pushManager.subscribe({
 		userVisibleOnly: true,
 		applicationServerKey:
@@ -24,6 +25,21 @@ export async function getSubscription() {
 	const subscription = await registration.pushManager.getSubscription();
 	console.log(subscription);
 	return subscription;
+}
+
+export async function checkNotificationStatus() {
+	if (!('Notification' in window)) {
+		throw new Error('Notifications are not supported');
+	}
+	if (Notification.permission !== 'granted') {
+		console.warn('Notifications unavailable because permission is not granted.');
+		return false;
+	}
+	if ((await subscribe(true)).registered === false) {
+		console.warn('Notifications unavailable because subscription does not exist.');
+		return false;
+	}
+	return true;
 }
 
 /**
@@ -39,19 +55,21 @@ export async function getSubscription() {
 export async function subscribe(dry = false) {
 	// get subscription
 	const subscription = await getSubscription();
-	if (!subscription) throw new Error('No subscription');
+	if (!subscription) throw new Error('Service worker subscription not found');
 
-	// prepare to get a test message
-	const broadcast = new BroadcastChannel('push-test');
-	let resolveTestId,
-		rejectTestId,
-		testId = new Promise((resolve, reject) => {
-			resolveTestId = resolve;
-			rejectTestId = reject;
-		});
-	broadcast.onmessage = (e) => {
-		if (e.data.id) resolveTestId(e.data.id);
-	};
+	if (!dry) {
+		// prepare to get a test message
+		var broadcast = new BroadcastChannel('push-test');
+		var resolveTestId,
+			rejectTestId,
+			testId = new Promise((resolve, reject) => {
+				resolveTestId = resolve;
+				rejectTestId = reject;
+			});
+		broadcast.onmessage = (e) => {
+			if (e.data.id) resolveTestId(e.data.id);
+		};
+	}
 
 	// send subscription to server
 	const sub = await fetch('https://v2.sc4hfair.app/api/webpush/subscribe' + (dry ? '?dry' : ''), {
@@ -67,15 +85,19 @@ export async function subscribe(dry = false) {
 	console.log(data);
 	if (!sub.ok || data.type !== 'success') throw data;
 
-	// wait for test message before giving up
-	let testIdMatched = false;
-	await Promise.race([testId, new Promise((_, reject) => setTimeout(reject, 5000))])
-		.then((id) => (testIdMatched = id === data.test_id))
-		.catch(() => console.error("didn' get test message"));
-	broadcast.close(); // allow channel to be garbage collected
+	if (!dry) {
+		// wait for test message before giving up
+		let testIdMatched = false;
+		await Promise.race([testId, new Promise((_, reject) => setTimeout(reject, 5000))])
+			.then((id) => (testIdMatched = id === data.test_id))
+			.catch(() => {
+				throw new Error('Test push not received within 5s');
+			});
+		broadcast.close(); // allow channel to be garbage collected
 
-	console.log('test id matched:', testIdMatched);
-	// @todo: reply to server if matched and then have server add to db
+		console.log('test id matched:', testIdMatched);
+		// @todo: reply to server if matched and then have server add to db
+	}
 
 	return data;
 }
