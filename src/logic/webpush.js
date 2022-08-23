@@ -16,7 +16,12 @@ export async function getSubscription() {
 	if (permission !== 'granted') {
 		throw new Error('Notification permission not granted');
 	}
-	const registration = await navigator.serviceWorker.ready;
+	const registration = await Promise.race([
+		navigator.serviceWorker.ready,
+		new Promise((_, reject) =>
+			setTimeout(() => reject('No service worker detected within 10s'), 10000)
+		),
+	]);
 	await registration.pushManager.subscribe({
 		userVisibleOnly: true,
 		applicationServerKey:

@@ -39,16 +39,13 @@
 		<div class="installBox">
 			<h3 style="text-align: center">Finish setting up the fair app</h3>
 			<hr />
-			<strong>Add the fair app to your homescreen:</strong>
+			<strong><span class="numberSquircle">1</span> Add the fair app to your homescreen:</strong>
 			<InstallInstructions />
-			{#await checkNotificationStatus() then registered}
-				{#if true}
-					<strong>Enable notifications about fair updates:</strong>
-					<p style="display: flex; align-items: center; gap: 8px;">
-						<NotificationEnableButton />
-					</p>
-				{/if}
-			{/await}
+			<strong><span class="numberSquircle">2</span> Enable notifications about fair updates:</strong
+			>
+			<p style="display: flex; align-items: center; gap: 8px;">
+				<NotificationEnableButton />
+			</p>
 			<hr />
 			<p>
 				<strong>
@@ -102,10 +99,9 @@
 				white-space: nowrap;
 			}
 		}
-		.numberCircle {
-			padding: 8px;
+		.numberSquircle {
+			padding: 0px 8px;
 			box-sizing: border-box;
-			height: 1em;
 			border-radius: 0.5em;
 			background-color: var(--text);
 			color: var(--bg);

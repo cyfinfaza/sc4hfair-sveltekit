@@ -11,8 +11,13 @@
 	}
 
 	onMount(async () => {
-		await checkSubscription();
-		loading = null;
+		try {
+			await checkSubscription();
+			loading = null;
+		} catch (e) {
+			subscriptionError = e;
+			loading = 'Notifications unavailable';
+		}
 	});
 </script>
 
