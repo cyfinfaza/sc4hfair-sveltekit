@@ -37,7 +37,7 @@
 	<h1 class="center">Welcome to the Somerset County 4-H Fair.</h1>
 	{#if showSetupBox}
 		<div class="installBox">
-			<h3 style="text-align: center">Finish setting up the fair app</h3>
+			<h2 style="text-align: center">Finish setting up the fair app</h2>
 			<hr />
 			<strong><span class="numberSquircle">1</span> Add the fair app to your homescreen:</strong>
 			<InstallInstructions />
@@ -105,6 +105,9 @@
 			border-radius: 0.5em;
 			background-color: var(--text);
 			color: var(--bg);
+		}
+		h2 {
+			font-size: 1.2em;
 		}
 		hr {
 			margin-top: 4px;

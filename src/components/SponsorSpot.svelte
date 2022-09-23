@@ -23,7 +23,11 @@
 
 {#if sponsor}
 	<div class="container" class:listMode>
-		<img src={sponsor.image.url} alt="" class="sfImage" />
+		<picture>
+			<source srcset={`${sponsor.image.url}?w=100&fm=webp`} type="image/webp" />
+			<source srcset={`${sponsor.image.url}?w=100`} />
+			<img alt="" src={sponsor.image.url} class="sfImage" />
+		</picture>
 		<div class="sfText">
 			<h2>
 				{#if !listMode}

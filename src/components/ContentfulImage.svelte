@@ -6,7 +6,8 @@
 	let isContentfulCdn = href.match(/^(https?:)?\/\/images.ctfassets.net\//),
 		originalSrcset = [],
 		webpSrcset = [],
-		sizes = '(min-width: 1366px) 916px, (min-width: 1536px) 1030px, 100vw';
+		sizes =
+			'(min-width: 768px) 640px, (min-width: 1024px) 960px, (min-width: 1500px) 1440px, (min-width: 1900px) 1920px 100vw';
 	if (isContentfulCdn) {
 		for (let size of [640, 960, 1440, 1920]) {
 			let img = `${href}?w=${size}`;

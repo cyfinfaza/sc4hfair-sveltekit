@@ -28,7 +28,7 @@
 		style:background={$isOnline ? 'var(--navbar)' : 'var(--navbar-grey)'}
 	>
 		<div class="topBar">
-			<a href="/">
+			<a href="/" aria-label="Main page">
 				<Logo />
 			</a>
 			<div class="horizPanel2" style:gap="12px">
