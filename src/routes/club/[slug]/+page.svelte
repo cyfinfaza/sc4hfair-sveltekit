@@ -84,6 +84,7 @@
 		display: flex;
 		gap: 8px;
 		margin-bottom: 8px;
+		flex-wrap: wrap;
 	}
 	.optionsButtonsPanel > :global(*) {
 		margin: 0 !important;

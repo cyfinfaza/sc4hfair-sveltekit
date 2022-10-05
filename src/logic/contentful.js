@@ -28,7 +28,8 @@ const clubQuery = `{
 			grades
 			meetingWhen
 			listingWebsite
-			}
+			tent
+		}
 	}
 }`;
 export async function getClubs() {
