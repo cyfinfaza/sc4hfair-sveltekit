@@ -247,7 +247,7 @@
 							<ul>
 								{#each filteredClubData as club}
 									<li key={club.slug}>
-										<a href={'/clubs#' + club.slug}>{club.name}</a>
+										<a href={'/club/' + club.slug}>{club.name}</a>
 									</li>
 								{/each}
 							</ul>

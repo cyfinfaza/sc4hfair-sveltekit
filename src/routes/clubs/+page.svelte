@@ -34,7 +34,7 @@
 	</div>
 	<div class="columnCentered">
 		{#each results as club}
-			<ClubBox {club} />
+			<ClubBox {club} autoTarget={browser && window.location?.hash === '#' + club.slug} />
 		{/each}
 	</div>
 </Layout>
