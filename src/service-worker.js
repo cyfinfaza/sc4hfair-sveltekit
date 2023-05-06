@@ -1,6 +1,6 @@
 import { build, files, prerendered, version } from '$service-worker';
 
-const CACHE_NAME = 'offline-cache-v1';
+const CACHE_NAME = 'offline-cache-v2';
 const PRECACHE = ['_app/version.json', ...build, ...files, ...prerendered];
 
 console.log('precache: ', PRECACHE);
@@ -18,6 +18,11 @@ self.addEventListener('install', function (event) {
 			} catch (e) {
 				console.log('PRECACHE FAILED: ', e);
 			}
+
+			try {
+				// remove old cache
+				await caches.delete('offline-cache-v1');
+			} catch (e) {}
 		})()
 	);
 });
@@ -91,6 +96,8 @@ self.addEventListener('fetch', function (event) {
 	}
 });
 
+const notificationOptions = { icon: '/favicon.ico', badge: '/4h-96x96.png' };
+
 self.addEventListener('push', (e) => {
 	console.log('Push received', e);
 	const pushData = e.data.json();
@@ -99,8 +106,7 @@ self.addEventListener('push', (e) => {
 		e.waitUntil(
 			self.registration.showNotification(pushData.data.title, {
 				body: pushData.data.body,
-				icon: '/favicon.ico',
-				badge: '/4h-96x96.png',
+				...notificationOptions,
 				...pushData.data.options,
 			})
 		);
@@ -109,6 +115,7 @@ self.addEventListener('push', (e) => {
 		console.log('testing push');
 		broadcast.postMessage(pushData);
 		broadcast.close(); // allow channel to be garbage collected
+		e.waitUntil(self.registration.showNotification('testing notifications', notificationOptions));
 	}
 });
 
