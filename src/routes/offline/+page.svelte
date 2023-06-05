@@ -1,5 +1,5 @@
 <script>
-	import AppLogo from 'assets/favicon.svg';
+	import AppLogo from 'assets/favicon.svg?component';
 	import LinkButton from 'components/LinkButton.svelte';
 </script>
 

@@ -5,7 +5,7 @@
 	import EventBox from './EventBox.svelte';
 	import { eventIsFuture } from 'logic/scheduling.js';
 	import { exactSearch } from 'logic/search.js';
-	import { browser } from '$app/env';
+	import { browser } from '$app/environment';
 
 	export let data;
 

@@ -1,5 +1,5 @@
 <script>
-	import { browser, dev } from '$app/env';
+	import { browser, dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { writable } from 'svelte/store';
 	import { isStandalone } from 'logic/platform.js';
@@ -29,8 +29,8 @@
 		graduation: '',
 	});
 	let cloudForm;
-	$: console.log($form, cloudForm);
-	$: console.log($session);
+	// $: console.log($form, cloudForm);
+	// $: console.log($session);
 
 	let client;
 

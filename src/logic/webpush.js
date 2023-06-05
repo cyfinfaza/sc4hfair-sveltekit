@@ -1,3 +1,5 @@
+import { PUBLIC_WEBPUSH_API_PREFIX } from '$env/static/public';
+
 export function requestNotificationPermission() {
 	return new Promise((resolve, reject) => {
 		if (!('Notification' in window)) {
@@ -32,19 +34,35 @@ export async function getSubscription() {
 	return subscription;
 }
 
+/**
+ * Check if we can notify
+ * @returns {Object} status
+ * @returns {boolean} status.available if the client can subscribe
+ * @returns {boolean|undefined} status.registered true if user is already registered
+ * @returns {string|undefined} status.message reasoning
+ */
 export async function checkNotificationStatus() {
 	if (!('Notification' in window)) {
-		throw new Error('Notifications are not supported');
+		return {
+			available: false,
+			message: 'Notifications are not supported',
+		};
 	}
-	if (Notification.permission !== 'granted') {
-		console.warn('Notifications unavailable because permission is not granted.');
-		return false;
+	// user specifically disallowed notifications
+	if (Notification.permission == 'denied') {
+		return {
+			available: false,
+			message: 'Notifications permission explicitly denied, enable it in your browser',
+		};
 	}
-	if ((await subscribe(true)).registered === false) {
-		console.warn('Notifications unavailable because subscription does not exist.');
-		return false;
-	}
-	return true;
+	// dry check, will not send a test notification
+	const regstered = (await subscribe(true)).registered;
+	return {
+		// 'default' or 'granted' permission, doesn't hurt to ask
+		available: true,
+		// if we aren't granted, it doesn't matter if we already have a subscription as we can't send
+		regstered: Notification.permission == 'granted' ? regstered : false,
+	};
 }
 
 /**
@@ -77,14 +95,17 @@ export async function subscribe(dry = false) {
 	}
 
 	// send subscription to server
-	const sub = await fetch('https://v2.sc4hfair.app/api/webpush/subscribe' + (dry ? '?dry' : ''), {
-		method: 'POST',
-		body: JSON.stringify({ subscription }),
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		credentials: 'include',
-	});
+	const sub = await fetch(
+		`${PUBLIC_WEBPUSH_API_PREFIX || ''}/api/webpush/subscribe${dry ? '?dry' : ''}`,
+		{
+			method: 'POST',
+			body: JSON.stringify({ subscription }),
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			credentials: 'include',
+		}
+	);
 	/** @type {WebpushApiResponse} */
 	const data = await sub.json();
 	console.log(data);
@@ -113,7 +134,7 @@ export async function unsubscribe() {
 	if (!subscription) throw new Error('No subscription');
 
 	// send subscription to server
-	const sub = await fetch('https://v2.sc4hfair.app/api/webpush/unsubscribe', {
+	const sub = await fetch(`${PUBLIC_WEBPUSH_API_PREFIX || ''}/api/webpush/unsubscribe`, {
 		method: 'POST',
 		body: JSON.stringify({ subscription }),
 		headers: {

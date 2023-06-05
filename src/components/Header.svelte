@@ -1,6 +1,6 @@
 <script>
-	import FourH from 'assets/4h.svg';
-	import Logo from 'assets/logo.svg';
+	import FourH from 'assets/4h.svg?component';
+	import Logo from 'assets/logo.svg?component';
 	import LinkButton from 'components/LinkButton.svelte';
 	import LoadingRing from 'components/LoadingRing.svelte';
 	import SponsorSpot from 'components/SponsorSpot.svelte';

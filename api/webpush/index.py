@@ -24,7 +24,8 @@ client = pymongo.MongoClient(MONGODB_SECRET)
 db = client.webpush
 subscriptionsCollection = db.subscriptions
 
-def testWebpush(sub_info, id):
+def test_webpush(sub_info, id):
+	'''Send a visible test notification, client should confirm it includes the correct id'''
 	if not sub_info: return False
 	try:
 		webpush(
@@ -37,9 +38,6 @@ def testWebpush(sub_info, id):
 	except Exception as e:
 		print(e.args)
 		return False
-
-def checkIfSubscriptionExists(subscription_info):
-	return subscriptionsCollection.count_documents({'subscription_info': subscription_info}) > 0
 
 def json_response(status, message=None, data=None):
 	d = {}
@@ -54,14 +52,20 @@ def success_json(message=None, data=None):
 def error_json(message=None, data=None):
 	return json_response(400, message, data)
 
+# show number of subscriptions
 @app.route('/api/webpush', methods=['GET'])
 def index():
 	return success_json(data={
 		'subscriptions': subscriptionsCollection.count_documents({})
 	})
 
-@app.route('/api/webpush/subscribe', methods=['POST'])
-def subscribe():
+# add (or check if dry) subscription
+@app.route('/api/webpush/subscribe', methods=['POST'], endpoint='subscribe')
+# remove subscription
+@app.route('/api/webpush/unsubscribe', methods=['POST'], endpoint='unsubscribe')
+def main():
+	'''main route with common logic'''
+
 	data = request.get_json() or {}
 
 	if 'subscription' not in data: return error_json('No subscription info')
@@ -70,13 +74,19 @@ def subscribe():
 	print('sub_info', sub_info)
 	print('pvt id', 'track_id' in session and session['track_id'])
 
-	test_id = str(uuid4())
+	alreadyExists = subscriptionsCollection.count_documents({'subscription_info': sub_info}) > 0
 
-	dry = 'dry' in request.args
+	if request.endpoint == 'subscribe':
+		test_id = str(uuid4())
 
-	if testWebpush(sub_info, test_id):
-		alreadyExists = checkIfSubscriptionExists(sub_info)
-		
+		dry = 'dry' in request.args
+
+		# check sub by sending test notif if necessary
+		# if we're dry, we can just reply if the sub exists
+		if (not dry) and (not test_webpush(sub_info, test_id)):
+			return error_json(message='Test failed')
+
+		# modify db if necessary
 		if not dry:
 			subscriptionsCollection.update_one({'subscription_info': sub_info}, {'$set': {
 				'created': datetime.utcnow(),
@@ -87,34 +97,21 @@ def subscribe():
 
 		return success_json(data={
 			'already_exists': alreadyExists,
-			'registered': alreadyExists if dry else True,
+			'registered': alreadyExists if dry else True, # if the subscription is in the db
 			'test_id': test_id
 		})
 
-	else:
-		return error_json(message='Test failed')
+	elif request.endpoint == 'check':
+		if not alreadyExists:
+			return error_json(data={
+				'already_exists': False,
+			}, message='Subscription does not exist')
 
-@app.route('/api/webpush/unsubscribe', methods=['POST'])
-def unsubscribe():
-	data = request.get_json() or {}
+		subscriptionsCollection.delete_one({'subscription_info': sub_info})
 
-	if 'subscription' not in data: return error_json('No subscription info')
-	sub_info = data['subscription']
-
-	print('sub_info', sub_info)
-	print('pvt id', 'track_id' in session and session['track_id'])
-
-	alreadyExists = checkIfSubscriptionExists(sub_info)
-	if not alreadyExists:
-		return error_json(data={
-			'already_exists': False,
-		}, message='Subscription does not exist')
-
-	subscriptionsCollection.delete_one({'subscription_info': sub_info})
-
-	return success_json(data={
-		'registered': False,
-	})
+		return success_json(data={
+			'registered': False,
+		})
 
 if __name__ == '__main__':
 	app.run(debug=True, port=6002)
