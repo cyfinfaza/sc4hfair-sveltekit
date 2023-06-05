@@ -1,5 +1,3 @@
-import { PUBLIC_WEBPUSH_API_PREFIX } from '$env/static/public';
-
 export function requestNotificationPermission() {
 	return new Promise((resolve, reject) => {
 		if (!('Notification' in window)) {
@@ -55,13 +53,15 @@ export async function checkNotificationStatus() {
 			message: 'Notifications permission explicitly denied, enable it in your browser',
 		};
 	}
-	// dry check, will not send a test notification
-	const regstered = (await subscribe(true)).registered;
 	return {
 		// 'default' or 'granted' permission, doesn't hurt to ask
 		available: true,
 		// if we aren't granted, it doesn't matter if we already have a subscription as we can't send
-		regstered: Notification.permission == 'granted' ? regstered : false,
+		// if we try to get the subscription without permission, 💀
+		registered:
+			Notification.permission == 'granted'
+				? (await subscribe(true)).registered // dry check, will not send a test notification
+				: false,
 	};
 }
 
@@ -75,6 +75,7 @@ export async function checkNotificationStatus() {
  * @property {string} [test_id] - uuid id sent back to the client to test webpush
  */
 
+/** THIS WILL ASK USER FOR A SUBSCRIPTION */
 export async function subscribe(dry = false) {
 	// get subscription
 	const subscription = await getSubscription();
@@ -95,17 +96,14 @@ export async function subscribe(dry = false) {
 	}
 
 	// send subscription to server
-	const sub = await fetch(
-		`${PUBLIC_WEBPUSH_API_PREFIX || ''}/api/webpush/subscribe${dry ? '?dry' : ''}`,
-		{
-			method: 'POST',
-			body: JSON.stringify({ subscription }),
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			credentials: 'include',
-		}
-	);
+	const sub = await fetch(`${__WEBPUSH_API_PREFIX__}/api/webpush/subscribe${dry ? '?dry' : ''}`, {
+		method: 'POST',
+		body: JSON.stringify({ subscription }),
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		credentials: 'include',
+	});
 	/** @type {WebpushApiResponse} */
 	const data = await sub.json();
 	console.log(data);
@@ -113,16 +111,18 @@ export async function subscribe(dry = false) {
 
 	if (!dry) {
 		// wait for test message before giving up
-		let testIdMatched = false;
-		await Promise.race([testId, new Promise((_, reject) => setTimeout(reject, 5000))])
-			.then((id) => (testIdMatched = id === data.test_id))
-			.catch(() => {
-				throw new Error('Test push not received within 5s');
-			});
+		let receivedId;
+		await Promise.race([testId, new Promise((_, reject) => setTimeout(reject, 10000))])
+			.then((id) => (receivedId = id))
+			.catch(() => {});
 		broadcast.close(); // allow channel to be garbage collected
 
-		console.log('test id matched:', testIdMatched);
-		// @todo: reply to server if matched and then have server add to db
+		// future: reply to server if matched and then have server add to db
+
+		if (!receivedId)
+			return { ...(await unsubscribe()), message: 'Test push not received within 10s' };
+		if (receivedId !== data.test_id)
+			return { ...(await unsubscribe()), message: "Test push didn't match" };
 	}
 
 	return data;
@@ -134,7 +134,7 @@ export async function unsubscribe() {
 	if (!subscription) throw new Error('No subscription');
 
 	// send subscription to server
-	const sub = await fetch(`${PUBLIC_WEBPUSH_API_PREFIX || ''}/api/webpush/unsubscribe`, {
+	const sub = await fetch(`${__WEBPUSH_API_PREFIX__}/api/webpush/unsubscribe`, {
 		method: 'POST',
 		body: JSON.stringify({ subscription }),
 		headers: {

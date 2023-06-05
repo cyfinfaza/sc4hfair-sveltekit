@@ -101,7 +101,7 @@ def main():
 			'test_id': test_id
 		})
 
-	elif request.endpoint == 'check':
+	elif request.endpoint == 'unsubscribe':
 		if not alreadyExists:
 			return error_json(data={
 				'already_exists': False,

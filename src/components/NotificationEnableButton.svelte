@@ -44,8 +44,9 @@
 		on:click={async () => {
 			if (loading !== null || !notificationStatus?.available) return;
 			try {
-				await updateStatus();
+				// await updateStatus();
 				let data;
+				console.log(notificationStatus);
 				if (!notificationStatus?.registered) {
 					loading = 'Enabling notifications…';
 					data = await subscribe();
@@ -54,8 +55,9 @@
 					data = await unsubscribe();
 				}
 				notificationStatus = { ...notificationStatus, registered: data.registered };
+				if (data.message) notificationStatus.message = data.message;
 			} catch (e) {
-				notificationStatus = { available: false, message: e.message }; // we failed
+				notificationStatus = { ...notificationStatus, message: e.message }; // we failed
 			}
 			loading = null;
 		}}

@@ -88,13 +88,22 @@ function networkFirst(event) {
 	);
 }
 
-self.addEventListener('fetch', function (event) {
-	if (new URL(event.request.url).hostname === 'graphql.contentful.com') {
-		networkFirst(event); // @todo: expiration cache
-	} else {
-		staleWhileEtagRevalidate(event);
-	}
-});
+function networkOnly(event) {
+	event.respondWith(async () => await fetch(event.request));
+}
+
+// don't cache during development
+if (prerendered.length !== 0) {
+	self.addEventListener('fetch', function (event) {
+		if (new URL(event.request.url).hostname === 'graphql.contentful.com') {
+			networkFirst(event); // @todo: expiration cache
+		} else if (event.request.method !== 'GET') {
+			networkOnly(event);
+		} else {
+			staleWhileEtagRevalidate(event);
+		}
+	});
+}
 
 const notificationOptions = { icon: '/favicon.ico', badge: '/4h-96x96.png' };
 

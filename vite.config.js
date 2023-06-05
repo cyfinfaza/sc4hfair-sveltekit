@@ -19,6 +19,7 @@ const config = {
 		__BRANCH__: await getInfo('VITE_VERCEL_GIT_COMMIT_REF', 'git rev-parse --abbrev-ref HEAD'),
 		__BUILD_TIME__: JSON.stringify(new Date().toISOString()),
 		__BUILD_LOCATION__: JSON.stringify(process.env.BUILD_LOCATION_NAME || hostname()),
+		__WEBPUSH_API_PREFIX__: JSON.stringify(process.env.WEBPUSH_API_PREFIX || ''), // needs a fallback
 	},
 	plugins: [sveltekit(), svg()],
 };
