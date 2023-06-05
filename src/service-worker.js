@@ -89,16 +89,16 @@ function networkFirst(event) {
 }
 
 function networkOnly(event) {
-	event.respondWith(async () => await fetch(event.request));
+	event.respondWith(async () => fetch(event.request));
 }
 
 // don't cache during development
 if (prerendered.length !== 0) {
 	self.addEventListener('fetch', function (event) {
-		if (new URL(event.request.url).hostname === 'graphql.contentful.com') {
+		if (event.request.method !== 'GET') {
+			return; // let the browser do its default thing
+		} else if (new URL(event.request.url).hostname === 'graphql.contentful.com') {
 			networkFirst(event); // @todo: expiration cache
-		} else if (event.request.method !== 'GET') {
-			networkOnly(event);
 		} else {
 			staleWhileEtagRevalidate(event);
 		}
