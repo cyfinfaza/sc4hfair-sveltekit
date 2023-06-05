@@ -1,10 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 
 /** @type {import('@supabase/supabase-js').SupabaseClient} */
 let client = null;
 
-/** @type {import('svelte/store').writable<import('@supabase/supabase-js').AuthSession>} */
+/** @type {import('svelte/store').writable<import('@supabase/gotrue-js').Session>} */
 export const session = writable();
 export const interestsSlugs = writable();
 
@@ -15,7 +15,7 @@ export async function initSupabaseClient() {
 			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYyMjIzMjcyMywiZXhwIjoxOTM3ODA4NzIzfQ.qeJRUDnHvCdSTo6LQUCbwe6XQFSLsi2l4_3oD9189u8'
 		);
 		window.supabase = client;
-		let sess = await client.auth.session();
+		const sess = (await client.auth.getSession())?.data?.session;
 		console.log(sess);
 		session.update((_) => sess);
 		refresh();
@@ -28,7 +28,7 @@ export async function initSupabaseClient() {
 }
 
 export async function refresh() {
-	const sess = await client.auth.session();
+	const sess = (await client.auth.getSession())?.data?.session;
 	console.log(sess);
 	if (sess) {
 		try {
@@ -52,11 +52,13 @@ export async function refresh() {
 }
 
 export async function login(provider, redirect = '/interests') {
-	// const { user, session, error } = await client.auth.signIn(
-	await client.auth.signIn(
-		{ provider: provider },
-		{ redirectTo: window.location.origin + redirect }
-	);
+	// const { data, error } =
+	await client.auth.signInWithOAuth({
+		provider: provider,
+		options: {
+			redirectTo: window.location.origin + redirect,
+		},
+	});
 }
 
 export function logout() {
@@ -65,7 +67,7 @@ export function logout() {
 }
 
 export async function verifySession(action) {
-	let sess = await client.auth.session();
+	const sess = (await client.auth.getSession())?.data?.session;
 	if (!sess) {
 		localStorage.setItem('cim_intent', JSON.stringify(action));
 		window.location = '/interests?reqLoginMessage=true';
@@ -85,7 +87,7 @@ export async function addInterest(slug) {
 	if (!verifySession({ action: 'add', slug: slug })) return;
 	let { error } = await client.from('interests').insert({
 		interest_slug: slug,
-		owner: client.auth.session().user.id,
+		owner: get(session).user.id,
 	});
 	if (error) console.error(error);
 	refresh();
