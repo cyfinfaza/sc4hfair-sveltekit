@@ -3,7 +3,7 @@
 	"short_name": "SC 4H Fair",
 	"start_url": "/",
 	"related_applications": [
-		{ "platform": "webapp", "url": "https://v2.sc4hfair.app/manifest.webmanifest" }
+		{ "platform": "webapp", "url": "https://sc4hfair.app/manifest.webmanifest" }
 	],
 	"background_color": "#009959",
 	"theme_color": "#009959",
@@ -56,6 +56,30 @@
 			"src": "icons/icon-512x512.png",
 			"sizes": "512x512",
 			"type": "image/png"
+		}
+	],
+	"shortcuts": [
+		{
+			"name": "Map",
+			"description": "Map of the fairgrounds",
+			"url": "/map",
+			"icons": [{
+				"src": "icons/map-192x192.png",
+				"type": "image/png",
+				"sizes": "192x192",
+				"purpose": "any"
+			}]
+		},
+		{
+			"name": "Schedule",
+			"description": "Schedule of events",
+			"url": "/schedule",
+			"icons": [{
+				"src": "icons/schedule-192x192.png",
+				"type": "image/png",
+				"sizes": "192x192",
+				"purpose": "any"
+			}]
 		}
 	]
 }

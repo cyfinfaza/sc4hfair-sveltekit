@@ -10,7 +10,7 @@ self.addEventListener('install', function (event) {
 	self.skipWaiting();
 	console.log('Service worker installing');
 	event.waitUntil(
-		(async (_) => {
+		(async () => {
 			try {
 				const cache = await caches.open(CACHE_NAME);
 				await cache.addAll(PRECACHE);
@@ -22,7 +22,9 @@ self.addEventListener('install', function (event) {
 			try {
 				// remove old cache
 				await caches.delete('offline-cache-v1');
-			} catch (e) {}
+			} catch (e) {
+				console.log('didn\'t delete v1 cache', e);
+			}
 		})()
 	);
 });
@@ -37,7 +39,7 @@ function staleWhileEtagRevalidate(event) {
 				const cacheEtag = cachedResponse.headers.get('etag');
 				console.log('CACHED: ', cachedResponse.url, cacheEtag);
 				event.waitUntil(
-					(async (_) => {
+					(async () => {
 						const headRequest = await fetch(event.request.url, { method: 'HEAD' });
 						const headEtag = headRequest.headers.get('etag');
 						console.log('REVALIDATE HEAD CHECK: ', cachedResponse.url, cacheEtag);
@@ -123,7 +125,7 @@ self.addEventListener('notificationclick', (event) => {
 	console.log('On notification click: ', event.notification.tag);
 	event.notification.close();
 	event.waitUntil(
-		clients
+		self.clients
 			.matchAll({
 				type: 'window',
 			})
@@ -132,7 +134,7 @@ self.addEventListener('notificationclick', (event) => {
 					console.log(client);
 					if (new URL(client.url).pathname === '/' && 'focus' in client) return client.focus();
 				}
-				if (clients.openWindow) return clients.openWindow('/');
+				if (self.clients.openWindow) return self.clients.openWindow('/');
 			})
 	);
 });
