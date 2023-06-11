@@ -8,7 +8,7 @@
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import clues from 'data/shClues.json';
-	import { browser } from '$app/env';
+	import { browser } from '$app/environment';
 	import { onMount, setContext } from 'svelte';
 	import { writable } from 'svelte/store';
 

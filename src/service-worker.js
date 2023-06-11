@@ -90,13 +90,26 @@ function networkFirst(event) {
 	);
 }
 
-self.addEventListener('fetch', function (event) {
-	if (new URL(event.request.url).hostname === 'graphql.contentful.com') {
-		networkFirst(event); // @todo: expiration cache
-	} else {
-		staleWhileEtagRevalidate(event);
-	}
-});
+function networkOnly(event) {
+	event.respondWith(async () => fetch(event.request));
+}
+
+// don't cache during development
+if (prerendered.length !== 0) {
+	self.addEventListener('fetch', function (event) {
+		const url = new URL(event.request.url);
+		if (
+			event.request.method !== 'GET' ||
+			(self.location.hostname === url.hostname && url.pathname.startsWith('/api')) // webpush
+		) {
+			return; // let the browser do its default thing
+		} else if (url.hostname === 'graphql.contentful.com') {
+			networkFirst(event); // @todo: expiration cache
+		} else {
+			staleWhileEtagRevalidate(event);
+		}
+	});
+}
 
 const notificationOptions = { icon: '/favicon.ico', badge: '/4h-96x96.png' };
 

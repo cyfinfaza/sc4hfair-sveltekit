@@ -1,5 +1,5 @@
 <script>
-	import { browser } from '$app/env';
+	import { browser } from '$app/environment';
 	import { getPlatform } from 'logic/platform.js';
 	const platform = getPlatform();
 </script>
@@ -41,8 +41,8 @@
 	</ol>
 {:else if platform === 'other'}
 	<p>
-		Look for a prompt asking you to install or add this app to your home screen. If you don't see
-		it, you might have to open a menu and find the option, or your browser might not support this
-		feature.
+		Look for a prompt asking you to install, create a shortcut, or add this app to your home screen.
+		If you don't see it, you might have to open a menu and find the option, or your browser might
+		not support this feature.
 	</p>
 {/if}

@@ -1,5 +1,5 @@
 <script>
-	import { browser, dev } from '$app/env';
+	import { browser, dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { writable } from 'svelte/store';
 	import { isStandalone } from 'logic/platform.js';
@@ -29,8 +29,8 @@
 		graduation: '',
 	});
 	let cloudForm;
-	$: console.log($form, cloudForm);
-	$: console.log($session);
+	// $: console.log($form, cloudForm);
+	// $: console.log($session);
 
 	let client;
 
@@ -44,8 +44,9 @@
 
 	$: {
 		(function (s) {
-			if (s) {
-				cloudForm = s.user.user_metadata;
+			if (client && s) {
+				cloudForm = s.user?.user_metadata || {};
+				console.log('new cloud user metadata', cloudForm);
 				$form = { ...cloudForm };
 			}
 		})($session);
@@ -82,7 +83,7 @@
 			label="Save"
 			icon="save"
 			on:click={() => {
-				client.auth.update({ data: $form });
+				client.auth.updateUser({ data: $form });
 				cloudForm = { ...$form };
 			}}
 			disabled={isInfoFormDisabled($form, cloudForm) || !$isOnline}

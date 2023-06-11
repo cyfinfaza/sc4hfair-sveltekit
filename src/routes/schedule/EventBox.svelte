@@ -4,7 +4,7 @@
 	import tentSlugs from 'data/tentSlugs.json';
 	import { eventIsFuture } from 'logic/scheduling.js';
 	import { share, canWebShare } from 'logic/webshare.js';
-	import { browser } from '$app/env';
+	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 
 	export let event;

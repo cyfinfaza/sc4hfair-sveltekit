@@ -17,10 +17,6 @@ const config = {
 			routes: 'src/routes/*',
 			styles: 'src/styles/*',
 		},
-		prerender: {
-			default: true,
-		},
-		trailingSlash: 'never',
 	},
 	preprocess: [
 		sveltePreprocess({

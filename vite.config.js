@@ -1,5 +1,5 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import svelteSVG from 'vite-plugin-svelte-svg';
+import svg from '@poppanator/sveltekit-svg';
 
 import { promisify } from 'util';
 import { exec } from 'child_process';
@@ -19,14 +19,9 @@ const config = {
 		__BRANCH__: await getInfo('VITE_VERCEL_GIT_COMMIT_REF', 'git rev-parse --abbrev-ref HEAD'),
 		__BUILD_TIME__: JSON.stringify(new Date().toISOString()),
 		__BUILD_LOCATION__: JSON.stringify(process.env.BUILD_LOCATION_NAME || hostname()),
+		__WEBPUSH_API_PREFIX__: JSON.stringify(process.env.WEBPUSH_API_PREFIX || ''), // needs a fallback
 	},
-	plugins: [
-		sveltekit(),
-		svelteSVG({
-			svgoConfig: {}, // See https://github.com/svg/svgo#configuration
-			requireSuffix: false, // Set false to accept '.svg' without the '?component'
-		}),
-	],
+	plugins: [sveltekit(), svg()],
 };
 
 export default config;

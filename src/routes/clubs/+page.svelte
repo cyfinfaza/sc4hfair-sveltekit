@@ -2,7 +2,7 @@
 	import ClubBox from 'components/ClubBox.svelte';
 	import Layout from 'components/Layout.svelte';
 	import { exactSearch } from 'logic/search.js';
-	import { browser } from '$app/env';
+	import { browser } from '$app/environment';
 
 	export let data;
 

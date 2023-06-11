@@ -7,7 +7,6 @@
 	import { isStandalone } from 'logic/platform.js';
 	import { menuOpen } from 'logic/stores.js';
 	import { onMount } from 'svelte';
-	import { checkNotificationStatus, subscribe } from 'logic/webpush';
 	import NotificationEnableButton from 'components/NotificationEnableButton.svelte';
 
 	const query = `{
