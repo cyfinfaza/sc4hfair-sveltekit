@@ -6,6 +6,7 @@
 	import { queryContentful } from 'logic/contentful.js';
 	import { isStandalone } from 'logic/platform.js';
 	import { menuOpen } from 'logic/stores.js';
+	import { notificationStatus } from 'logic/webpush.js';
 	import { onMount } from 'svelte';
 	import NotificationEnableButton from 'components/NotificationEnableButton.svelte';
 
@@ -38,10 +39,25 @@
 		<div class="installBox">
 			<h2 style="text-align: center">Finish setting up the fair app</h2>
 			<hr />
-			<strong><span class="numberSquircle">1</span> Add the fair app to your homescreen:</strong>
-			<InstallInstructions />
-			<strong><span class="numberSquircle">2</span> Enable notifications about fair updates:</strong
-			>
+			<strong>
+				<span class="numberSquircle">
+					1{#if $isStandalone}
+						{' '}<span class="material-icons" aria-label="Done">check</span>
+					{/if}
+				</span>
+				{' '}Add the fair app to your homescreen{$isStandalone ? '.' : ':'}
+			</strong>
+			{#if !$isStandalone}
+				<InstallInstructions />
+			{/if}
+			<strong>
+				<span class="numberSquircle">
+					2{#if $notificationStatus?.registered}
+						{' '}<span class="material-icons" aria-label="Done">check</span>
+					{/if}
+				</span>
+				{' '}Enable notifications about fair updates:
+			</strong>
 			<p style="display: flex; align-items: center; gap: 8px;">
 				<NotificationEnableButton />
 			</p>
@@ -104,6 +120,9 @@
 			border-radius: 0.5em;
 			background-color: var(--text);
 			color: var(--bg);
+			.material-icons {
+				font-size: 21px; // kinda jank but makes it appear the same size as the text
+			}
 		}
 		h2 {
 			font-size: 1.2em;

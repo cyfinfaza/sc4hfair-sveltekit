@@ -1,3 +1,6 @@
+import { writable } from 'svelte/store';
+import { isOnline } from 'logic/stores.js';
+
 export function requestNotificationPermission() {
 	return new Promise((resolve, reject) => {
 		if (!('Notification' in window)) {
@@ -148,3 +151,16 @@ export async function unsubscribe() {
 	if (!sub.ok || data.type !== 'success') throw data;
 	return data;
 }
+
+export const notificationStatus = writable({ available: false, registered: false, message: '' });
+export async function updateNotificationStatus() {
+	try {
+		notificationStatus.set(await checkNotificationStatus());
+	} catch (e) {
+		notificationStatus.set({ available: false, message: e.message });
+	}
+}
+
+isOnline.subscribe(async (online) => {
+	if (online) updateNotificationStatus();
+});

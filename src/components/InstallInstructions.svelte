@@ -15,13 +15,13 @@
 			then tap "Add to Home Screen" or "Install".
 		</li>
 	</ol>
-{:else if platform === 'android-other'}
+{:else if platform === 'android-unsupported'}
 	<p>
 		First open this site {#if browser}
 			(<a href={window.location.origin}>{window.location.origin}</a>){' '}
 		{/if}in Chrome or another web browser app.
 	</p>
-{:else if platform === 'ios-other'}
+{:else if platform === 'ios-unsupported'}
 	<p>
 		First open this site {#if browser}
 			(<a href={window.location.origin}>{window.location.origin}</a>){' '}

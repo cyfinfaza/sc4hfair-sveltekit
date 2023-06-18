@@ -96,7 +96,7 @@
 	{/if}
 
 	<h1>Add to homescreen</h1>
-	{#if browser && isStandalone()}
+	{#if $isStandalone}
 		<p>This site is already running in standalone mode.</p>
 	{:else}
 		<p>To add the fair app to your homescreen:</p>

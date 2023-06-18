@@ -1,70 +1,61 @@
 <script>
 	import LinkButton from 'components/LinkButton.svelte';
-	import { checkNotificationStatus, subscribe, unsubscribe } from 'logic/webpush';
+	import { notificationStatus, subscribe, unsubscribe } from 'logic/webpush.js';
 	import { isOnline } from 'logic/stores.js';
+	import { onDestroy } from 'svelte';
 
 	// initial state
 	/** overrides button text, used while an operation (like fetch) is happening */
 	let loading = 'Loading notification status…';
-	let notificationStatus = {
-		available: false,
-		registered: false,
-		message: '',
-	};
 
-	async function updateStatus() {
-		try {
-			notificationStatus = await checkNotificationStatus();
-			loading = null;
-		} catch (e) {
-			notificationStatus = { available: false, message: e.message };
-		}
-	}
-
-	$: {
-		if ($isOnline) updateStatus();
-	}
-	// onMount(updateStatus);
+	const unsubStore = notificationStatus.subscribe(() => {
+		console.log('notificationStatus changed', $notificationStatus);
+		loading = null;
+	});
+	onDestroy(unsubStore);
 </script>
 
 <div class="notificationEnableButton">
 	<LinkButton
 		label={(!$isOnline && 'Notifications unavailable offline') ||
 			loading ||
-			(notificationStatus?.available
-				? notificationStatus?.registered
+			($notificationStatus?.available
+				? $notificationStatus?.registered
 					? 'Notifications enabled (tap to disable)'
 					: 'Notifications disabled (tap to enable)'
 				: 'Notifications unavailable')}
-		icon={notificationStatus?.available && notificationStatus?.registered
+		icon={$notificationStatus?.available && $notificationStatus?.registered
 			? 'notifications'
 			: 'notifications_off'}
-		disabled={loading !== null || !notificationStatus?.available || !$isOnline}
-		active={notificationStatus?.available && notificationStatus?.registered}
+		disabled={loading !== null || !$notificationStatus?.available || !$isOnline}
+		active={$notificationStatus?.available && $notificationStatus?.registered}
 		on:click={async () => {
-			if (loading !== null || !notificationStatus?.available) return;
+			if (loading !== null || !$notificationStatus?.available) return;
 			try {
-				// await updateStatus();
+				// await updateNotificationStatus();
 				let data;
-				console.log(notificationStatus);
-				if (!notificationStatus?.registered) {
+				console.log($notificationStatus);
+				if (!$notificationStatus?.registered) {
 					loading = 'Enabling notifications…';
 					data = await subscribe();
 				} else {
 					loading = 'Disabling notifications…';
 					data = await unsubscribe();
 				}
-				notificationStatus = { ...notificationStatus, registered: data.registered };
-				if (data.message) notificationStatus.message = data.message;
+				notificationStatus.update((oldStatus) => ({
+					available: oldStatus.available,
+					registered: data.registered,
+					message: data.message,
+				}));
 			} catch (e) {
-				notificationStatus = { ...notificationStatus, message: e.message }; // we failed
+				notificationStatus.update((oldStatus) => ({ ...oldStatus, message: e.message })); // we failed, revert with message
 			}
 			loading = null;
 		}}
 	/>
-	{#if notificationStatus?.message}
+	{#if $notificationStatus?.message}
 		<p style="color: red; font-size: 0.9rem;">
-			{notificationStatus?.message}
+			{$notificationStatus.message}
 		</p>
 	{/if}
 </div>
