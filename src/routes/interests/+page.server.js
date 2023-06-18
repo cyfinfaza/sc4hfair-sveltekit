@@ -1,22 +1,6 @@
-import { queryContentful } from 'logic/contentful.js';
-
-const query = `{
-	clubCollection {
-		items {
-			slug
-				name
-				meetingLocation
-				clubWebsite
-				description
-				grades
-				meetingWhen
-				listingWebsite
-				tent
-		}
-	}
-}`;
+import { getClubs } from 'logic/contentful.js';
 
 export async function load() {
-	const resp = await queryContentful(query);
-	return { clubs: resp.clubCollection?.items };
+	const clubs = await getClubs();
+	return { clubs };
 }

@@ -20,7 +20,7 @@
 	);
 
 	let selectedTent = 'All';
-	let showingPast = true;
+	let showingPast = false;
 	let searchQuery = '';
 	let starredEvents = (browser && JSON.parse(localStorage.getItem('starredEvents'))) || [];
 	let showingOnlyStarredEvents = false;

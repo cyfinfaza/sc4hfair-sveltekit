@@ -1,7 +1,8 @@
 import { queryContentful } from 'logic/contentful.js';
 
+// big limit to make sure we get all events!!, default is 100 but we have 200+ events
 const query = `{
-	scheduledEventCollection(order:sys_firstPublishedAt_DESC) {
+	scheduledEventCollection(order: time_ASC, limit: 500) {
 		items {
 			sys {
 				id

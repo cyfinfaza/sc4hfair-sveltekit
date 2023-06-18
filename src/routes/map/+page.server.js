@@ -1,7 +1,7 @@
 import { queryContentful } from 'logic/contentful.js';
 
 const query = `{
-	scheduledEventCollection(order:sys_firstPublishedAt_DESC, where: {time_gt: "${new Date().toISOString()}"}) {
+	scheduledEventCollection(order: sys_firstPublishedAt_DESC, where: {time_gt: "${new Date().toISOString()}"}) {
 		items {
 			sys {
 				id
@@ -11,7 +11,7 @@ const query = `{
 			tent
 		}
 	}
-	clubCollection {
+	clubCollection(order: name_ASC) {
 		items {
 			name
 			slug

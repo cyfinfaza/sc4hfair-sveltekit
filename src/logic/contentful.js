@@ -13,12 +13,13 @@ export async function queryContentful(query) {
 		}
 	);
 	if (!res.ok) throw new Error(await res.text());
+	// console.trace('query cost', res.headers.get('x-contentful-graphql-query-cost'));
 	return (await res.json()).data;
 }
 
 let clubs = [];
 const clubQuery = `{
-	clubCollection {
+	clubCollection(order: name_ASC) {
 		items {
 			slug
 			name
