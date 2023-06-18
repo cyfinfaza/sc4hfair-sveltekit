@@ -16,6 +16,7 @@
 	export let alert = false; // blinking yellow border
 	export let active = false; // green background
 	export let danger = false; // red background
+	export let props = {}; // additional props for the button element
 
 	const dispatch = createEventDispatcher();
 	function onClick(e) {
@@ -43,6 +44,7 @@
 	class:active
 	class:danger
 	disabled={disabled || null}
+	{...props}
 >
 	{#if icon}
 		<span class="material-icons icon" aria-hidden="true">{icon}</span>

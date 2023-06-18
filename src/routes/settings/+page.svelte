@@ -12,7 +12,7 @@
 	import NoOffline from 'components/NoOffline.svelte';
 	import SignInButtons from 'components/SignInButtons.svelte';
 	import { onMount } from 'svelte';
-	import { session, initSupabaseClient, logout } from 'logic/supabase.js';
+	import { session, initSupabaseClient, logout, interestsSlugs } from 'logic/supabase.js';
 	import { getSubscription, subscribe, unsubscribe } from 'logic/webpush';
 	import NotificationEnableButton from 'components/NotificationEnableButton.svelte';
 
@@ -32,6 +32,7 @@
 	// $: console.log($form, cloudForm);
 	// $: console.log($session);
 
+	/** @type {import('@supabase/supabase-js').SupabaseClient} */
 	let client;
 
 	let confirmReset = ''; // modal for confirmation
@@ -113,17 +114,35 @@
 			on:click={() => (confirmReset = 'sh')}
 			icon="restart_alt"
 		/>
+		{#if $session}
+			<LinkButton
+				label="Clear Interest List"
+				on:click={() => (confirmReset = 'interests')}
+				icon="clear_all"
+			/>
+		{/if}
 	</p>
 	<Modal
 		show={!!confirmReset}
-		confirmation={true}
 		on:close={() => (confirmReset = '')}
-		on:confirm={() => {
+		on:confirm={async () => {
 			switch (confirmReset) {
 				case 'sh':
 					localStorage.removeItem('sh_code');
 					localStorage.removeItem('sh_hints');
 					goto('/scavenger-hunt');
+					break;
+				case 'interests':
+					localStorage.removeItem('cim_intent');
+					if (client) {
+						const { error } = await client
+							.from('interests')
+							.delete()
+							.match({ owner: $session.user.id });
+						if (error) alert(error.message);
+						else interestsSlugs.update(() => []);
+					}
+					goto('/interests');
 					break;
 				default:
 					confirmReset = '';
@@ -142,9 +161,8 @@
 
 	<h1>About</h1>
 	<p>
-		This app was created by the <a href="https://4hcomputers.club"
-			>Somerset County 4-H Computer Club</a
-		>.
+		This app was created by the
+		<a href="https://4hcomputers.club">Somerset County 4-H Computer Club</a>.
 	</p>
 	<p class="horizPanel2">
 		<LinkButton label="Send feedback" disabled={!$isOnline} href="/feedback" icon="message" />
@@ -152,6 +170,7 @@
 	</p>
 	<div style:opacity={0.5}>
 		<!-- svelte-ignore missing-declaration -->
+		<!-- svelte-ignore a11y-interactive-supports-focus -->
 		<code
 			role="button"
 			tabIndex={0}
@@ -198,15 +217,18 @@
 						});
 					}}
 				/>
-				<!-- <LinkButton
+			</div>
+			<hr />
+			<div class="horizPanel2">
+				<LinkButton
 					icon="notifications_active"
 					label="Test notification"
 					on:click={async () => {
 						new window.Notification('Fair Update', {
-							body: 'The fair has been closed due to weather.',
+							body: 'The fair has been closed due to test weather.',
 						});
 					}}
-				/> -->
+				/>
 				<LinkButton
 					icon="notifications"
 					label="Get notification subscription"
