@@ -8,9 +8,9 @@
 	/** overrides button text, used while an operation (like fetch) is happening */
 	let loading = 'Loading notification status…';
 
-	const unsubStore = notificationStatus.subscribe(() => {
-		// console.log('notificationStatus changed', $notificationStatus);
-		loading = null;
+	const unsubStore = notificationStatus.subscribe((status) => {
+		console.log('notificationStatus changed', status);
+		if (status.ready !== false) loading = null;
 	});
 	onDestroy(unsubStore);
 </script>

@@ -152,7 +152,12 @@ export async function unsubscribe() {
 	return data;
 }
 
-export const notificationStatus = writable({ available: false, registered: false, message: '' });
+export const notificationStatus = writable({
+	ready: false, // will become undefined when ready
+	available: false,
+	registered: false,
+	message: '',
+});
 export async function updateNotificationStatus() {
 	try {
 		notificationStatus.set(await checkNotificationStatus());
