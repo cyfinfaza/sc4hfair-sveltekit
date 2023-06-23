@@ -9,7 +9,7 @@
 	let loading = 'Loading notification status…';
 
 	const unsubStore = notificationStatus.subscribe((status) => {
-		console.log('notificationStatus changed', status);
+		// console.log('notificationStatus changed', status);
 		if (status.ready !== false) loading = null;
 	});
 	onDestroy(unsubStore);

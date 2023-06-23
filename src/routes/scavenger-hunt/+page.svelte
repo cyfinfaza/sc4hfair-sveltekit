@@ -11,6 +11,7 @@
 	import { browser } from '$app/environment';
 	import { onMount, setContext } from 'svelte';
 	import { writable } from 'svelte/store';
+	import Modal from 'components/Modal.svelte';
 
 	const getIndexFromCode = (code) => clues.findIndex((clue) => clue.code === code);
 	const getOffsetIndexFromCode = (code) => getIndexFromCode(code) + 1;
@@ -103,6 +104,7 @@
 		} else {
 			$atIndex = index + 1;
 			scanning = false;
+			scannerMessage = '';
 		}
 		if (!clues[$atIndex]) return;
 		console.table({
@@ -114,10 +116,8 @@
 		});
 	}
 
-	function enterManually() {
-		let input = prompt('Enter the 8 digit code found in the bottom left corner of the sheet.');
-		if (input) checkCode(input);
-	}
+	let showEnterManuallyPrompt = false,
+		manualCode = '';
 </script>
 
 <Layout title="Scavenger Hunt">
@@ -149,9 +149,14 @@
 		<div>
 			<!-- svelte-ignore a11y-media-has-caption -->
 			<video bind:this={videoElement} />
-			<div class="scannerOverlay">
+			<div class="scannerOverlay showSquare">
 				<div class="scannerButtons">
-					<LinkButton label="Enter manually" icon="keyboard" on:click={enterManually} acrylic />
+					<LinkButton
+						label="Enter manually"
+						icon="keyboard"
+						on:click={() => (showEnterManuallyPrompt = true)}
+						acrylic
+					/>
 					<LinkButton label="Close" icon="close" on:click={() => (scanning = false)} acrylic />
 				</div>
 				<p class="scannerMessage">
@@ -176,11 +181,40 @@
 					camera access to use the built-in one, or use an external scanner.
 				</p>
 				<p>Alternatively, you can manually enter the code:</p>
-				<LinkButton label="Enter manually" icon="keyboard" on:click={enterManually} />
+				<LinkButton
+					label="Enter manually"
+					icon="keyboard"
+					on:click={() => (showEnterManuallyPrompt = true)}
+				/>
 			</div>
 		</div>
 	</div>
 </Layout>
+
+<Modal
+	show={showEnterManuallyPrompt}
+	danger={false}
+	on:close={() => {
+		showEnterManuallyPrompt = false;
+		manualCode = '';
+	}}
+	on:confirm={() => {
+		checkCode(manualCode, false);
+	}}
+>
+	<p>Enter the 8 character code found in the bottom left corner of the sheet.</p>
+	<!-- todo: little diagram showing where the code is? -->
+	<!-- svelte-ignore a11y-autofocus -->
+	<input
+		class="enterManually"
+		autofocus
+		type="text"
+		pattern="\w+"
+		maxlength="8"
+		placeholder="12345678"
+		bind:value={manualCode}
+	/>
+</Modal>
 
 <style lang="scss">
 	.scanner {
@@ -223,14 +257,21 @@
 		}
 	}
 	.scannerOverlay {
-		background-image: linear-gradient(to top, var(--light-translucent) 0%, 100px, rgba(0, 0, 0, 0));
-		box-shadow: 0 0 0 16vw rgba(0, 0, 0, 0.3) inset;
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
 		padding: 16px;
 		align-items: flex-end;
 		box-sizing: border-box;
+		&.showSquare {
+			background-image: linear-gradient(
+				to top,
+				var(--light-translucent) 0%,
+				100px,
+				rgba(0, 0, 0, 0)
+			);
+			box-shadow: 0 0 0 16vw rgba(0, 0, 0, 0.3) inset;
+		}
 		.scannerButtons {
 			display: flex;
 			width: 100%;
@@ -259,5 +300,12 @@
 			width: 100%;
 			font-weight: normal;
 		}
+	}
+
+	input.enterManually {
+		border-radius: 0;
+		border: none;
+		border-bottom: solid 2px var(--accent);
+		outline: none;
 	}
 </style>

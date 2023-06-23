@@ -144,8 +144,6 @@
 					}
 					goto('/interests');
 					break;
-				default:
-					confirmReset = '';
 			}
 		}}
 	>

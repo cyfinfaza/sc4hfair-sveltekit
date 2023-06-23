@@ -13,8 +13,9 @@
 	onMount(() => {
 		dialog.addEventListener('close', () => {
 			if (dialog.returnValue === 'confirm') dispatch('confirm'); // when explicitly confirming
-			else dispatch('close'); // for any other reason
+			else dispatch('cancel'); // for any other reason (click out, etc.)
 			show = false;
+			dispatch('close'); // always (for resetting content), DONE LAST
 		});
 		dialog.addEventListener('click', (e) => {
 			if (e.target.nodeName === 'DIALOG') {
@@ -30,25 +31,32 @@
 </script>
 
 <dialog bind:this={dialog}>
-	<form>
+	<form method="dialog">
 		<slot />
 		<div class="horizPanel">
 			<LinkButton
 				icon="close"
 				label="Cancel"
-				props={{ autofocus: '', type: 'submit', formmethod: 'dialog' }}
+				props={{ autofocus: '', type: 'submit', formnovalidate: '' }}
 			/>
 			<LinkButton
 				icon={danger ? 'delete' : 'check'}
 				label="Confirm"
-				props={{ type: 'submit', formmethod: 'dialog', value: 'confirm' }}
+				props={{ type: 'submit', value: 'confirm' }}
 				{danger}
+				active={!danger}
 			/>
 		</div>
 	</form>
 </dialog>
 
 <style lang="scss">
+	// https://github.com/whatwg/html/issues/7732
+	// dialog {
+	// 	overscroll-behavior-y: contain;
+	// 	overflow: auto;
+	// }
+
 	dialog::backdrop {
 		background-color: rgba(0, 0, 0, 0.4);
 		animation: fade 250ms ease;
@@ -64,8 +72,9 @@
 		font-size: 17px;
 
 		form {
-			width: clamp(330px, 50vw, 40rem);
+			width: clamp(260px, 50vw, 40rem);
 			min-height: 15vh;
+			box-sizing: border-box;
 			padding: 12px; // so clicking on the edges won't count as clicking outside
 
 			display: flex;
