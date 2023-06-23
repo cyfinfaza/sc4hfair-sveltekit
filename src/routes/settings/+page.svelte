@@ -1,5 +1,5 @@
 <script>
-	import { browser, dev } from '$app/environment';
+	import { browser, dev, version } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { writable } from 'svelte/store';
 	import { isStandalone } from 'logic/platform.js';
@@ -104,7 +104,7 @@
 		<InstallInstructions />
 	{/if}
 
-	<h1>Notifications</h1>
+	<h1 id="notifications">Notifications</h1>
 	<NotificationEnableButton />
 
 	<h1>Clear data</h1>
@@ -124,6 +124,7 @@
 	</p>
 	<Modal
 		show={!!confirmReset}
+		danger
 		on:close={() => (confirmReset = '')}
 		on:confirm={async () => {
 			switch (confirmReset) {
@@ -167,18 +168,20 @@
 		<LinkButton label="Privacy Policy" href="/privacy-policy" icon="policy" />
 	</p>
 	<div style:opacity={0.5}>
-		<!-- svelte-ignore missing-declaration -->
-		<!-- svelte-ignore a11y-interactive-supports-focus -->
 		<code
 			role="button"
-			tabIndex={0}
+			tabindex="0"
 			on:click={() => (showingAdditionalBuildInfo = !showingAdditionalBuildInfo)}
-			on:keydown={() => (showingAdditionalBuildInfo = !showingAdditionalBuildInfo)}
+			on:keydown={(e) =>
+				e.key === 'Enter' && (showingAdditionalBuildInfo = !showingAdditionalBuildInfo)}
 			style:cursor="pointer"
 		>
-			{__COMMIT__}/{__BRANCH__}
+			{version}
 		</code>
 		{#if showingAdditionalBuildInfo && browser}
+			<br />
+			<!-- svelte-ignore missing-declaration -->
+			<code>{__BRANCH__}</code>
 			<br />
 			<!-- svelte-ignore missing-declaration -->
 			<code>{__BUILD_TIME__}</code>
@@ -195,6 +198,14 @@
 								registration.unregister();
 							}
 						});
+					}}
+				/>
+				<LinkButton
+					icon="update"
+					label="Check for update (sw)"
+					on:click={async () => {
+						const swRegistration = await navigator.serviceWorker.getRegistration();
+						swRegistration?.update();
 					}}
 				/>
 				<LinkButton

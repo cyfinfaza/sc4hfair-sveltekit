@@ -9,16 +9,24 @@ import { hostname } from 'os';
 async function getInfo(env, cmd, length = false) {
 	let value = process.env[env] || (await pexec(cmd)).stdout.trim();
 	if (length) value = value.substring(0, length);
-	return JSON.stringify(value);
+	return value;
 }
+
+const commit = await getInfo('VITE_VERCEL_GIT_COMMIT_SHA', 'git rev-parse --short HEAD', 7);
+const buildTime = new Date();
+export const versionKey = commit + '-' + buildTime.getTime().toString(36); // will be picked by sveltekit
 
 /** @type {import('vite').UserConfig} */
 const config = {
 	define: {
-		__COMMIT__: await getInfo('VITE_VERCEL_GIT_COMMIT_SHA', 'git rev-parse --short HEAD', 7),
-		__BRANCH__: await getInfo('VITE_VERCEL_GIT_COMMIT_REF', 'git rev-parse --abbrev-ref HEAD'),
-		__BUILD_TIME__: JSON.stringify(new Date().toISOString()),
-		__BUILD_LOCATION__: JSON.stringify(process.env.BUILD_LOCATION_NAME || hostname()),
+		__COMMIT__: JSON.stringify(commit),
+		__BRANCH__: JSON.stringify(
+			await getInfo('VITE_VERCEL_GIT_COMMIT_REF', 'git rev-parse --abbrev-ref HEAD')
+		),
+		__BUILD_TIME__: JSON.stringify(buildTime.toISOString()),
+		__BUILD_LOCATION__: JSON.stringify(
+			(process.env.VERCEL && 'vercel') || process.env.BUILD_LOCATION_NAME || hostname()
+		),
 		__WEBPUSH_API_PREFIX__: JSON.stringify(process.env.WEBPUSH_API_PREFIX || ''), // needs a fallback
 	},
 	plugins: [sveltekit(), svg()],

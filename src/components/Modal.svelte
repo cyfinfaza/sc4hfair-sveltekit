@@ -5,7 +5,7 @@
 	import { onMount } from 'svelte';
 
 	export let show = false;
-	export let danger = true; // when you're deleting something
+	export let danger = false; // when you're deleting something
 
 	/** @type {HTMLDialogElement} */
 	let dialog;
