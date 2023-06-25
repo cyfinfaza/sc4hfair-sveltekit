@@ -1,10 +1,12 @@
+import { browser } from '$app/environment';
 import { createClient } from '@supabase/supabase-js';
 import { get, writable } from 'svelte/store';
+import { isOnline } from './stores';
 
 /** @type {import('@supabase/supabase-js').SupabaseClient} */
 let client = null;
 
-/** @type {import('svelte/store').writable<import('@supabase/gotrue-js').Session>} */
+/** @type {import('svelte/store').Writable<import('@supabase/gotrue-js').Session|null>} */
 export const session = writable();
 export const interestsSlugs = writable();
 
@@ -23,12 +25,16 @@ export async function initSupabaseClient() {
 			session.update((_) => sess);
 			refresh();
 		});
+		isOnline.subscribe((online) => {
+			if (online) refresh();
+		});
 	}
 	return client;
 }
 
 export async function refresh() {
 	const sess = (await client.auth.getSession())?.data?.session;
+	session.update((_) => sess);
 	console.log(sess);
 	if (sess) {
 		try {
@@ -47,7 +53,7 @@ export async function refresh() {
 		console.log(results);
 		interestsSlugs.update(() => results.map((result) => result.interest_slug));
 	} else {
-		interestsSlugs.update(() => []);
+		await removeCachedData();
 	}
 }
 
@@ -56,13 +62,44 @@ export async function login(provider, redirect = '/interests') {
 	await client.auth.signInWithOAuth({
 		provider: provider,
 		options: {
-			redirectTo: window.location.origin + redirect,
+			redirectTo: globalThis.location.origin + redirect,
 		},
 	});
 }
 
-export function logout() {
-	client.auth.signOut();
+/** when logging out, we don't want to keep stale login/user data */
+async function removeCachedData() {
+	interestsSlugs.update(() => []);
+	if (browser) {
+		// delete any cached supabase responses
+		const keys = await globalThis.caches.keys();
+		await Promise.all(
+			keys.map(async (key) => {
+				const cache = await globalThis.caches.open(key);
+				await Promise.all(
+					(
+						await cache.keys()
+					).map(async (req) => {
+						if (req.url.includes('.supabase.co/')) await cache.delete(req);
+					})
+				);
+			})
+		);
+	}
+}
+
+export async function logout() {
+	if (!get(isOnline)) {
+		// remove the session token from the client and call it day
+		// the session token is still valid on the server but it's probably fine enough for our uses
+		localStorage.removeItem(client.auth.storageKey);
+		const sess = (await client.auth.getSession()).data.session;
+		if (sess !== null) throw new Error('Failed to clear Supabase session');
+		session.update((_) => sess);
+	} else {
+		await client.auth.signOut();
+	}
+	await removeCachedData();
 	// window.location.reload()
 }
 

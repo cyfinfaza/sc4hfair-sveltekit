@@ -6,7 +6,6 @@
 	import SponsorSpot from 'components/SponsorSpot.svelte';
 	import ThemeSwitcher from 'components/ThemeSwitcher.svelte';
 	import { menuOpen, isOnline } from 'logic/stores';
-	import { goto } from '$app/navigation';
 	import { navigating } from '$app/stores';
 	import 'styles/button.css';
 
@@ -51,13 +50,7 @@
 				<LinkButton header label="Map" icon="map" href="/map" />
 				<LinkButton header label="Schedule" icon="event_note" href="/schedule" />
 				<LinkButton header label="Clubs" icon="groups" href="/clubs" />
-				<LinkButton
-					header
-					disabled={!$isOnline}
-					label="Interest List"
-					icon="list_alt"
-					href="/interests"
-				/>
+				<LinkButton header label="Interest List" icon="list_alt" href="/interests" />
 				<LinkButton header label="Scavenger Hunt" icon="travel_explore" href="/scavenger-hunt" />
 			</div>
 			<div class="menuBottom">

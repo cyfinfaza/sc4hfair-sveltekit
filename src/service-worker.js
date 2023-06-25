@@ -156,10 +156,16 @@ if (prerendered.length !== 0) {
 		const url = new URL(event.request.url);
 		if (
 			event.request.method !== 'GET' ||
-			(sw.location.hostname === url.hostname && url.pathname.startsWith('/api')) // webpush
+			(sw.location.hostname === url.hostname && url.pathname.startsWith('/api')) || // webpush
+			(url.hostname.endsWith('.supabase.co') && url.pathname.startsWith('/auth/')) // supabase auth
+			// todo: pvt
 		) {
 			return; // let the browser do its default thing
-		} else if (url.hostname === 'graphql.contentful.com' || url.pathname === '/_app/version.json') {
+		} else if (
+			url.hostname === 'graphql.contentful.com' ||
+			url.hostname.endsWith('.supabase.co') ||
+			url.pathname === '/_app/version.json'
+		) {
 			networkFirst(event);
 		} else if (url.pathname.startsWith('/_app/immutable/')) {
 			cacheFirst(event, false); // no revalidate, as these assets are immutable (versioned in url)

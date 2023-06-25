@@ -93,7 +93,7 @@
 	{:else if !$isOnline}
 		<NoOffline />
 	{:else}
-		<SignInButtons />
+		<SignInButtons redirect="/settings" />
 	{/if}
 
 	<h1>Add to homescreen</h1>
