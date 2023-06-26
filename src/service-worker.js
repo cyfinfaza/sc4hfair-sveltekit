@@ -232,3 +232,32 @@ sw.addEventListener('notificationclick', (event) => {
 		);
 	}
 });
+
+sw.addEventListener('pushsubscriptionchange', (event) => {
+	event.waitUntil(async () => {
+		/** @type {PushSubscription|null} */
+		let newSubscription = event.newSubscription,
+			/** @type {PushSubscription|null} */
+			oldSubscription = event.oldSubscription;
+
+		if (!newSubscription) {
+			// try resubscribing
+			newSubscription = await sw.registration.pushManager.subscribe({
+				userVisibleOnly: true,
+				applicationServerKey:
+					'BEVhADYtzjjK1odWzYgXNZmiO90ugEBch6S8taqPnCL3Fbdpc1NNPSsJa-HJDXM57FrvfJc7TBMqWuB51mdkT7k',
+				...oldSubscription?.options,
+			});
+		}
+
+		const res = await fetch(`${__WEBPUSH_API_PREFIX__}/api/webpush/resubscribe`, {
+			method: 'POST',
+			body: JSON.stringify({ subscription: newSubscription, oldSubscription }),
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			credentials: 'include',
+		});
+		console.log('resubscribe response', res);
+	});
+});

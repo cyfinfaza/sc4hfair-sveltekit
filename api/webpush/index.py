@@ -12,9 +12,8 @@ from uuid import uuid4
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 CORS(app, origins=['*'], supports_credentials=True)
-app.config.update(SESSION_COOKIE_SAMESITE='None', SESSION_COOKIE_SECURE=True)
+app.config.update(SESSION_COOKIE_NAME='pvt_s', SESSION_COOKIE_SAMESITE='None', SESSION_COOKIE_SECURE=True)
 app.secret_key = '--------'
-app.session_cookie_name = 'pvt_s'
 
 dotenv.load_dotenv()
 MONGODB_SECRET = environ.get('MONGODB_SECRET')
@@ -63,13 +62,16 @@ def index():
 @app.route('/api/webpush/subscribe', methods=['POST'], endpoint='subscribe')
 # remove subscription
 @app.route('/api/webpush/unsubscribe', methods=['POST'], endpoint='unsubscribe')
+# pushsubscriptionchange event
+@app.route('/api/webpush/resubscribe', methods=['POST'], endpoint='resubscribe')
 def main():
 	'''main route with common logic'''
 
 	data = request.get_json() or {}
 
-	if 'subscription' not in data: return error_json('No subscription info')
-	sub_info = data['subscription']
+	sub_info = data.get('subscription')
+	if request.endpoint != 'resubscribe':
+		if sub_info is None: return error_json('No subscription info')
 
 	print('sub_info', sub_info)
 	print('pvt id', 'track_id' in session and session['track_id'])
@@ -111,6 +113,45 @@ def main():
 
 		return success_json(data={
 			'registered': False,
+		})
+
+	elif request.endpoint == 'resubscribe':
+		result = 'none'
+
+		oldSubscription = data.get('oldSubscription')
+		print('oldSubscription', oldSubscription)
+
+		query = {'subscription_info': {
+			'$exists': True,
+			'$ne': None,
+			'$eq': oldSubscription
+		}}
+		if oldSubscription and 'endpoint' in oldSubscription:
+			query = {'subscription_info': {
+				'endpoint': oldSubscription['endpoint']
+			}}
+
+		# try updating the old entry if we can, otherwise create a new entry
+		if sub_info: # newSubscription
+			op = subscriptionsCollection.update_one(query, {'$set': {
+				'created': datetime.utcnow(),
+				'subscription_info': sub_info,
+				'user_agent': str(request.user_agent),
+				'track_id': 'track_id' in session and session['track_id'] or None,
+			}}, upsert=True)
+			if op.upserted_id is None:
+				result = 'newCreated'
+			else:
+				result = 'oldUpdated'
+
+		# if we only have an old subscription, just delete the entry
+		elif oldSubscription and 'endpoint' in oldSubscription:
+			op = subscriptionsCollection.delete_one(query)
+			if op.deleted_count > 0:
+				result = 'oldDeleted'
+
+		return success_json(data={
+			result: result,
 		})
 
 if __name__ == '__main__':
