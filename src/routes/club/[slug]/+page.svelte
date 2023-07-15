@@ -1,5 +1,4 @@
 <script>
-	import { page } from '$app/stores';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import { canWebShare, share } from 'logic/webshare.js';
@@ -13,10 +12,9 @@
 	} from 'logic/supabase.js';
 	import { onMount } from 'svelte';
 
+	/** @type {import('./$types').PageData} */
 	export let data;
-
-	const slug = $page.params.slug;
-	const club = data.clubs.find((club) => club.slug === slug);
+	const club = data.club;
 
 	onMount(async () => {
 		await initSupabaseClient();
@@ -29,7 +27,7 @@
 		style="whitespace: nowrap; justify-content: flex-start; margin-top: 16px;"
 	>
 		<LinkButton label="See all clubs" icon="groups" href="/clubs" />
-		<LinkButton label="View interest list" icon="list" href="/interests" />
+		<LinkButton label="View interest list" icon="list" href="/interests" disabled={!$isOnline} />
 	</div>
 	<h1 style="text-transform: uppercase;">{club.name}</h1>
 	<div class="optionsButtonsPanel">

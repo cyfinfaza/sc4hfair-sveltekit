@@ -31,7 +31,7 @@ export async function getSubscription() {
 			'BEVhADYtzjjK1odWzYgXNZmiO90ugEBch6S8taqPnCL3Fbdpc1NNPSsJa-HJDXM57FrvfJc7TBMqWuB51mdkT7k',
 	});
 	const subscription = await registration.pushManager.getSubscription();
-	console.log(subscription);
+	// console.log(subscription);
 	return subscription;
 }
 
@@ -115,7 +115,7 @@ export async function subscribe(dry = false) {
 	if (!dry) {
 		// wait for test message before giving up
 		let receivedId;
-		await Promise.race([testId, new Promise((_, reject) => setTimeout(reject, 10000))])
+		await Promise.race([testId, new Promise((_, reject) => setTimeout(reject, 20000))])
 			.then((id) => (receivedId = id))
 			.catch(() => {});
 		broadcast.close(); // allow channel to be garbage collected
@@ -123,7 +123,7 @@ export async function subscribe(dry = false) {
 		// future: reply to server if matched and then have server add to db
 
 		if (!receivedId)
-			return { ...(await unsubscribe()), message: 'Test push not received within 10s' };
+			return { ...(await unsubscribe()), message: 'Test push not received within 20s' };
 		if (receivedId !== data.test_id)
 			return { ...(await unsubscribe()), message: "Test push didn't match" };
 	}

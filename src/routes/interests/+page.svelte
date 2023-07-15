@@ -43,32 +43,39 @@
 	<div class="center">
 		<h1>Interest List</h1>
 		<p>Keep a list of clubs you are interested in</p>
-		{#if !$isOnline}
-			<NoOffline />
-		{:else}
-			<p>
-				{#if $session}
-					Signed in as <strong>{$session.user.email}</strong>
-				{:else}
-					You are not signed in.
-				{/if}
-			</p>
-			{#if reqLoginMessage}
-				<p style="color: red;">Sign in to add this item to your interest list.</p>
+		<p>
+			{#if $session}
+				Signed in as <strong>{$session.user.email}</strong>
+			{:else}
+				You are not signed in.
 			{/if}
-			<p class="horizPanel" style="white-space: nowrap;">
-				{#if $session}
-					<LinkButton label="Add Clubs to List" icon="open_in_new" href="/clubs" />
-					<LinkButton label="Sign out" icon="logout" on:click={() => logout()} />
-				{:else}
-					<SignInButtons redirect="/interests" />
-				{/if}
-			</p>
+		</p>
+		{#if reqLoginMessage}
+			<p style="color: red;">Sign in to add this item to your interest list.</p>
 		{/if}
+		<p class="horizPanel" style="white-space: nowrap;">
+			{#if $session}
+				<LinkButton
+					label={$isOnline ? 'Add Clubs to List' : 'View clubs'}
+					icon="open_in_new"
+					href="/clubs"
+				/>
+				<LinkButton label="Sign out" icon="logout" on:click={() => logout()} />
+			{:else if !$isOnline}
+				<NoOffline />
+			{:else}
+				<SignInButtons redirect="/interests" />
+			{/if}
+		</p>
 	</div>
 	<div class="columnCentered">
-		{#each results as club}
-			<ClubBox {club} />
-		{/each}
+		{#if $session && !$isOnline && results.length === 0}
+			<!-- in case the results weren't cached -->
+			<NoOffline />
+		{:else}
+			{#each results as club}
+				<ClubBox {club} />
+			{/each}
+		{/if}
 	</div>
 </Layout>

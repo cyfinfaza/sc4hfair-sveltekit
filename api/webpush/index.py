@@ -12,9 +12,8 @@ from uuid import uuid4
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 CORS(app, origins=['*'], supports_credentials=True)
-app.config.update(SESSION_COOKIE_SAMESITE='None', SESSION_COOKIE_SECURE=True)
+app.config.update(SESSION_COOKIE_NAME='pvt_s', SESSION_COOKIE_SAMESITE='None', SESSION_COOKIE_SECURE=True)
 app.secret_key = '--------'
-app.session_cookie_name = 'pvt_s'
 
 dotenv.load_dotenv()
 MONGODB_SECRET = environ.get('MONGODB_SECRET')
@@ -55,26 +54,41 @@ def error_json(message=None, data=None):
 # show number of subscriptions
 @app.route('/api/webpush', methods=['GET'])
 def index():
+	res = subscriptionsCollection.aggregate([{
+		'$group': {
+			'_id': None,
+			'subscriptions': {'$sum': {
+				'$cond': [{'$ne': ['$valid', False]}, 1, 0]
+			}},
+			'invalidSubscriptions': {'$sum': {
+				'$cond': [{'$eq': ['$valid', False]}, 1, 0]
+			}},
+		},
+	}]).next()
 	return success_json(data={
-		'subscriptions': subscriptionsCollection.count_documents({})
+		'subscriptions': res['subscriptions'],
+		'invalidSubscriptions': res['invalidSubscriptions'],
 	})
 
 # add (or check if dry) subscription
 @app.route('/api/webpush/subscribe', methods=['POST'], endpoint='subscribe')
 # remove subscription
 @app.route('/api/webpush/unsubscribe', methods=['POST'], endpoint='unsubscribe')
+# pushsubscriptionchange event
+@app.route('/api/webpush/resubscribe', methods=['POST'], endpoint='resubscribe')
 def main():
 	'''main route with common logic'''
 
 	data = request.get_json() or {}
 
-	if 'subscription' not in data: return error_json('No subscription info')
-	sub_info = data['subscription']
+	sub_info = data.get('subscription')
+	if request.endpoint != 'resubscribe':
+		if sub_info is None: return error_json('No subscription info')
 
 	print('sub_info', sub_info)
 	print('pvt id', 'track_id' in session and session['track_id'])
 
-	alreadyExists = subscriptionsCollection.count_documents({'subscription_info': sub_info}) > 0
+	alreadyExists = subscriptionsCollection.count_documents({'subscription_info': sub_info, 'valid': {'$ne': False}}) > 0
 
 	if request.endpoint == 'subscribe':
 		test_id = str(uuid4())
@@ -93,12 +107,13 @@ def main():
 				'subscription_info': sub_info,
 				'user_agent': str(request.user_agent),
 				'track_id': 'track_id' in session and session['track_id'] or None,
+				'valid': None # we just got it, it should be fine
 			}}, upsert=True)
 
 		return success_json(data={
 			'already_exists': alreadyExists,
 			'registered': alreadyExists if dry else True, # if the subscription is in the db
-			'test_id': test_id
+			'test_id': None if dry else test_id
 		})
 
 	elif request.endpoint == 'unsubscribe':
@@ -111,6 +126,47 @@ def main():
 
 		return success_json(data={
 			'registered': False,
+		})
+
+	elif request.endpoint == 'resubscribe':
+		result = 'noChange'
+
+		oldSubscription = data.get('oldSubscription')
+		print('oldSubscription', oldSubscription)
+
+		query = {'subscription_info': {
+			'$exists': True,
+			'$ne': None,
+			'$eq': oldSubscription
+		}}
+		if oldSubscription and 'endpoint' in oldSubscription:
+			query = {'subscription_info': {
+				'endpoint': oldSubscription['endpoint']
+			}}
+
+		# try updating the old entry if we can, otherwise create a new entry
+		if sub_info and not alreadyExists: # newSubscription
+			op = subscriptionsCollection.update_one(query, {'$set': {
+				'created': datetime.utcnow(),
+				'subscription_info': sub_info,
+				'user_agent': str(request.user_agent),
+				'track_id': 'track_id' in session and session['track_id'] or None,
+				'valid': None
+			}}, upsert=True)
+			if op.upserted_id is None:
+				result = 'oldUpdated'
+			else:
+				result = 'newCreated'
+
+		# if we only have an old subscription, just delete the entry
+		elif oldSubscription and 'endpoint' in oldSubscription:
+			op = subscriptionsCollection.delete_one(query)
+			if op.deleted_count > 0:
+				result = 'oldDeleted'
+
+		return success_json(data={
+			'result': result,
+			'already_exists': alreadyExists,
 		})
 
 if __name__ == '__main__':

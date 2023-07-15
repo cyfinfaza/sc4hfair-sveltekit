@@ -1,56 +1,107 @@
+/// <reference types="@sveltejs/kit" />
+/// <reference no-default-lib="true"/>
+/// <reference lib="esnext" />
+/// <reference lib="webworker" />
+const sw = /** @type {ServiceWorkerGlobalScope} */ (/** @type {unknown} */ (self));
+
 import { build, files, prerendered, version } from '$service-worker';
 
 const CACHE_NAME = 'offline-cache-v2';
-const PRECACHE = ['_app/version.json', ...build, ...files, ...prerendered];
+const PRECACHE = ['/_app/version.json', ...build, ...files, ...prerendered];
 
-console.log('precache: ', PRECACHE);
-console.log('version: ', version);
+// console.log('precache: ', PRECACHE);
+console.log('SW VERSION: ', version);
 
-self.addEventListener('install', function (event) {
-	self.skipWaiting();
+sw.addEventListener('install', function (event) {
+	// sw.skipWaiting();
 	console.log('Service worker installing');
 	event.waitUntil(
 		(async () => {
+			const cache = await caches.open(CACHE_NAME);
+
+			console.log('PRECACHE SIZE', PRECACHE.length);
+
+			let toCache = PRECACHE,
+				toUncache = [];
+			const existingKeys = await cache.keys();
+
+			for (const req of existingKeys) {
+				const url = new URL(req.url),
+					immutable = url.pathname.startsWith('/_app/immutable');
+				if (immutable && toCache.includes(url.pathname)) {
+					// immutable files are hashed, we can skip caching them again
+					toCache.splice(toCache.indexOf(url.pathname), 1);
+				} else if (url.origin === location.origin && !toCache.includes(url.pathname)) {
+					// we can remove them from the cache if they are no longer in the precache
+					await cache.delete(req);
+					toUncache.push(req.url);
+				}
+			}
+
+			console.log('PRECACHE SIZE REDUCED TO', toCache.length);
+			console.log('UNCACHED', toUncache.length, 'OLD FILES', toUncache);
+
 			try {
-				const cache = await caches.open(CACHE_NAME);
-				await cache.addAll(PRECACHE);
+				await cache.addAll(toCache);
 				console.log('PRECACHE COMPLETE');
 			} catch (e) {
 				console.log('PRECACHE FAILED: ', e);
 			}
 
 			try {
-				// remove old cache
+				// remove old cache from v1 of the app
 				await caches.delete('offline-cache-v1');
 			} catch (e) {
-				console.log('didn\'t delete v1 cache', e);
+				console.log("didn't delete v1 cache", e);
 			}
 		})()
 	);
 });
 
-function staleWhileEtagRevalidate(event) {
+sw.addEventListener('message', (event) => {
+	if (event?.data?.type === 'SKIP_WAITING') {
+		sw.skipWaiting(); // install new sw (update caches), then activate (reload old versions)
+	}
+});
+
+sw.addEventListener('activate', async () => {
+	// ensure we are never running any old versions
+	// after we've taken over, iterate over all the current clients (windows)
+	const tabs = await sw.clients.matchAll({ type: 'window' });
+	tabs.forEach((tab) => {
+		// and refresh each one of them
+		tab.navigate(tab.url);
+	});
+});
+
+function cacheFirst(event, revalidateEtag = false) {
 	event.respondWith(
 		(async function () {
 			const cache = await caches.open(CACHE_NAME);
-			const cachedResponse = await cache.match(event.request);
+			const cachedResponse = await cache.match(event.request, { ignoreSearch: true }); // `?x-sveltekit-invalidated=01`
 			console.log(cachedResponse);
 			if (cachedResponse) {
 				const cacheEtag = cachedResponse.headers.get('etag');
 				console.log('CACHED: ', cachedResponse.url, cacheEtag);
-				event.waitUntil(
-					(async () => {
-						const headRequest = await fetch(event.request.url, { method: 'HEAD' });
-						const headEtag = headRequest.headers.get('etag');
-						console.log('REVALIDATE HEAD CHECK: ', cachedResponse.url, cacheEtag);
-						if (headEtag && cacheEtag !== headEtag) {
-							console.log('REVALIDATING: ', cachedResponse.url);
-							await cache.delete(event.request);
-							await cache.add(event.request);
-						}
-					})()
-				);
-				return cachedResponse;
+				let wasRevalidated = false;
+				if (revalidateEtag) {
+					event.waitUntil(
+						(async () => {
+							const headRequest = await fetch(event.request.url, { method: 'HEAD' });
+							const headEtag = headRequest.headers.get('etag');
+							console.log('REVALIDATE HEAD CHECK: ', cachedResponse.url, cacheEtag);
+							if (headEtag && cacheEtag !== headEtag) {
+								console.log('REVALIDATING: ', cachedResponse.url);
+								await cache.delete(event.request);
+								await cache.add(event.request);
+								wasRevalidated = true; // regrab the response from the cache
+							}
+						})()
+					);
+				}
+				return wasRevalidated
+					? await cache.match(event.request, { ignoreSearch: true })
+					: cachedResponse;
 			} else {
 				console.log('CACHE MISS: ', event.request.url);
 				let resp;
@@ -58,7 +109,11 @@ function staleWhileEtagRevalidate(event) {
 					resp = await fetch(event.request);
 				} catch (e) {
 					console.log('FETCH ERROR: ', e);
-					return cache.match('/offline');
+					// fixme: this is broken as sveltekit's routing doesn't trigger this
+					// we could hook into the router and force the navigation if we wanted
+					// https://github.com/sveltejs/kit/issues/2570 for some reference
+					if (event.request.mode === 'navigate') return cache.match('/offline');
+					else return resp;
 				}
 				event.waitUntil(cache.put(event.request, resp.clone()));
 				return resp;
@@ -77,11 +132,12 @@ function networkFirst(event) {
 				resp = await fetch(event.request);
 			} catch (e) {
 				console.log('FETCH ERROR: ', e);
-				const cachedResponse = await caches.match(event.request);
+				const cachedResponse = await caches.match(event.request, { ignoreSearch: true });
 				if (cachedResponse) {
 					return cachedResponse;
 				} else {
-					return cache.match('/offline');
+					if (event.request.mode === 'navigate') return cache.match('/offline');
+					else return resp;
 				}
 			}
 			event.waitUntil(cache.put(event.request, resp.clone()));
@@ -96,30 +152,38 @@ function networkOnly(event) {
 
 // don't cache during development
 if (prerendered.length !== 0) {
-	self.addEventListener('fetch', function (event) {
+	sw.addEventListener('fetch', function (event) {
 		const url = new URL(event.request.url);
 		if (
 			event.request.method !== 'GET' ||
-			(self.location.hostname === url.hostname && url.pathname.startsWith('/api')) // webpush
+			(sw.location.hostname === url.hostname && url.pathname.startsWith('/api')) || // webpush
+			(url.hostname.endsWith('.supabase.co') && url.pathname.startsWith('/auth/')) // supabase auth
+			// todo: pvt
 		) {
 			return; // let the browser do its default thing
-		} else if (url.hostname === 'graphql.contentful.com') {
-			networkFirst(event); // @todo: expiration cache
+		} else if (
+			url.hostname === 'graphql.contentful.com' ||
+			url.hostname.endsWith('.supabase.co') ||
+			url.pathname === '/_app/version.json'
+		) {
+			networkFirst(event);
+		} else if (url.pathname.startsWith('/_app/immutable/')) {
+			cacheFirst(event, false); // no revalidate, as these assets are immutable (versioned in url)
 		} else {
-			staleWhileEtagRevalidate(event);
+			cacheFirst(event, true); // stale while etag revalidate
 		}
 	});
 }
 
 const notificationOptions = { icon: '/favicon.ico', badge: '/4h-96x96.png' };
 
-self.addEventListener('push', (e) => {
+sw.addEventListener('push', (e) => {
 	console.log('Push received', e);
 	const pushData = e.data.json();
 	console.log('Push data', pushData);
 	if (pushData.type === 'notification') {
 		e.waitUntil(
-			self.registration.showNotification(pushData.data.title, {
+			sw.registration.showNotification(pushData.data.title, {
 				body: pushData.data.body,
 				...notificationOptions,
 				...pushData.data.options,
@@ -130,24 +194,70 @@ self.addEventListener('push', (e) => {
 		console.log('testing push');
 		broadcast.postMessage(pushData);
 		broadcast.close(); // allow channel to be garbage collected
-		e.waitUntil(self.registration.showNotification('testing notifications', notificationOptions));
+		e.waitUntil(
+			sw.registration.showNotification('Your notifications are working!', {
+				body: 'The latest fair news will arrive here.',
+				silent: true,
+				tag: 'push-test',
+				actions: [
+					{
+						action: '/settings#notifications',
+						title: 'Notification settings',
+					},
+				],
+				...notificationOptions,
+			})
+		);
 	}
 });
 
-self.addEventListener('notificationclick', (event) => {
+sw.addEventListener('notificationclick', (event) => {
 	console.log('On notification click: ', event.notification.tag);
 	event.notification.close();
-	event.waitUntil(
-		self.clients
-			.matchAll({
-				type: 'window',
-			})
-			.then((clientList) => {
-				for (const client of clientList) {
-					console.log(client);
-					if (new URL(client.url).pathname === '/' && 'focus' in client) return client.focus();
-				}
-				if (self.clients.openWindow) return self.clients.openWindow('/');
-			})
-	);
+	if (event.action) {
+		return sw.clients.openWindow(event.action);
+	} else {
+		event.waitUntil(
+			sw.clients
+				.matchAll({
+					type: 'window',
+				})
+				.then((clientList) => {
+					for (const client of clientList) {
+						console.log(client);
+						if (new URL(client.url).pathname === '/' && 'focus' in client) return client.focus();
+					}
+					return sw.clients.openWindow('/');
+				})
+		);
+	}
+});
+
+sw.addEventListener('pushsubscriptionchange', (event) => {
+	event.waitUntil(async () => {
+		/** @type {PushSubscription|null} */
+		let newSubscription = event.newSubscription,
+			/** @type {PushSubscription|null} */
+			oldSubscription = event.oldSubscription;
+
+		if (!newSubscription) {
+			// try resubscribing
+			newSubscription = await sw.registration.pushManager.subscribe({
+				userVisibleOnly: true,
+				applicationServerKey:
+					'BEVhADYtzjjK1odWzYgXNZmiO90ugEBch6S8taqPnCL3Fbdpc1NNPSsJa-HJDXM57FrvfJc7TBMqWuB51mdkT7k',
+				...oldSubscription?.options,
+			});
+		}
+
+		const res = await fetch(`${__WEBPUSH_API_PREFIX__}/api/webpush/resubscribe`, {
+			method: 'POST',
+			body: JSON.stringify({ subscription: newSubscription, oldSubscription }),
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			credentials: 'include',
+		});
+		console.log('resubscribe response', res);
+	});
 });

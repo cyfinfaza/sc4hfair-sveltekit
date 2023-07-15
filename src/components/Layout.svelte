@@ -7,16 +7,14 @@
 	import { onMount } from 'svelte';
 
 	export let title = '';
-	export let description = '';
+	export let description = 'The Somerset County 4-H Fair App';
 	export let noPadding = false;
 	export let noHeaderPadding = false;
 	export let fixedHeightContent = false;
 	export let fullWidth = false;
 
 	const SITE_NAME = 'Somerset County 4-H Fair';
-	const DESCRIPTION = 'The Somerset County 4-H Fair App';
 	const AUTHOR = 'Somerset County 4-H';
-	const metaDescription = description || DESCRIPTION;
 	const animationDuration = 150;
 
 	onMount(() => {
@@ -29,14 +27,14 @@
 
 <svelte:head>
 	<title>{title ? title + ' | ' : ''} {SITE_NAME}</title>
-	<meta name="description" content={metaDescription} />
+	<meta name="description" content={description} />
 	<meta property="og:title" content={title} />
-	<meta property="og:description" content={metaDescription} />
+	<meta property="og:description" content={description} />
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<meta name="twitter:creator" content={AUTHOR || ''} />
+	<meta name="twitter:creator" content={AUTHOR} />
 	<meta name="twitter:title" content={title} />
-	<meta name="twitter:description" content={metaDescription} />
+	<meta name="twitter:description" content={description} />
 	<meta name="theme-color" content="#009959" />
 </svelte:head>
 

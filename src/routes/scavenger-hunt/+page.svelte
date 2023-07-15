@@ -193,7 +193,6 @@
 
 <Modal
 	show={showEnterManuallyPrompt}
-	danger={false}
 	on:close={() => {
 		showEnterManuallyPrompt = false;
 		manualCode = '';

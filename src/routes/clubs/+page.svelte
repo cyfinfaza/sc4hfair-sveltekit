@@ -2,6 +2,7 @@
 	import ClubBox from 'components/ClubBox.svelte';
 	import Layout from 'components/Layout.svelte';
 	import { exactSearch } from 'logic/search.js';
+	import { isOnline } from 'logic/stores.js';
 	import { browser } from '$app/environment';
 
 	export let data;
@@ -23,7 +24,7 @@
 		<h1>Clubs</h1>
 		<p>
 			Tap the +Add button to add a club to your interest list.
-			<a href="/interests">View interest list</a>
+			{#if $isOnline}<a href="/interests">View interest list</a>{/if}
 		</p>
 	</div>
 	<div class="filterOptions">
