@@ -39,6 +39,7 @@
 		</li>
 		<li>Tap "Add" in the upper right corner</li>
 	</ol>
+	<small>Note: On iPhone you are required to add the app to your homescreen before enabling notifications.</small>
 {:else if platform === 'other'}
 	<p>
 		Look for a prompt asking you to install, create a shortcut, or add this app to your home screen.
