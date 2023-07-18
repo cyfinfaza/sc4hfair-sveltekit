@@ -15,9 +15,12 @@ export function requestNotificationPermission() {
 
 export async function getSubscription() {
 	// debugger;
-	const permission = await requestNotificationPermission();
+	let permission = Notification.permission;
 	if (permission !== 'granted') {
-		throw new Error('Notification permission not granted');
+		permission = await requestNotificationPermission();
+		if (permission !== 'granted') {
+			throw new Error('Notification permission not granted');
+		}
 	}
 	const registration = await Promise.race([
 		navigator.serviceWorker.ready,

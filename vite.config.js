@@ -30,6 +30,11 @@ const config = {
 		__WEBPUSH_API_PREFIX__: JSON.stringify(process.env.WEBPUSH_API_PREFIX || ''), // needs a fallback
 	},
 	plugins: [sveltekit(), svg()],
+	server: {
+		proxy: {
+			'/api': 'http://localhost:6002',
+		},
+	},
 };
 
 export default config;
