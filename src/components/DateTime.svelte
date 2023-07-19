@@ -22,9 +22,9 @@
 			calendarStrings[
 				diff < -6
 					? 'sameElse'
-					: diff < -1
-					? 'lastWeek'
-					: diff < 0
+					: // : diff < -1
+					// ? 'lastWeek'
+					diff < 0
 					? 'lastDay'
 					: diff < 1
 					? 'sameDay'
@@ -38,43 +38,46 @@
 	}
 
 	export let date; // iso string
-	export let format = 'EEEE, MMMM d, y \'at\' t';
+	export let format = "EEEE, MMMM d, y 'at' t";
 	export let calendar = false; // use relative time strings like "today" instead of "monday", periodically refreshes
 	export let duration = undefined; // displays time between date and duration
 	export let fromNow = false; // use relative durations like "1 minute ago", periodically refreshes
 	export let withTitle = false; // show original formatted date on hover
 
-	date = DateTime.fromISO(date);
-	let relative = calendar || fromNow;
+	let dateO, timeString, durationString, relative;
+	$: {
+		dateO = DateTime.fromISO(date);
+		relative = calendar || fromNow;
 
-	let timeString;
-	const updateTimeString = () => {
-		if (calendar) timeString = getCalendarFormat(date);
-		else if (fromNow) timeString = date.toRelative();
-	}
-	if (relative) {
-		updateTimeString();
-		updateStore.subscribe(updateTimeString);
-	}
+		const updateTimeString = () => {
+			if (calendar) timeString = getCalendarFormat(dateO);
+			else if (fromNow) timeString = dateO.toRelative();
+		};
+		if (relative) {
+			updateTimeString();
+			updateStore.subscribe(updateTimeString);
+		}
 
-	let durationString;
-	if (duration) {
-		let d = DateTime.fromISO(duration);
-		d = date.diff(d, ['years', 'months', 'days', 'hours', 'minutes']);
-		if (d.valueOf() < 0) d = d.negate();
-		d = Duration.fromObject(Object.fromEntries(Object.entries(d.toObject()).filter(([_, val]) => val !== 0))); // remove 0s so they don't show up in the final string
-		durationString = d.toHuman({ floor: true });
+		if (duration) {
+			let d = DateTime.fromISO(duration);
+			d = dateO.diff(d, ['years', 'months', 'days', 'hours', 'minutes']);
+			if (d.valueOf() < 0) d = d.negate();
+			d = Duration.fromObject(
+				Object.fromEntries(Object.entries(d.toObject()).filter(([_, val]) => val !== 0))
+			); // remove 0s so they don't show up in the final string
+			durationString = d.toHuman({ floor: true });
+		}
 	}
 </script>
 
-<time datetime={date} title={withTitle && date.toFormat(format)}>
+<time datetime={dateO} title={withTitle && dateO.toFormat(format)}>
 	{#if relative}
-		{#key updateStore}
+		{#key $updateStore}
 			{timeString}
 		{/key}
 	{:else if duration}
 		{durationString}
 	{:else}
-		{date.toFormat(format)}
+		{dateO.toFormat(format)}
 	{/if}
 </time>
