@@ -23,7 +23,7 @@
 				<p>
 					You've finished the scavenger hunt {$hintsUsed.length
 						? `with ${$hintsUsed.length === 1 ? 'only 1 hint' : `${$hintsUsed.length} hints`}`
-						: 'without any hints'}! Go back to the 4-H Computers booth to claim your prize!
+						: 'without any hints'}! Go back to the 4‑H Computers booth to claim your prize!
 				</p>
 			{:else}
 				<p>{clues[index].clue}</p>

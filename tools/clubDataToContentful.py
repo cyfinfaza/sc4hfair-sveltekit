@@ -28,6 +28,7 @@ dotenv.load_dotenv()
 session = requests.Session()
 session.headers.update({
 	'Authorization': 'Bearer ' + environ.get('CONTENTFUL_CMA_TOKEN'),
+	'Content-Type': 'application/vnd.contentful.management.v1+json',
 })
 
 # get list of all previous entries
@@ -48,14 +49,18 @@ for entry in entries['items']:
 
 	if slug not in allSlugs:
 		print('archiving', slug)
-		session.put(f'https://api.contentful.com/spaces/{spaceId}/environments/{environmentId}/entries/{id}/archived', headers={
+		session.delete(f'https://api.contentful.com/spaces/{spaceId}/environments/{environmentId}/entries/{id}/published', headers={
+			'X-Contentful-Version': str(version),
+		})
+		req = session.put(f'https://api.contentful.com/spaces/{spaceId}/environments/{environmentId}/entries/{id}/archived', headers={
 			'X-Contentful-Version': str(version),
 		})
 
 publishPayload = []
 
-# for club in [club for club in data if club['slug'] == '4h-computers']:
 for club in data:
+	# if club['slug'] != '4h-computers': continue # for testing
+
 	print('updating', club['slug'])
 	entry = {
 		"fields": {
@@ -83,7 +88,6 @@ for club in data:
 	entryId = club['slug']
 
 	headers = {
-		'Content-Type': 'application/vnd.contentful.management.v1+json',
 		'X-Contentful-Content-Type': contentTypeId,
 	}
 	if club['slug'] in previousData:
@@ -114,12 +118,10 @@ for club in data:
 	})
 
 if not noPublish and len(publishPayload) > 0:
-	bulkReq = session.post(f'https://api.contentful.com/spaces/{spaceId}/environments/{environmentId}/bulk_actions/publish', headers={
-		'Content-Type': 'application/vnd.contentful.management.v1+json',
-	}, json={
+	bulkReq = session.post(f'https://api.contentful.com/spaces/{spaceId}/environments/{environmentId}/bulk_actions/publish', json={
 		'entities': {
 			'items': publishPayload,
 		},
 	})
 
-	print('bulk publish status', bulkReq.status_code, bulkReq.json()['sys']['status'])
+	print('bulk publish status', bulkReq.status_code, bulkReq.json()['sys']['status'], bulkReq.json())

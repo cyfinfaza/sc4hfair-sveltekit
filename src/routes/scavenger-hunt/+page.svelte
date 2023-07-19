@@ -124,12 +124,12 @@
 	<div class="center">
 		<h1>Scavenger Hunt</h1>
 		<p>
-			Welcome to the 4-H Fair Scavenger Hunt! Each clue will lead you to a QR Code, and when you
+			Welcome to the 4‑H Fair Scavenger Hunt! Each clue will lead you to a QR Code, and when you
 			scan it, it will unlock the next clue. The last clue will lead you to your prize!
 		</p>
 		<p>
 			If you're stuck on a clue, try looking at the <a href="/map">fair map</a>, talking to other
-			4-Hers, or searching for information online. You can get a hint on each clue, but if you
+			4‑Hers, or searching for information online. You can get a hint on each clue, but if you
 			choose to you won't get a perfect score. Go to <a href="/settings">settings</a> to reset the scavenger
 			hunt, though only one prize may be claimed per person.
 		</p>

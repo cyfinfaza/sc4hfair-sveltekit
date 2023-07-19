@@ -34,7 +34,7 @@
 </script>
 
 <Layout>
-	<h1 class="center">Welcome to the Somerset County 4-H Fair.</h1>
+	<h1 class="center">Welcome to the Somerset County 4‑H Fair.</h1>
 	{#if showSetupBox}
 		<div class="installBox">
 			<h2 style="text-align: center">Finish setting up the fair app</h2>

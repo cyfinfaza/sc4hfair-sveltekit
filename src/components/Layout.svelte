@@ -7,14 +7,14 @@
 	import { onMount } from 'svelte';
 
 	export let title = '';
-	export let description = 'The Somerset County 4-H Fair App';
+	export let description = 'The Somerset County 4‑H Fair App';
 	export let noPadding = false;
 	export let noHeaderPadding = false;
 	export let fixedHeightContent = false;
 	export let fullWidth = false;
 
-	const SITE_NAME = 'Somerset County 4-H Fair';
-	const AUTHOR = 'Somerset County 4-H';
+	const SITE_NAME = 'Somerset County 4‑H Fair';
+	const AUTHOR = 'Somerset County 4‑H';
 	const animationDuration = 150;
 
 	onMount(() => {

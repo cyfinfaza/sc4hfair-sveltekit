@@ -11,11 +11,13 @@
 		<p>The 4-H fair is made possible by our sponsors.</p>
 	</div>
 	<div class="columnCentered">
-		{#each ['Gold', 'Silver', 'Bronze'] as tier}
-			<h2>{tier}</h2>
-			{#each data.sponsors.filter((sponsor) => sponsor.tier === tier.toLowerCase()) as sponsor}
-				<SponsorSpot {sponsor} listMode />
-			{/each}
+		{#each data.sorted as tier}
+			{#if tier.sponsors.length}
+				<h2>{tier.tier}</h2>
+				{#each tier.sponsors as sponsor}
+					<SponsorSpot {sponsor} listMode />
+				{/each}
+			{/if}
 		{/each}
 	</div>
 </Layout>

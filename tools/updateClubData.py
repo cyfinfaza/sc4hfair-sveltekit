@@ -18,9 +18,9 @@ from time import sleep
 clubDataOverrides = {
 	'computer-club': {
 		"slug": "4h-computers",
-		"name": "4-H Computers",
-		"description": "From microcontrollers to gaming PCs and from Scratch to full-stack web apps, 4-H Computers is a club for students who have a passion for electronics and software. We work together to help each other complete projects and build friendships along the way. Our club's work culminates in the 4-H Fair in August, where we get to show off all of our projects to the public. We are also responsible for developing and maintaining the 4-H Fair App, a project started several years ago that our club adopted in 2020. While anyone is welcome to join our club, our club is not a class, and we are more geared towards self-driven individuals who already have an interest in electronics and software.",
-		"meeting_where": "Ted Blum 4-H Center or Discord virtual call",
+		"name": "4‑H Computers",
+		"description": "From microcontrollers to gaming PCs and from Scratch to full-stack web apps, 4‑H Computers is a club for students who have a passion for electronics and software. We work together to help each other complete projects and build friendships along the way. Our club's work culminates in the 4‑H Fair in August, where we get to show off all of our projects to the public. We are also responsible for developing and maintaining the 4‑H Fair App, a project started several years ago that our club adopted in 2020. While anyone is welcome to join our club, our club is not a class, and we are more geared towards self-driven individuals who already have an interest in electronics and software.",
+		"meeting_where": "Ted Blum 4‑H Center or Discord virtual call",
 		"meeting_when": "Every first and third Friday from 7pm to 9pm",
 		"grades": "Mainly 7-12",
 		"clubWebsite": "https://4hcomputers.club"
@@ -32,6 +32,9 @@ clubsToTents = {}
 for tent in tentsToClubs:
 	for club in tentsToClubs[tent]:
 		clubsToTents[club] = tent
+
+def cleanString(str):
+	return str.strip().replace('4-H', '4‑H')
 
 clubData = []
 doneSlugs = [] # because of course some listings are duplicated
@@ -74,8 +77,8 @@ for clubListing in ['https://4histops.org/clubs', 'https://4histops.org/4-h-prep
 				data = {
 					'listingWebsite': listingWebsite,
 					'slug': slug,
-					'name': block.find('h2').text.title().replace('And', 'and').strip(), # it's transformed to upper case so the actual value is random cases
-					'description': block.find('p').text.strip(),
+					'name': cleanString(block.find('h2').text.title().replace('And', 'and')), # it's transformed to upper case so the actual value is random cases
+					'description': cleanString(block.find('p').text),
 					'meetingLocation': '',
 					'meetingWhen': '',
 					'grades': '',
@@ -84,7 +87,7 @@ for clubListing in ['https://4histops.org/clubs', 'https://4histops.org/4-h-prep
 				for field in block.find_all('p'):
 					value = field.text.strip().split(':')
 					key = value.pop(0).lower()
-					value = ':'.join(value).strip()
+					value = cleanString(':'.join(value).strip())
 
 					if key == 'where': data['meetingLocation'] = value
 					elif key == 'when': data['meetingWhen'] = value

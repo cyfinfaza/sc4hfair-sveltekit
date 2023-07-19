@@ -30,20 +30,10 @@
 		"tent": "horses"
 	},
 	{
-		"listingWebsite": "https://4histops.org/critter-club",
-		"slug": "critter-club",
-		"name": "Critter Club",
-		"description": "Calling all animal lovers!  In Critter Club we meet different types of animals, find out how to care for them, and do animal-theme activities.",
-		"meetingLocation": "Ted Blum 4-H Center",
-		"meetingWhen": "The 2nd and 4th Monday of each month at 6:30 pm",
-		"grades": "K-3",
-		"tent": "prep"
-	},
-	{
 		"listingWebsite": "https://4histops.org/furry-friends",
 		"slug": "furry-friends",
 		"name": "Furry Friends",
-		"description": "Learn all about small animals, such as rabbits, cavies, and rodents. By learning the proper care and handling of small animals, members strengthen their sense of responsibility as pet owners. There is an emphasis on proper animal handling, showmanship, preparing for a small animal show, public speaking and public education. Members also learn about animal safety. There is typically one (1) Somerset County Small Animal Division show, as well as a Furry Friends club show to best prepare 4-H Furry Friends members for the annual Fair.",
+		"description": "Learn all about small animals, such as rabbits, cavies, and rodents. By learning the proper care and handling of small animals, members strengthen their sense of responsibility as pet owners. There is an emphasis on proper animal handling, showmanship, preparing for a small animal show, public speaking and public education. Members also learn about animal safety. There is typically one (1) Somerset County Small Animal Division show, as well as a Furry Friends club show to best prepare 4\u2011H Furry Friends members for the annual Fair.",
 		"meetingLocation": "Ted Blum 4-H Center",
 		"meetingWhen": "*The 4th Thursday of every month at 7pm",
 		"grades": "K-13",
@@ -160,6 +150,15 @@
 		"tent": "arts-sciences"
 	},
 	{
+		"listingWebsite": "https://4histops.org/junior-council",
+		"slug": "junior-council",
+		"name": "Junior Council",
+		"description": "Members work on community service projects throughout the year. Coming Fall 2023!",
+		"meetingLocation": "Ted Blum 4-H Center",
+		"meetingWhen": "Meets the 1st Thursday of the month from 6-7:30 pm & one additional day per month for community service.",
+		"grades": "6-7"
+	},
+	{
 		"listingWebsite": "https://4histops.org/k9-leaders-seeing-eye-club",
 		"slug": "k9-leaders-seeing-eye-club",
 		"name": "K-9 Leaders Seeing Eye Puppy Club",
@@ -183,7 +182,7 @@
 		"listingWebsite": "https://4histops.org/sach",
 		"slug": "sach",
 		"name": "Student Ambassadors For Community Health (Sach)",
-		"description": "This club focuses on improving health in the Bound Brook Community. Somerset County 4-H in partnership with Middle Earth are able to empower youth to identify unique health challenges in their community and create solutions to shape positive change. This club is a great way for members to learn skills in leadership, business, government operations, problem solving, teamwork, and most importantly, creativity!",
+		"description": "This club focuses on improving health in the Bound Brook Community. Somerset County 4\u2011H in partnership with Middle Earth are able to empower youth to identify unique health challenges in their community and create solutions to shape positive change. This club is a great way for members to learn skills in leadership, business, government operations, problem solving, teamwork, and most importantly, creativity!",
 		"meetingLocation": "Middle Earth Center - 520 North Bridge Street, Bridgewater",
 		"meetingWhen": "The 2nd and 4th Tuesday of every month from 6-8pm",
 		"grades": "9-13",
@@ -192,8 +191,8 @@
 	{
 		"listingWebsite": "https://4histops.org/4h-exchange",
 		"slug": "4h-exchange",
-		"name": "Somerset County 4-H Exchange Association",
-		"description": "Members learn to share ideas and thoughts with other 4-H youth around the country. Through fundraising, members are able to visit other states to learn about life around the country.",
+		"name": "Somerset County 4\u2011H Exchange Association",
+		"description": "Members learn to share ideas and thoughts with other 4\u2011H youth around the country. Through fundraising, members are able to visit other states to learn about life around the country.",
 		"meetingLocation": "Ted Blum 4-H Center",
 		"meetingWhen": "The 4th Thursday of every month at 7:30pm",
 		"grades": "8-13",
@@ -202,7 +201,7 @@
 	{
 		"listingWebsite": "https://4histops.org/area14-robotics-club",
 		"slug": "area14-robotics-club",
-		"name": "4-H Area14 Robotics Club",
+		"name": "4\u2011H Area14 Robotics Club",
 		"description": "This club emphasizes problem-solving, computational thinking, the use of coding, cognitive and AI skills to advance STEM learning. It offers three learning tracks (LEGO\u00ae Mindstorms, Arduino, and Raspberry Pi) through guided projects and real-life robotics missions.",
 		"meetingLocation": "Leader\u2019s Home",
 		"meetingWhen": "Every Saturday from 4:30 - 6:30 pm",
@@ -212,7 +211,7 @@
 	{
 		"listingWebsite": "https://4histops.org/4h-bananabots-robotics-club",
 		"slug": "4h-bananabots-robotics-club",
-		"name": "4-H Bananabots Robotics Club",
+		"name": "4\u2011H Bananabots Robotics Club",
 		"description": "Members use LEGO\u00ae robotics to learn how to design, build, and program robots. Some clubs also participate in the FIRST LEGO\u00ae League Competition.",
 		"meetingLocation": "Virtually and/or at the Leader\u2019s Home",
 		"meetingWhen": "The 1st and 3rd Friday of every month at 7:30 pm",
@@ -222,7 +221,7 @@
 	{
 		"listingWebsite": "https://4histops.org/4h-beacon-bots",
 		"slug": "4h-beacon-bots",
-		"name": "4-H Beacon Bots",
+		"name": "4\u2011H Beacon Bots",
 		"description": "Beacon Bots is a club devoted to learning about robotics and computer programming. Many platforms will be involved, such as use of the Arduino and Mindstorms ev3. Club activities culminate in the construction of different projects and potential participation in different competitions such as FIRST LEGO League Competition.",
 		"meetingLocation": "Ted Blum 4-H Center",
 		"meetingWhen": "The 2nd and 4th Friday of every month at 7pm",
@@ -274,7 +273,7 @@
 	{
 		"listingWebsite": "https://4histops.org/servos-4h-robotics-club",
 		"slug": "servos-4h-robotics-club",
-		"name": "Servos 4-H Robotics Club",
+		"name": "Servos 4\u2011H Robotics Club",
 		"description": "Members use LEGO\u00ae robotics to learn how to design, build, and program robots. Some clubs also participate in the FIRST LEGO\u00ae League Competition.",
 		"meetingLocation": "Ted Blum 4-H Center",
 		"meetingWhen": "The 1st and 3rd Thursday of the month from 7 to 8:30 pm",
@@ -284,7 +283,7 @@
 	{
 		"listingWebsite": "https://4histops.org/4h-drawing-sketch",
 		"slug": "4h-drawing-sketch",
-		"name": "4-H Drawing & Sketch Club",
+		"name": "4\u2011H Drawing & Sketch Club",
 		"description": "Members of this club will be able to use traditional mediums to create anything from comic book characters to still life drawings. We will learn how to use color, light, perspective, proportion, and much more using pencil, ink and markers to create standout pieces.",
 		"meetingLocation": "Ted Blum 4-H Center",
 		"meetingWhen": "The 3rd Friday of the month at 7 pm",
@@ -293,7 +292,7 @@
 	{
 		"listingWebsite": "https://4histops.org/camera-club",
 		"slug": "camera-club",
-		"name": "4-H Camera Club",
+		"name": "4\u2011H Camera Club",
 		"description": "Get creative while learning how to apply advanced skills in photography!",
 		"meetingLocation": "Ted Blum 4-H Center",
 		"meetingWhen": "The 2nd Wednesday of each month at 7 pm",
@@ -303,8 +302,8 @@
 	{
 		"listingWebsite": "https://4histops.org/4h-magicians-guild",
 		"slug": "4h-magicians-guild",
-		"name": "4-H Magicians Guild",
-		"description": "The 4-H Magic project uses hands-on learning opportunities for member to acquire life skills while exploring the art of magic and illusion. With an emphasis on fun and cooperative creativity members enhance public speaking and presentation skills while building self confidence and learning a new skill set.",
+		"name": "4\u2011H Magicians Guild",
+		"description": "The 4\u2011H Magic project uses hands-on learning opportunities for member to acquire life skills while exploring the art of magic and illusion. With an emphasis on fun and cooperative creativity members enhance public speaking and presentation skills while building self confidence and learning a new skill set.",
 		"meetingLocation": "Ted Blum 4-H Center",
 		"meetingWhen": "The 1st and 3rd Monday of every month at 7pm",
 		"grades": "4-13",
@@ -483,7 +482,7 @@
 	{
 		"listingWebsite": "https://4histops.org/4h-master-chef",
 		"slug": "4h-master-chef",
-		"name": "4-H Master Chefs",
+		"name": "4\u2011H Master Chefs",
 		"description": "Through hands-on-activities, members gain experience preparing food.",
 		"meetingLocation": "Ted Blum 4-H Center",
 		"meetingWhen": "The 2nd and 4th Wednesday of every month at 7pm.",
@@ -504,7 +503,7 @@
 		"listingWebsite": "https://4histops.org/discovery-prep",
 		"slug": "discovery-prep",
 		"name": "Discovery Prep",
-		"description": "Discover what 4-H has to offer! Members from existing 4-H clubs will lead hands-on activities with our youngest 4-H members.",
+		"description": "Discover what 4\u2011H has to offer! Members from existing 4\u2011H clubs will lead hands-on activities with our youngest 4\u2011H members.",
 		"meetingLocation": "Ted Blum 4-H Center",
 		"meetingWhen": "The 2nd and 4th Wednesday of each month from 6:30 - 7:30pm",
 		"grades": "K-3",
@@ -524,7 +523,7 @@
 		"listingWebsite": "https://4histops.org/hawkeye-archers",
 		"slug": "hawkeye-archers",
 		"name": "Hawkeye Archers",
-		"description": "At Hawkeye Archers, we focus on archery equipment and training.\u00a0 The goal of our program is to create a strong archery foundation which will be tracked and monitored by score production.\u00a0 As a young developing archer, you will learn the tools to be successful along with tracking and monitoring your performance by score progress.\u00a0 Members will learn core foundations and have the opportunity to grow and succeed at the county, state and hopefully one day the nation 4-H level.\u00a0 Archers will also learn team work, community service, public speaking as well as important social skills.\u00a0 We look forward to growing the sport of archery together.",
+		"description": "At Hawkeye Archers, we focus on archery equipment and training.\u00a0 The goal of our program is to create a strong archery foundation which will be tracked and monitored by score production.\u00a0 As a young developing archer, you will learn the tools to be successful along with tracking and monitoring your performance by score progress.\u00a0 Members will learn core foundations and have the opportunity to grow and succeed at the county, state and hopefully one day the nation 4\u2011H level.\u00a0 Archers will also learn team work, community service, public speaking as well as important social skills.\u00a0 We look forward to growing the sport of archery together.",
 		"meetingLocation": "Ted Blum 4-H Center",
 		"meetingWhen": "2nd, 3rd and 4th Tuesdays of the month at 7 pm",
 		"grades": "4-13",
@@ -554,7 +553,7 @@
 		"listingWebsite": "https://4histops.org/proud-2b-prep",
 		"slug": "proud-2b-prep",
 		"name": "Proud 2B Prep",
-		"description": "Explore some of the many different project areas available through 4-H, cook and do craft projects.",
+		"description": "Explore some of the many different project areas available through 4\u2011H, cook and do craft projects.",
 		"meetingLocation": "Ted Blum 4-H Center",
 		"meetingWhen": "The 2nd and 4th Mondays of the month at 6:30 pm",
 		"grades": "K-3",
@@ -583,7 +582,7 @@
 	{
 		"listingWebsite": "https://4histops.org/4h-gokart-club",
 		"slug": "4h-gokart-club",
-		"name": "4-H Go-Kart Club",
+		"name": "4\u2011H Go-Kart Club",
 		"description": "Members learn about the mechanics, driving skills and safety of go-karts, with an emphasis on sportsmanship and teamwork.",
 		"meetingLocation": "Ted Blum 4-H Center",
 		"meetingWhen": "The 1st & 3rd Wednesday of every month at 7:30pm",
@@ -611,19 +610,9 @@
 		"tent": "rc-cars"
 	},
 	{
-		"listingWebsite": "https://4histops.org/somerset-sentinels-rocket-club",
-		"slug": "somerset-sentinels-rocket-club",
-		"name": "Rocket Club",
-		"description": "Members learn about the principles of rocketry and how to construct a flying model rocket while learning the importance of safety, patience and experience.",
-		"meetingLocation": "Ted Blum 4-H Center",
-		"meetingWhen": "The 2nd Wednesday of every month at 7:30pm",
-		"grades": "2-13",
-		"tent": "mechanical-sciences"
-	},
-	{
 		"listingWebsite": "https://4histops.org/somerset-4h-trainmasters",
 		"slug": "somerset-4h-trainmasters",
-		"name": "Somerset 4-H Trainmasters",
+		"name": "Somerset 4\u2011H Trainmasters",
 		"description": "By working with Hi-Rail model railroads, members learn the skills and joy of basic carpentry, safe low-voltage wiring, cooperation and teamwork and creativity. The project emphasizes the historical and geographical impact of trains.",
 		"meetingLocation": "Ted Blum 4-H Center",
 		"meetingWhen": "The 2nd and 4th Wednesday of every month at 7pm",
@@ -633,7 +622,7 @@
 	{
 		"listingWebsite": "https://4histops.org/4h-beekeeping-club",
 		"slug": "4h-beekeeping-club",
-		"name": "4-H Beekeeping Club",
+		"name": "4\u2011H Beekeeping Club",
 		"description": "Members learn all about bee keeping, the importance of key pollinators, honey and bee behavior.",
 		"meetingLocation": "Ted Blum 4-H Center",
 		"meetingWhen": "The 2nd and 4th Tuesday of every month at 6:30 pm",
@@ -643,8 +632,8 @@
 	{
 		"listingWebsite": "https://4histops.org/garden-and-bee-club",
 		"slug": "garden-and-bee-club",
-		"name": "4-H Garden & Bee Club",
-		"description": "Members learn about organic flower and vegetable gardening by planting and maintaining the 4-H garden. Members who elect the optional beekeeping project will learn about bee keeping by assisting in the 4-H apiary, as well as the importance of pollinators, honey and other products from the hive.",
+		"name": "4\u2011H Garden & Bee Club",
+		"description": "Members learn about organic flower and vegetable gardening by planting and maintaining the 4\u2011H garden. Members who elect the optional beekeeping project will learn about bee keeping by assisting in the 4\u2011H apiary, as well as the importance of pollinators, honey and other products from the hive.",
 		"meetingLocation": "Ted Blum 4-H Center",
 		"meetingWhen": "The 1st and 3rd Monday of every month at 6:30 pm",
 		"grades": "4-13",

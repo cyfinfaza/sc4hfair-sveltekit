@@ -3,6 +3,7 @@
 	import Layout from 'components/Layout.svelte';
 
 	console.log($page.error);
+	// todo: implement proper error catching to populate this page
 </script>
 
 <Layout title="Error">
@@ -10,8 +11,8 @@
 		<h1>404: Not found</h1>
 		<p>You just hit a route that doesn't exist... the sadness.</p>
 	{:else}
-		<h1>{$page.error.name}</h1>
-		<pre style="overflow-x: auto; opacity: 0.75;">{$page.error.stack.replace(/ {4}/g, '\t')}</pre>
+		<h1>{$page.error.name || $page.error.message}</h1>
+		<pre style="overflow-x: auto; opacity: 0.75;">{$page.error.stack?.replace(/ {4}/g, '\t')}</pre>
 	{/if}
 	<p>If you weren't expecting this to happen, <a href="/feedback">send us a message</a>.</p>
 </Layout>

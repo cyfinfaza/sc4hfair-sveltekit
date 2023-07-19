@@ -6,17 +6,17 @@
 	export let sponsor;
 	let sponsors = getContext('sponsors');
 
-	const DEFAULT_SPONSOR_DESCRIPTION = 'The 4-H fair is made possible by our sponsors.';
+	const DEFAULT_SPONSOR_DESCRIPTION = 'The 4‑H fair is made possible by our sponsors.';
 
 	$: {
 		if (!sponsor) {
-			let chosenTier = Math.random();
-			if (chosenTier < 0.45) chosenTier = 'gold'; // 45% chance
-			else if (chosenTier < 0.8) chosenTier = 'silver'; // 35% chance
-			else chosenTier = 'bronze'; // 20% chance
-			let filteredSponsors = sponsors.filter((ad) => ad.tier === chosenTier);
+			// let chosenTier = Math.random();
+			// if (chosenTier < 0.45) chosenTier = 'gold'; // 45% chance
+			// else if (chosenTier < 0.8) chosenTier = 'silver'; // 35% chance
+			// else chosenTier = 'bronze'; // 20% chance
+			// let filteredSponsors = sponsors.filter((ad) => ad.tier === chosenTier);
 
-			sponsor = filteredSponsors[Math.floor(Math.random() * filteredSponsors.length)];
+			sponsor = sponsors[Math.floor(Math.random() * sponsors.length)];
 		}
 	}
 </script>
