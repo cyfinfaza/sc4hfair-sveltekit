@@ -24,6 +24,9 @@ clubDataOverrides = {
 		"meeting_when": "Every first and third Friday from 7pm to 9pm",
 		"grades": "Mainly 7-12",
 		"clubWebsite": "https://4hcomputers.club"
+	},
+	'prep-lego-maniacs': {
+		"grades": "K-3",
 	}
 }
 
@@ -77,15 +80,16 @@ for clubListing in ['https://4histops.org/clubs', 'https://4histops.org/4-h-prep
 				data = {
 					'listingWebsite': listingWebsite,
 					'slug': slug,
-					'name': cleanString(block.find('h2').text.title().replace('And', 'and')), # it's transformed to upper case so the actual value is random cases
-					'description': cleanString(block.find('p').text),
+					'name': cleanString(block.find('h2').text.title().replace('And', 'and').replace('(Prep)', '(PREP)')), # it's transformed to upper case so the actual value is random cases
+					'description': '',
 					'meetingLocation': '',
 					'meetingWhen': '',
 					'grades': '',
 				}
 
 				for field in block.find_all('p'):
-					value = field.text.strip().split(':')
+					text = field.text.strip()
+					value = text.split(':')
 					key = value.pop(0).lower()
 					value = cleanString(':'.join(value).strip())
 
@@ -95,12 +99,17 @@ for clubListing in ['https://4histops.org/clubs', 'https://4histops.org/4-h-prep
 						short = re.search(r'^(K|\d{1,2})\s?-\s?(\d{1,2})$', value) # formats things like "K - 12" or "1 -3"
 						if short != None: value = short.group(1) + '-' + short.group(2)
 						data['grades'] = value
+					elif key == 'description':
+						pass # broken 4h website thing
+					elif 'not accepting new members' not in text.lower():
+						# another part of the description probably, but ignore not accepting new members as the fair/next year is later
+						data['description'] = data['description'] + '\n\n' + text
 
 				if slug in clubDataOverrides:
 					data.update(clubDataOverrides[slug])
 
-				if slug in clubsToTents:
-					data['tent'] = clubsToTents[slug]
+				if data['slug'] in clubsToTents:
+					data['tent'] = clubsToTents[data['slug']]
 
 				doneSlugs.append(slug)
 				clubData.append(data)

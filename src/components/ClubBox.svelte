@@ -22,7 +22,13 @@
 
 <div class="clubEntry" id={club.slug} class:targeted={autoTarget} bind:this={div}>
 	<h2>{club.name}</h2>
-	<SvelteMarkdown renderers={{ image: null }} source={club.description} />
+	<div class="description">
+		<SvelteMarkdown
+			renderers={{ image: null }}
+			source={club.description}
+			options={{ mangle: false }}
+		/>
+	</div>
 	<div class="actionButtonsPanel">
 		{#if club.tent}
 			<LinkButton label="Map" icon="place" href={`/map?locate=${club.tent}`} lightFont />
@@ -64,7 +70,8 @@
 			border: 2px solid var(--accent);
 		}
 
-		> :global(*) {
+		> :global(*),
+		> .description > :global(*) {
 			margin: 0;
 		}
 
@@ -72,22 +79,22 @@
 			text-transform: uppercase;
 		}
 
-		> :global(p) {
+		> .description {
 			/* height: 64px; */
 			width: calc(100% - var(--entry-padding) * 2);
 			position: absolute;
-		}
 
-		> :global(p):before {
-			content: '';
-			width: 100%;
-			height: 100%;
-			position: absolute;
-			left: 0;
-			top: 0;
-			background: linear-gradient(transparent 20px, var(--light) 98px);
-			/* TODO make this also have a nice transition */
-			transition: background var(--theme-transition);
+			&:before {
+				content: '';
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				left: 0;
+				top: 0;
+				background: linear-gradient(transparent 20px, var(--light) 98px);
+				/* TODO make this also have a nice transition */
+				transition: background var(--theme-transition);
+			}
 		}
 	}
 

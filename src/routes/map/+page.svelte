@@ -86,6 +86,7 @@
 				}
 			);
 			previouslySelectedFeature = selectedFeature;
+			// todo: have this already mapped in a compact way (object of events/clubs in tent)
 			filteredEventData = data.events.filter(
 				(event) => event.tent === selectedFeature?.properties.slug && eventIsFuture(event)
 			);

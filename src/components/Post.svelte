@@ -9,7 +9,11 @@
 
 <div class="container" style:animation-delay={index * 0.1 + 's'}>
 	<h3 class="title">{data.title}</h3>
-	<SvelteMarkdown source={data.contentText} renderers={{ image: ContentfulImage }} />
+	<SvelteMarkdown
+		source={data.contentText}
+		renderers={{ image: ContentfulImage }}
+		options={{ mangle: false }}
+	/>
 	<DateTime date={data.sys.publishedAt} fromNow withTitle />
 </div>
 

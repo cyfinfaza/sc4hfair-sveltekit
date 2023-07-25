@@ -69,7 +69,7 @@
 		{/if}
 	</div>
 	<div class="clubDescription">
-		<SvelteMarkdown source={club.description} />
+		<SvelteMarkdown source={club.description} options={{ mangle: false }} />
 	</div>
 	<p><strong>Where:</strong> {club.meetingLocation}</p>
 	<p><strong>When:</strong> {club.meetingWhen}</p>
