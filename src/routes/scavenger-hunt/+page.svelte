@@ -73,6 +73,8 @@
 			console.error(e);
 			compatible = false;
 		}
+
+		() => qrScanner.destroy();
 	});
 
 	$: if (compatible) {

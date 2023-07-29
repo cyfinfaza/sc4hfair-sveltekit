@@ -1,4 +1,5 @@
 <script>
+	import { version } from '$app/environment';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import { isOnline } from 'logic/stores.js';
@@ -34,7 +35,7 @@
 		formData.append('entry.1901667750', name);
 		formData.append('entry.614631811', email);
 		formData.append('entry.1550740052', comment);
-		formData.append('entry.118251261', `${__COMMIT__}/${__BRANCH__}`);
+		formData.append('entry.118251261', `${version}/${__BRANCH__}`);
 		formData.append('entry.87818926', navigator.userAgent);
 
 		fetch(

@@ -59,14 +59,15 @@
 			</h3>
 			{#if event.endTime}
 				<p>
-					<DateTime date={event.time} duration={event.endTime} /> long
+					<!-- <DateTime date={event.time} duration={event.endTime} /> long -->
+					ends <DateTime date={event.endTime} calendar />
 				</p>
 			{/if}
 		</div>
 		<div class="buttonPanel">
 			{#if event.tent && event.tent !== '---'}
 				<LinkButton
-					label={tentSlugs[event.tent] || event.tent}
+					label={(event.near ? 'Near ' : '') + (tentSlugs[event.tent] || event.tent)}
 					disabled={!tentSlugs[event.tent]}
 					icon="place"
 					href={`/map?locate=${event.tent}`}

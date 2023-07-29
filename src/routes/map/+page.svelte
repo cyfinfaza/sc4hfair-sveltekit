@@ -175,6 +175,8 @@
 			console.log(selectedFeature, feature);
 			selectedFeature = feature;
 		});
+
+		return () => map.remove();
 	});
 </script>
 

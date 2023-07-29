@@ -21,8 +21,7 @@ sw.addEventListener('install', function (event) {
 
 			console.log('PRECACHE SIZE', PRECACHE.length);
 
-			let toCache = PRECACHE,
-				toUncache = [];
+			let toCache = PRECACHE;
 			const existingKeys = await cache.keys();
 
 			for (const req of existingKeys) {
@@ -31,28 +30,16 @@ sw.addEventListener('install', function (event) {
 				if (immutable && toCache.includes(url.pathname)) {
 					// immutable files are hashed, we can skip caching them again
 					toCache.splice(toCache.indexOf(url.pathname), 1);
-				} else if (url.origin === location.origin && !toCache.includes(url.pathname)) {
-					// we can remove them from the cache if they are no longer in the precache
-					await cache.delete(req);
-					toUncache.push(req.url);
 				}
 			}
 
 			console.log('PRECACHE SIZE REDUCED TO', toCache.length);
-			console.log('UNCACHED', toUncache.length, 'OLD FILES', toUncache);
 
 			try {
 				await cache.addAll(toCache);
 				console.log('PRECACHE COMPLETE');
 			} catch (e) {
 				console.log('PRECACHE FAILED: ', e);
-			}
-
-			try {
-				// remove old cache from v1 of the app
-				await caches.delete('offline-cache-v1');
-			} catch (e) {
-				console.log("didn't delete v1 cache", e);
 			}
 		})()
 	);
@@ -64,14 +51,42 @@ sw.addEventListener('message', (event) => {
 	}
 });
 
-sw.addEventListener('activate', async () => {
-	// ensure we are never running any old versions
-	// after we've taken over, iterate over all the current clients (windows)
-	const tabs = await sw.clients.matchAll({ type: 'window' });
-	tabs.forEach((tab) => {
-		// and refresh each one of them
-		tab.navigate(tab.url);
-	});
+sw.addEventListener('activate', (event) => {
+	console.log('SW ACTIVATED');
+	event.waitUntil(
+		// we can do all of these maintenance tasks in parallel
+		Promise.allSettled([
+			sw.clients.claim(),
+
+			(async () => {
+				// ensure we are never running any old versions
+				// after we've taken over, iterate over all the current clients (windows)
+				const tabs = await sw.clients.matchAll({ type: 'window' });
+				tabs.forEach((tab) => {
+					// and refresh each one of them
+					tab.navigate(tab.url);
+				});
+			})(),
+
+			// does this work?
+			(async () => {
+				const cache = await caches.open(CACHE_NAME);
+				let toUncache = [];
+				for (const req of await cache.keys()) {
+					const url = new URL(req.url);
+					if (url.origin === location.origin && !PRECACHE.includes(url.pathname)) {
+						// we can remove them from the cache if they are no longer in the precache
+						toUncache.push(req.url);
+						await cache.delete(req);
+					}
+				}
+				console.log('UNCACHED', toUncache.length, 'OLD FILES', toUncache);
+			})(),
+
+			// remove old cache from v1 of the app
+			caches.delete('offline-cache-v1'),
+		])
+	);
 });
 
 function cacheFirst(event, revalidateEtag = false) {

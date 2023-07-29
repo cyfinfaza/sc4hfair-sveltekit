@@ -12,13 +12,6 @@
 	export let data;
 	setContext('sponsors', data?.sponsors || []);
 
-	// force reload on navigation if app can be updated
-	beforeNavigate(({ willUnload, to }) => {
-		if ($updated && !willUnload && to?.url) {
-			location.href = to.url.href;
-		}
-	});
-
 	/** @type {ServiceWorkerRegistration|undefined} */
 	let swRegistration;
 
@@ -28,7 +21,7 @@
 		swRegistration = await navigator.serviceWorker.getRegistration();
 		if (!swRegistration) return;
 
-		swRegistration.addEventListener('updatefound', () => {
+		const handleSwUpdate = () => {
 			console.log('service worker update detected!');
 			swRegistration.installing.addEventListener(
 				'statechange',
@@ -42,17 +35,28 @@
 				},
 				{ once: true }
 			);
-		});
+		};
+		swRegistration.addEventListener('updatefound', handleSwUpdate);
+
+		() => {
+			// cleanup
+			swRegistration?.removeEventListener('updatefound', handleSwUpdate);
+		};
+	});
+
+	const skipWaiting = () => swRegistration?.waiting?.postMessage({ type: 'SKIP_WAITING' }); // ask for the new sw to take over & reload us
+
+	// force reload on navigation if app can be updated
+	beforeNavigate(({ willUnload, to }) => {
+		if ($updated && !willUnload && to?.url) {
+			skipWaiting();
+			location.href = to.url.href;
+		}
 	});
 </script>
 
 <slot />
 
-<Modal
-	show={$updated}
-	on:confirm={() => {
-		swRegistration?.waiting?.postMessage({ type: 'SKIP_WAITING' }); // ask for the new sw to take over & reload us
-	}}
->
+<Modal show={$updated} on:confirm={skipWaiting}>
 	<p>New version of the app is available. Refresh now?</p>
 </Modal>

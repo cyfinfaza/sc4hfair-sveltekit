@@ -9,12 +9,21 @@ const query = `{
 			}
 			title
 			time
+			endTime
 			tent
+			near
 		}
 	}
 }`;
 
 export async function load() {
 	const resp = await queryContentful(query);
-	return { events: resp.scheduledEventCollection?.items };
+	/** @type {str[]} */
+	const events = resp.scheduledEventCollection?.items;
+
+	const eventTentsList = ['All', ...new Set(events.map((event) => event.tent))].filter(
+		(tent) => tent && tent !== '---'
+	);
+
+	return { events, eventTentsList };
 }

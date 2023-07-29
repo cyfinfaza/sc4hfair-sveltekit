@@ -70,7 +70,7 @@
 	}
 </script>
 
-<time datetime={dateO} title={withTitle && dateO.toFormat(format)}>
+<time datetime={dateO} title={withTitle ? dateO.toFormat(format) : null}>
 	{#if relative}
 		{#key $updateStore}
 			{timeString}

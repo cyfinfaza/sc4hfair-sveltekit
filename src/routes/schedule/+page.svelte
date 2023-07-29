@@ -9,16 +9,6 @@
 
 	export let data;
 
-	const eventTentsList = data.events.reduce(
-		(last, current) => {
-			if (last.indexOf(current.tent) < 0 && current.tent && current.tent !== '---') {
-				return [...last, current.tent];
-			}
-			return last;
-		},
-		['All']
-	);
-
 	let selectedTent = 'All';
 	let showingPast = false;
 	let searchQuery = '';
@@ -61,7 +51,7 @@
 	<div class="filterOptions">
 		<p>Filter:</p>
 		<select bind:value={selectedTent} name="Tent">
-			{#each eventTentsList as tent}
+			{#each data.eventTentsList as tent}
 				<option value={tent} key={tent}>
 					{tentSlugs[tent] || tent}
 				</option>

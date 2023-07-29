@@ -16,14 +16,14 @@
 	const SITE_NAME = 'Somerset County 4‑H Fair';
 	const AUTHOR = 'Somerset County 4‑H';
 	const animationDuration = 150;
-
-	onMount(() => {
-		window.addEventListener('keydown', (e) => {
-			if (e.key === 'm' && (e.ctrlKey || e.metaKey))
-				document.querySelector('#menuArea :is(input, button, a)').focus();
-		});
-	});
 </script>
+
+<svelte:window
+	on:keydown={(e) => {
+		if (e.key === 'm' && (e.ctrlKey || e.metaKey))
+			document.querySelector('#menuArea :is(input, button, a)').focus();
+	}}
+/>
 
 <svelte:head>
 	<title>{title ? title + ' | ' : ''} {SITE_NAME}</title>
