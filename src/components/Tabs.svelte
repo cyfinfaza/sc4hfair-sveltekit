@@ -2,7 +2,7 @@
 	export let tabs;
 	let actualTabs = tabs.filter((tab) => tab.enabled ?? true);
 	let selectedTab = 0;
-	console.log(tabs);
+	// console.log(tabs);
 </script>
 
 {#if actualTabs.length > 0}

@@ -2,7 +2,7 @@
 	import mapboxgl from 'mapbox-gl';
 	import 'mapbox-gl/dist/mapbox-gl.css';
 	import polylabel from 'polylabel';
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 
 	import DateTime from 'components/DateTime.svelte';
 	import Layout from 'components/Layout.svelte';
@@ -28,42 +28,38 @@
 	// location of the fair to center to
 	const fairLng = -74.677043,
 		fairLat = 40.577636,
-		fairZoom = 16;
+		fairZoom = 17;
 
 	// mapbox
-	let /** @type {HTMLDivElement} */
-		mapContainer,
-		/** @type {import('mapbox-gl').Map} */
-		map,
+	let /** @type {HTMLDivElement} */ mapContainer,
+		/** @type {mapboxgl.Map} */ map,
 		isMapLoaded = false;
 
 	// user locating
-	/** @type {import('mapbox-gl').GeolocateControl} */
-	let geolocate,
-		trackUserLocationActive = false;
+	let /** @type {mapboxgl.GeolocateControl} */ geolocate,
+		trackUserLocationActive = false,
+		trackUserLocationRecenter = false;
 
 	// feature popup info
-	let selectedFeature = null,
-		previouslySelectedFeature = null,
-		filteredEventData = [],
-		filteredClubData = [];
+	let /** @type {mapboxgl.MapboxGeoJSONFeature} */ selectedFeature = null,
+		/** @type {mapboxgl.MapboxGeoJSONFeature} */ previouslySelectedFeature = null,
+		filteredEventData = null,
+		filteredClubData = null;
 
 	let easterEggCount = 0;
 
 	const mapboxColorThemes = {
-		light: mapbox_theme_light,
-		dark: mapbox_theme_dark,
+		'theme-light': mapbox_theme_light,
+		'theme-dark': mapbox_theme_dark,
 	};
-
-	function changeTheme(theme) {
-		const themeData = mapboxColorThemes[{ 'theme-light': 'light', 'theme-dark': 'dark' }[theme]];
-		themeData.forEach((property) => {
+	$: if (isMapLoaded) {
+		mapboxColorThemes[$theme].forEach((property) => {
 			map.setPaintProperty(...property);
 		});
 	}
 
 	$: if (isMapLoaded) {
-		previouslySelectedFeature &&
+		if (previouslySelectedFeature) {
 			map.setFeatureState(
 				{
 					source: previouslySelectedFeature.source,
@@ -74,6 +70,7 @@
 					click: false,
 				}
 			);
+		}
 		if (selectedFeature) {
 			map.setFeatureState(
 				{
@@ -86,13 +83,10 @@
 				}
 			);
 			previouslySelectedFeature = selectedFeature;
-			// todo: have this already mapped in a compact way (object of events/clubs in tent)
-			filteredEventData = data.events.filter(
-				(event) => event.tent === selectedFeature?.properties.slug && eventIsFuture(event)
-			);
-			filteredClubData = data.clubs.filter(
-				(club) => club.tent === selectedFeature?.properties.slug
-			);
+
+			let slug = selectedFeature?.properties.slug;
+			filteredEventData = data.eventsByTent[slug]?.filter((event) => eventIsFuture(event));
+			filteredClubData = data.clubsByTent[slug];
 		} else {
 			previouslySelectedFeature = null;
 		}
@@ -124,6 +118,7 @@
 			console.warn('No feature found for slug:', toLocate);
 		}
 	}
+
 	onMount(() => {
 		if (map) return; // Initialize map only once
 		map = new mapboxgl.Map({
@@ -136,14 +131,16 @@
 
 		map.on('load', (_) => {
 			isMapLoaded = true;
-			changeTheme($theme);
-			theme.subscribe((next) => {
-				changeTheme(next);
-			});
 
 			// Locate a tent by its slug
 			let toLocate = new URLSearchParams(window.location.search).get('locate');
 			if (toLocate) selectFeature(toLocate);
+		});
+
+		map.on('click', sourceLayerId, (e) => {
+			const feature = e.features[0];
+			console.log(selectedFeature, feature);
+			selectedFeature = feature;
 		});
 
 		window.map = map;
@@ -155,26 +152,23 @@
 			trackUserLocation: true,
 			showUserHeading: true,
 		});
-
 		geolocate.on('trackuserlocationstart', () => {
 			trackUserLocationActive = true;
+			trackUserLocationRecenter = false;
 		});
 		geolocate.on('trackuserlocationend', () => {
-			trackUserLocationActive = false;
+			// this event is fired when the map moves as the button turns into one that recenters on the user
+			if (geolocate._watchState === 'OFF') {
+				trackUserLocationActive = false; // actually stopping for realz
+				trackUserLocationRecenter = false;
+			} else trackUserLocationRecenter = true;
 		});
-
 		map.addControl(geolocate);
 
 		const scale = new mapboxgl.ScaleControl({
 			unit: 'imperial',
 		});
 		map.addControl(scale);
-
-		map.on('click', sourceLayerId, (e) => {
-			const feature = e.features[0];
-			console.log(selectedFeature, feature);
-			selectedFeature = feature;
-		});
 
 		return () => map.remove();
 	});
@@ -196,8 +190,16 @@
 			acrylic
 		/>
 		<LinkButton
-			label={trackUserLocationActive ? 'Stop locating me' : 'Locate me'}
-			icon={trackUserLocationActive ? 'location_disabled' : 'my_location'}
+			label={trackUserLocationRecenter
+				? 'Center on me'
+				: trackUserLocationActive
+				? 'Stop locating me'
+				: 'Locate me'}
+			icon={trackUserLocationRecenter
+				? 'gps_not_fixed'
+				: trackUserLocationActive
+				? 'gps_off'
+				: 'gps_fixed'}
 			on:click={() => {
 				geolocate.trigger();
 			}}
@@ -210,10 +212,10 @@
 		class="tentInfo"
 		class:hidden={!selectedFeature}
 		aria-hidden={!selectedFeature}
-		class:short={filteredEventData.length === 0 && filteredClubData.length === 0}
+		class:short={!filteredEventData?.length && !filteredClubData?.length}
 	>
 		<div>
-			<h2 class="tentInfoHeading">
+			<h2>
 				{selectedFeature?.properties.name || selectedFeature?.properties.slug || '-'}
 				<LinkButton
 					label="Close"
@@ -227,18 +229,18 @@
 			{#key selectedFeature}
 				<Tabs
 					tabs={[
-						{ key: 'events', enabled: filteredEventData.length > 0, name: 'Events' },
-						{ key: 'clubs', enabled: filteredClubData.length > 0, name: 'Clubs' },
+						{ key: 'events', enabled: filteredEventData?.length > 0, name: 'Events' },
+						{ key: 'clubs', enabled: filteredClubData?.length > 0, name: 'Clubs' },
 					]}
 					let:key
 				>
 					{#if key === 'events'}
-						{#if filteredEventData.length}
+						{#if filteredEventData?.length}
 							<ul>
 								{#each filteredEventData as event}
 									<li key={event.id}>
 										<a href={'/schedule#' + event.id}>{event.title}</a>
-										<small>(<DateTime date={event.time} />)</small>
+										<small>(<DateTime date={event.time} calendar />)</small>
 									</li>
 								{/each}
 							</ul>
@@ -246,7 +248,7 @@
 							<p>No future events found</p>
 						{/if}
 					{:else if key === 'clubs'}
-						{#if filteredClubData.length}
+						{#if filteredClubData?.length}
 							<ul>
 								{#each filteredClubData as club}
 									<li key={club.slug}>
@@ -311,7 +313,9 @@
 			height: auto;
 		}
 
+		pointer-events: none;
 		> * {
+			pointer-events: auto;
 			background-color: var(--light-blur);
 			backdrop-filter: var(--backdrop-blur);
 			// background: var(--light);
@@ -330,14 +334,14 @@
 				margin: 0;
 			}
 		}
-	}
 
-	.tentInfoHeading {
-		display: flex;
-		justify-content: space-between;
-		gap: 12px;
-		align-items: center;
-		width: 100%;
+		h2 {
+			display: flex;
+			justify-content: space-between;
+			gap: 12px;
+			align-items: center;
+			width: 100%;
+		}
 	}
 
 	// @media screen and (max-width: 700px) {

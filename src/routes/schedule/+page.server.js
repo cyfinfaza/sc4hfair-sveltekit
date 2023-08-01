@@ -18,12 +18,10 @@ const query = `{
 
 export async function load() {
 	const resp = await queryContentful(query);
-	/** @type {str[]} */
 	const events = resp.scheduledEventCollection?.items;
 
-	const eventTentsList = ['All', ...new Set(events.map((event) => event.tent))].filter(
-		(tent) => tent && tent !== '---'
-	);
+	/** @type {string[]} */
+	const eventTentsList = ['All', ...new Set(events.map((event) => event.tent))].filter(Boolean);
 
 	return { events, eventTentsList };
 }
