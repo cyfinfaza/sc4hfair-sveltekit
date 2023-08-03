@@ -124,9 +124,11 @@ function cacheFirst(event, revalidateEtag = false) {
 					resp = await fetch(event.request);
 				} catch (e) {
 					console.log('FETCH ERROR: ', e);
-					// fixme: this is broken as sveltekit's routing doesn't trigger this
+					// this is broken as sveltekit's routing doesn't trigger this
 					// we could hook into the router and force the navigation if we wanted
-					// https://github.com/sveltejs/kit/issues/2570 for some reference
+					// (https://github.com/sveltejs/kit/issues/2570 for some reference)
+					// this page is only for when something goes really wrong
+					// as all real pages in the app should already have offline support
 					if (event.request.mode === 'navigate') return cache.match('/offline');
 					else return resp;
 				}
@@ -182,9 +184,16 @@ if (prerendered.length !== 0) {
 			url.pathname === '/_app/version.json'
 		) {
 			networkFirst(event);
-		} else if (url.pathname.startsWith('/_app/immutable/')) {
-			cacheFirst(event, false); // no revalidate, as these assets are immutable (versioned in url)
+		} else if (
+			url.pathname.startsWith('/_app/immutable/') || // assets are immutable (versioned in url)
+			// any other assets served as part of the app bundle, all need to be the same version
+			// having misversioned assets will cause pages to crash
+			// these will be updated in the bulk precache when the app is updated
+			url.hostname === sw.location.hostname
+		) {
+			cacheFirst(event, false);
 		} else {
+			// any other random assets that the app loads are cachable
 			cacheFirst(event, true); // stale while etag revalidate
 		}
 	});
