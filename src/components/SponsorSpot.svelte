@@ -49,6 +49,7 @@
 					disabled={!$isOnline}
 					label="Visit"
 					icon="open_in_new"
+					external
 					headerSmall
 					noCloseHeader
 				/>

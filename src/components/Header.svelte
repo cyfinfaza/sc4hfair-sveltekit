@@ -64,13 +64,14 @@
 					href="/feedback"
 				/>
 				<LinkButton headerSmall label="Fair sponsors" icon="monetization_on" href="/sponsors" />
-				<LinkButton headerSmall disabled={!$isOnline} label="About 4‑H" href="https://4histops.org">
+				<!-- <LinkButton headerSmall disabled={!$isOnline} label="About 4‑H" href="https://4histops.org">
 					<svelte:fragment slot="iconElement">
 						<FourH
 							style="height: 100%; fill: currentColor; transition: fill var(--theme-transition);"
 						/>
 					</svelte:fragment>
-				</LinkButton>
+				</LinkButton> -->
+				<LinkButton headerSmall label="Links" icon="link" href="/links" />
 			</div>
 			<div class="dqpmdptSpot">
 				<SponsorSpot />

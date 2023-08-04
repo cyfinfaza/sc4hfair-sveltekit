@@ -16,6 +16,7 @@
 	export let alert = false; // blinking yellow border
 	export let active = false; // green background
 	export let danger = false; // red background
+	export let external = false; // open link in new tab
 	export let props = {}; // additional props for the button element
 
 	const dispatch = createEventDispatcher();
@@ -44,6 +45,7 @@
 	class:active
 	class:danger
 	disabled={disabled || null}
+	target={external ? '_blank' : null}
 	{...props}
 >
 	{#if icon}
