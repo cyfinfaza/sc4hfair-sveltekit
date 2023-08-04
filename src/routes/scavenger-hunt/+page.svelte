@@ -16,11 +16,14 @@
 	const getIndexFromCode = (code) => clues.findIndex((clue) => clue.code === code);
 	const getOffsetIndexFromCode = (code) => getIndexFromCode(code) + 1;
 
+	const storageKeyPrefix = `sh_2023_`;
+
 	let atIndex = writable(0);
-	$: if ($atIndex > 0) localStorage.setItem('sh_code', clues[$atIndex - 1].code);
+	$: if ($atIndex > 0) localStorage.setItem(storageKeyPrefix + 'code', clues[$atIndex - 1].code);
 
 	let hintsUsed = writable([]);
-	$: if ($hintsUsed.length) localStorage.setItem('sh_hints', JSON.stringify($hintsUsed));
+	$: if ($hintsUsed.length)
+		localStorage.setItem(storageKeyPrefix + 'hints', JSON.stringify($hintsUsed));
 
 	setContext('sh', {
 		atIndex,
@@ -38,10 +41,10 @@
 
 	onMount(async () => {
 		if (browser) {
-			let tmpIndex = getOffsetIndexFromCode(localStorage.getItem('sh_code'));
+			let tmpIndex = getOffsetIndexFromCode(localStorage.getItem(storageKeyPrefix + 'code'));
 			if (tmpIndex) $atIndex = tmpIndex;
 
-			let hints = JSON.parse(localStorage.getItem('sh_hints'));
+			let hints = JSON.parse(localStorage.getItem(storageKeyPrefix + 'hints'));
 			if (hints && hints.length > 0) $hintsUsed = hints;
 
 			checkCode(new URLSearchParams(window.location.search).get('code'), true); // Code from a scanned URL bringing them here
