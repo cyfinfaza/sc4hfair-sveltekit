@@ -131,7 +131,7 @@ export async function subscribe(dry = false) {
 		let receivedId;
 		await Promise.race([
 			testId,
-			new Promise((_, reject) => setTimeout(reject, getPlatform() === 'ios' ? 10000 : 20000)),
+			new Promise((_, reject) => setTimeout(reject, getPlatform() === 'ios' ? 8000 : 20000)),
 		])
 			.then((id) => (receivedId = id))
 			.catch(() => {});
@@ -144,7 +144,8 @@ export async function subscribe(dry = false) {
 			if (getPlatform() === 'ios')
 				return {
 					...data,
-					message: "If you didn't receive a test notification, try resubscribing",
+					message:
+						"If you didn't receive a test notification, try turning notifications off and back on again (iOS issues)",
 				};
 			else return { ...(await unsubscribe()), message: 'Test push not received within 20s' };
 		if (receivedId !== data.test_id)
