@@ -129,8 +129,10 @@
 		on:confirm={async () => {
 			switch (confirmReset) {
 				case 'sh':
-					localStorage.removeItem('sh_code');
-					localStorage.removeItem('sh_hints');
+					for (let i = 0; i < localStorage.length; i++) {
+						const key = localStorage.key(i);
+						if (key?.startsWith('sh_')) localStorage.removeItem(key);
+					}
 					goto('/scavenger-hunt');
 					break;
 				case 'interests':
