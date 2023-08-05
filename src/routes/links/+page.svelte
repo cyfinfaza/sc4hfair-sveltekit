@@ -15,7 +15,7 @@
 			<LinkButton icon="open_in_new" external href="https://4histops.org" label="Open link" />
 		</div>
 		<div class="box">
-			<h2>Merchandise</h2>
+			<h2>Clothing Fundraiser</h2>
 			<p>
 				Support Somerset County 4‑H by purchasing some awesome merchandise.<br />
 			</p>

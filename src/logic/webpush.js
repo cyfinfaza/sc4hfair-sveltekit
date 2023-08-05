@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
 import { isOnline } from 'logic/stores.js';
+import { getPlatform, checkIsStandalone } from './platform';
 
 export function requestNotificationPermission() {
 	return new Promise((resolve, reject) => {
@@ -47,6 +48,11 @@ export async function getSubscription() {
  */
 export async function checkNotificationStatus() {
 	if (!('Notification' in window)) {
+		if (getPlatform() === 'ios' && !checkIsStandalone())
+			return {
+				available: false,
+				message: 'Notifications are only supported when added to the home screen',
+			};
 		return {
 			available: false,
 			message: 'Notifications are not supported',

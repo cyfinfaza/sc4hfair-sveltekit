@@ -25,7 +25,7 @@ export function getPlatform() {
 
 const standaloneModes = ['standalone', 'fullscreen', 'minimal-ui'];
 /** @returns {boolean} */
-const checkIsStandalone = () =>
+export const checkIsStandalone = () =>
 	browser &&
 	(window.navigator.standalone ||
 		standaloneModes.some((mode) => window.matchMedia(`(display-mode: ${mode})`).matches));
