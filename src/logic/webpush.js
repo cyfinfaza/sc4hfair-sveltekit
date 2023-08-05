@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import { isOnline } from 'logic/stores.js';
-import { getPlatform, checkIsStandalone } from './platform';
+import { getPlatform, isStandalone, checkIsStandalone } from './platform';
 
 export function requestNotificationPermission() {
 	return new Promise((resolve, reject) => {
@@ -93,18 +93,23 @@ export async function subscribe(dry = false) {
 	const subscription = await getSubscription();
 	if (!subscription) throw new Error('Service worker subscription not found');
 
+	let testId, handleSwMessage;
 	if (!dry) {
 		// prepare to get a test message
-		var broadcast = new BroadcastChannel('push-test');
-		var resolveTestId,
-			rejectTestId,
-			testId = new Promise((resolve, reject) => {
-				resolveTestId = resolve;
-				rejectTestId = reject;
-			});
-		broadcast.onmessage = (e) => {
-			if (e.data.id) resolveTestId(e.data.id);
+		let resolveTestId, rejectTestId;
+		testId = new Promise((resolve, reject) => {
+			resolveTestId = resolve;
+			rejectTestId = reject;
+		});
+		// var broadcast = new BroadcastChannel('push-test');
+		// broadcast.onmessage = (e) => {
+		// 	if (e.data.id) resolveTestId(e.data.id);
+		// };
+		handleSwMessage = (e) => {
+			console.log(e.data);
+			if (e.data.type === 'PUSH_TEST') resolveTestId(e.data.id);
 		};
+		navigator.serviceWorker.addEventListener('message', handleSwMessage);
 	}
 
 	// send subscription to server
@@ -127,7 +132,8 @@ export async function subscribe(dry = false) {
 		await Promise.race([testId, new Promise((_, reject) => setTimeout(reject, 20000))])
 			.then((id) => (receivedId = id))
 			.catch(() => {});
-		broadcast.close(); // allow channel to be garbage collected
+		// broadcast.close(); // allow channel to be garbage collected
+		navigator.serviceWorker.removeEventListener('message', handleSwMessage);
 
 		// future: reply to server if matched and then have server add to db
 
@@ -177,4 +183,8 @@ export async function updateNotificationStatus() {
 
 isOnline.subscribe(async (online) => {
 	if (online) updateNotificationStatus();
+});
+// ios requires standalone to use notifications
+isStandalone.subscribe(async () => {
+	updateNotificationStatus();
 });

@@ -2,17 +2,12 @@
 	import LinkButton from 'components/LinkButton.svelte';
 	import { notificationStatus, subscribe, unsubscribe } from 'logic/webpush.js';
 	import { isOnline } from 'logic/stores.js';
-	import { onDestroy } from 'svelte';
 
 	// initial state
 	/** overrides button text, used while an operation (like fetch) is happening */
 	let loading = 'Loading notification status…';
 
-	const unsubStore = notificationStatus.subscribe((status) => {
-		// console.log('notificationStatus changed', status);
-		if (status.ready !== false) loading = null;
-	});
-	onDestroy(unsubStore);
+	$: if ($notificationStatus.ready !== false) loading = null;
 </script>
 
 <div class="notificationEnableButton">

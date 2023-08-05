@@ -214,23 +214,31 @@ sw.addEventListener('push', (e) => {
 			})
 		);
 	} else if (pushData.type === 'test') {
-		const broadcast = new BroadcastChannel('push-test');
 		console.log('testing push');
-		broadcast.postMessage(pushData);
-		broadcast.close(); // allow channel to be garbage collected
+		// not supported well on ios :/
+		// const broadcast = new BroadcastChannel('push-test');
+		// broadcast.postMessage(pushData);
+		// broadcast.close(); // allow channel to be garbage collected
 		e.waitUntil(
-			sw.registration.showNotification('Your notifications are working!', {
-				body: 'The latest fair news will arrive here.',
-				silent: true,
-				tag: 'push-test',
-				actions: [
-					{
-						action: '/settings#notifications',
-						title: 'Notification settings',
-					},
-				],
-				...notificationOptions,
-			})
+			(async () => {
+				const clients = await sw.clients.matchAll({ includeUncontrolled: true, type: 'window' });
+				for (const client of clients) {
+					client.postMessage({ id: pushData.id, type: 'PUSH_TEST' });
+				}
+
+				await sw.registration.showNotification('Your notifications are working!', {
+					body: 'The latest fair news will arrive here.',
+					silent: true,
+					tag: 'push-test',
+					actions: [
+						{
+							action: '/settings#notifications',
+							title: 'Notification settings',
+						},
+					],
+					...notificationOptions,
+				});
+			})()
 		);
 	}
 });

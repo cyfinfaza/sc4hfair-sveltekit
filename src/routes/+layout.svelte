@@ -1,5 +1,5 @@
 <script>
-	import { browser } from '$app/environment';
+	import { browser, dev } from '$app/environment';
 	import { beforeNavigate } from '$app/navigation';
 	import { updated } from '$app/stores';
 	import { onMount, setContext } from 'svelte';
@@ -14,18 +14,25 @@
 
 	/** @type {ServiceWorkerRegistration|undefined} */
 	let swRegistration;
+	const skipWaiting = () => swRegistration?.waiting?.postMessage({ type: 'SKIP_WAITING' }); // ask for the new sw to take over & reload us
 
 	onMount(async () => {
 		if (!browser) return;
-		// https://whatwebcando.today/articles/handling-service-worker-updates/
+
 		swRegistration = await navigator.serviceWorker.getRegistration();
 		if (!swRegistration) return;
+
+		// always force update if possible
+		if (dev) skipWaiting();
+
+		// https://whatwebcando.today/articles/handling-service-worker-updates/
 
 		const handleSwUpdate = () => {
 			console.log('service worker update detected!');
 			swRegistration.installing.addEventListener(
 				'statechange',
 				() => {
+					if (dev) skipWaiting();
 					if (swRegistration.waiting && navigator.serviceWorker.controller) {
 						// there's an old sw running and a new sw waiting to install
 						// let sveltekit decide if we need to show the proompt
@@ -38,13 +45,16 @@
 		};
 		swRegistration.addEventListener('updatefound', handleSwUpdate);
 
+		// new sw has taken over
+		const reload = () => location.reload();
+		navigator.serviceWorker.addEventListener('controllerchange', reload);
+
 		() => {
 			// cleanup
 			swRegistration?.removeEventListener('updatefound', handleSwUpdate);
+			navigator.serviceWorker.removeEventListener('controllerchange', reload);
 		};
 	});
-
-	const skipWaiting = () => swRegistration?.waiting?.postMessage({ type: 'SKIP_WAITING' }); // ask for the new sw to take over & reload us
 
 	// force reload on navigation if app can be updated
 	beforeNavigate(({ willUnload, to }) => {
