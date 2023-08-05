@@ -1,4 +1,5 @@
 <script>
+	import FourH from 'assets/4h.svg?component';
 	import LinkButton from 'components/LinkButton.svelte';
 	import { getContext } from 'svelte/internal';
 	import { isOnline } from 'logic/stores.js';
@@ -10,30 +11,38 @@
 
 	$: {
 		if (!sponsor) {
-			// let chosenTier = Math.random();
-			// if (chosenTier < 0.45) chosenTier = 'gold'; // 45% chance
-			// else if (chosenTier < 0.8) chosenTier = 'silver'; // 35% chance
-			// else chosenTier = 'bronze'; // 20% chance
-			// let filteredSponsors = sponsors.filter((ad) => ad.tier === chosenTier);
+			let chosenTier = Math.random();
 
-			sponsor = sponsors[Math.floor(Math.random() * sponsors.length)];
+			// because not all tiers are used this year, split into the mainer ones
+			if (chosenTier < 0.25) chosenTier = ['sky']; // 25% but from one
+			else if (chosenTier < 0.8) chosenTier = ['gold', 'silver', 'bronze']; // 55% the rest
+			else chosenTier = ['custom', 'automobile', 'friends-family']; // 20% but from many
+
+			let filteredSponsors = sponsors.filter((ad) => chosenTier.includes(ad.tier));
+
+			sponsor = filteredSponsors[Math.floor(Math.random() * filteredSponsors.length)];
 		}
 	}
 </script>
 
 {#if sponsor}
 	<div class="container" class:listMode>
-		<picture>
-			<source srcset={`${sponsor.image.url}?w=100&fm=webp`} type="image/webp" />
-			<source srcset={`${sponsor.image.url}?w=100`} />
-			<img alt="" src={sponsor.image.url} class="sfImage" />
-		</picture>
+		{#if sponsor.image}
+			<picture>
+				<source srcset={`${sponsor.image.url}?w=100&fm=webp`} type="image/webp" />
+				<source srcset={`${sponsor.image.url}?w=100`} />
+				<img alt="" src={sponsor.image.url} class="sfImage" />
+			</picture>
+		{:else}
+			<FourH class="sfImage" style="fill: var(--accent)" />
+		{/if}
 		<div class="sfText">
 			<h2>
 				{#if !listMode}
 					<span class="disclosure">
-						{sponsor.tier ? sponsor.tier.charAt(0).toUpperCase() + sponsor.tier.slice(1) + ' ' : ''}
-						Fair Sponsor
+						{sponsor.tier
+							? (sponsor.tier === 'friends-family' ? 'FRIENDS & FAMILY' : sponsor.tier) + ' '
+							: ''}FAIR SPONSOR
 					</span>
 				{/if}
 				{sponsor.heading}
@@ -75,9 +84,12 @@
 		margin-bottom: 12px;
 	}
 
-	.sfImage {
+	:global(.sfImage) {
 		height: 100px;
-		width: 100px;
+		// width: 100px;
+		min-height: 100px;
+		min-width: 100px;
+		aspect-ratio: 1 / 1;
 		border-radius: 8px;
 		object-fit: contain;
 		background-color: white;
