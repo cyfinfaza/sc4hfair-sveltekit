@@ -202,25 +202,23 @@ if (prerendered.length !== 0) {
 const notificationOptions = { icon: '/favicon.ico', badge: '/4h-96x96.png' };
 
 sw.addEventListener('push', (e) => {
-	console.log('Push received', e);
-	const pushData = e.data.json();
-	console.log('Push data', pushData);
-	if (pushData.type === 'notification') {
-		e.waitUntil(
-			sw.registration.showNotification(pushData.data.title, {
-				body: pushData.data.body,
-				...notificationOptions,
-				...pushData.data.options,
-			})
-		);
-	} else if (pushData.type === 'test') {
-		console.log('testing push');
-		// not supported well on ios :/
-		// const broadcast = new BroadcastChannel('push-test');
-		// broadcast.postMessage(pushData);
-		// broadcast.close(); // allow channel to be garbage collected
-		e.waitUntil(
-			(async () => {
+	e.waitUntil(
+		(async () => {
+			console.log('Push received', e);
+			const pushData = e.data.json();
+			console.log('Push data', pushData);
+			if (pushData.type === 'notification') {
+				await sw.registration.showNotification(pushData.data.title, {
+					body: pushData.data.body,
+					...notificationOptions,
+					...pushData.data.options,
+				});
+			} else if (pushData.type === 'test') {
+				console.log('testing push');
+				// not supported well on ios :/
+				// const broadcast = new BroadcastChannel('push-test');
+				// broadcast.postMessage(pushData);
+				// broadcast.close(); // allow channel to be garbage collected
 				const clients = await sw.clients.matchAll({ includeUncontrolled: true, type: 'window' });
 				for (const client of clients) {
 					client.postMessage({ id: pushData.id, type: 'PUSH_TEST' });
@@ -238,9 +236,9 @@ sw.addEventListener('push', (e) => {
 					],
 					...notificationOptions,
 				});
-			})()
-		);
-	}
+			}
+		})()
+	);
 });
 
 sw.addEventListener('notificationclick', (event) => {

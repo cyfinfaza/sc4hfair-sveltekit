@@ -106,7 +106,7 @@ export async function subscribe(dry = false) {
 		// 	if (e.data.id) resolveTestId(e.data.id);
 		// };
 		handleSwMessage = (e) => {
-			console.log(e.data);
+			console.log('sw message', e.data);
 			if (e.data.type === 'PUSH_TEST') resolveTestId(e.data.id);
 		};
 		navigator.serviceWorker.addEventListener('message', handleSwMessage);
