@@ -129,7 +129,10 @@ export async function subscribe(dry = false) {
 	if (!dry) {
 		// wait for test message before giving up
 		let receivedId;
-		await Promise.race([testId, new Promise((_, reject) => setTimeout(reject, 20000))])
+		await Promise.race([
+			testId,
+			new Promise((_, reject) => setTimeout(reject, getPlatform() === 'ios' ? 10000 : 20000)),
+		])
 			.then((id) => (receivedId = id))
 			.catch(() => {});
 		// broadcast.close(); // allow channel to be garbage collected
@@ -138,7 +141,12 @@ export async function subscribe(dry = false) {
 		// future: reply to server if matched and then have server add to db
 
 		if (!receivedId)
-			return { ...(await unsubscribe()), message: 'Test push not received within 20s' };
+			if (getPlatform() === 'ios')
+				return {
+					...data,
+					message: "If you didn't receive a test notification, try resubscribing",
+				};
+			else return { ...(await unsubscribe()), message: 'Test push not received within 20s' };
 		if (receivedId !== data.test_id)
 			return { ...(await unsubscribe()), message: "Test push didn't match" };
 	}
