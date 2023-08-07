@@ -55,7 +55,6 @@
 		class={['content', forceTheme ? 'global-theme-' + forceTheme : null].filter(Boolean).join(' ')}
 		id="content"
 		class:noPadding
-		class:padTop={!noHeaderPadding}
 		class:fixedHeightContent
 		on:focusin={() => ($menuOpen = false)}
 	>
@@ -79,9 +78,6 @@
 
 	.content.noPadding {
 		padding: 0;
-	}
-	.content.padTop {
-		padding-top: var(--nav-height);
 	}
 	.content.fixedHeightContent {
 		/* height: 100vh; */

@@ -67,6 +67,7 @@
 
 <slot />
 
-<Modal show={$updated} on:confirm={skipWaiting}>
-	<p>New version of the app is available. Refresh now?</p>
+<Modal show={$updated} on:confirm={skipWaiting} closeText="Later" confirmText="Load now">
+	<h2>New version available</h2>
+	<p>A new version of the app is available. Load the new version now?</p>
 </Modal>

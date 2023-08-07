@@ -6,6 +6,8 @@
 	export let show = false;
 	export let danger = false; // when you're deleting something
 	export let confirmation = true; // false only shows the close button
+	export let closeText = null;
+	export let confirmText = null;
 
 	/** @type {HTMLDialogElement} */
 	let dialog;
@@ -44,17 +46,19 @@
 	on:click|self={() => dialog.close()}
 >
 	<form method="dialog">
-		<slot />
-		<div class="horizPanel">
+		<div class="content">
+			<slot />
+		</div>
+		<div class="horizPanel" style="justify-content: flex-end;">
 			<LinkButton
 				icon="close"
-				label={confirmation ? 'Cancel' : 'Close'}
+				label={closeText || (confirmation ? 'Cancel' : 'Close')}
 				props={{ autofocus: '', type: 'submit', formnovalidate: '' }}
 			/>
 			{#if confirmation}
 				<LinkButton
 					icon={danger ? 'delete' : 'check'}
-					label="Confirm"
+					label={confirmText || 'Confirm'}
 					props={{ type: 'submit', value: 'confirm' }}
 					{danger}
 					active={!danger}
@@ -84,13 +88,16 @@
 		border: none;
 		padding: 0;
 
+		width: calc(100% - 16px);
+		max-width: 40rem;
+
 		border-radius: 8px;
 		background-color: var(--light);
 		box-shadow: var(--button-shadow);
 		font-size: 17px;
 
 		form {
-			width: clamp(260px, 50vw, 40rem);
+			width: 100%;
 			min-height: 15vh;
 			box-sizing: border-box;
 			padding: 12px; // so clicking on the edges won't count as clicking outside
@@ -98,14 +105,18 @@
 			display: flex;
 			flex-direction: column;
 			align-items: center;
-			justify-content: center;
+			justify-content: space-between;
+			gap: 0.5em;
 
 			> :global(*) {
-				margin: 0.5em 0;
 				width: 100%;
-
-				&:last-child {
-					margin-bottom: 0;
+			}
+			.content {
+				> :global(*) {
+					&:first-child {
+						margin-top: 0;
+					}
+					margin-block: 0.5em;
 				}
 			}
 		}
