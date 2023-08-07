@@ -12,7 +12,7 @@ const PRECACHE = ['/_app/version.json', ...build, ...files, ...prerendered];
 // console.log('precache: ', PRECACHE);
 console.log('SW VERSION: ', version);
 
-sw.addEventListener('install', function (event) {
+sw.addEventListener('install', (event) => {
 	// sw.skipWaiting();
 	console.log('Service worker installing');
 	event.waitUntil(
@@ -40,6 +40,11 @@ sw.addEventListener('install', function (event) {
 				console.log('PRECACHE COMPLETE');
 			} catch (e) {
 				console.log('PRECACHE FAILED: ', e);
+			}
+
+			if (await caches.has('offline-cache-v1')) {
+				console.log('HOSTILE TAKEOVER OF APP V1');
+				await sw.skipWaiting();
 			}
 		})()
 	);

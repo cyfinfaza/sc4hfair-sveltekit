@@ -4,5 +4,6 @@
 	},
 	"cleanUrls": true,
 	"trailingSlash": false,
-	"rewrites": [{ "source": "/api/webpush/(.*)", "destination": "/api/webpush" }]
+	"rewrites": [{ "source": "/api/webpush/(.*)", "destination": "/api/webpush" }],
+	"redirects": [{ "source": "/sw.js", "destination": "/service-worker.js" }]
 }
