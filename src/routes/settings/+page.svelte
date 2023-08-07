@@ -37,7 +37,8 @@
 
 	let confirmReset = ''; // modal for confirmation
 
-	let showingAdditionalBuildInfo = dev;
+	let showingAdditionalBuildInfo = dev,
+		showDebugModal = false;
 
 	onMount(async () => {
 		client = await initSupabaseClient();
@@ -191,6 +192,7 @@
 			<!-- svelte-ignore missing-declaration -->
 			<code>{__BUILD_LOCATION__}</code>
 			<div class="horizPanel2">
+				<LinkButton icon="engineering" label="Debug" on:click={() => (showDebugModal = true)} />
 				<LinkButton
 					icon="settings_suggest"
 					label="Unregister service worker"
@@ -268,4 +270,37 @@
 			</div>
 		{/if}
 	</div>
+
+	<Modal bind:show={showDebugModal} confirmation={false}>
+		{#if showDebugModal && typeof navigator !== 'undefined'}
+			{#key showDebugModal}
+				<table>
+					<tr>
+						<td>UA</td>
+						<td>{navigator.userAgent}</td>
+					</tr>
+					<tr>
+						<td>SW</td>
+						<td>
+							{#await navigator.serviceWorker?.getRegistration()}
+								...
+							{:then reg}
+								active: {reg.active?.state}<br />
+								waiting: {reg.waiting?.state}<br />
+								installing: {reg.installing?.state}<br />
+							{:catch error}
+								{error.message}
+							{/await}
+						</td>
+					</tr>
+					<tr>
+						<td>Notif</td>
+						<td>
+							permission: {Notification.permission}<br />
+						</td>
+					</tr>
+				</table>
+			{/key}
+		{/if}
+	</Modal>
 </Layout>

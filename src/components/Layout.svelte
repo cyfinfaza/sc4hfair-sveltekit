@@ -46,6 +46,7 @@
 	</span>
 </a>
 <Header offsetContent={!noHeaderPadding && !fixedHeightContent} />
+<noscript>JavaScript is required to use this app.</noscript>
 {#key title}
 	<div
 		in:fly={{ duration: animationDuration, delay: animationDuration, y: 50, quintOut }}

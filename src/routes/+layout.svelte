@@ -59,8 +59,8 @@
 	// force reload on navigation if app can be updated
 	beforeNavigate(({ willUnload, to }) => {
 		if ($updated && !willUnload && to?.url) {
-			skipWaiting();
 			location.href = to.url.href;
+			skipWaiting();
 		}
 	});
 </script>
