@@ -72,7 +72,7 @@
 		pointer-events: painted;
 		display: flex;
 		justify-content: center;
-		scroll-margin-top: calc(var(--navbar-height) + 16px);
+		scroll-margin-top: calc(var(--nav-height) + 16px);
 		padding-top: 0;
 	}
 
@@ -80,11 +80,14 @@
 		padding: 0;
 	}
 	.content.padTop {
-		padding-top: var(--navbar-height);
+		padding-top: var(--nav-height);
 	}
 	.content.fixedHeightContent {
-		height: 100vh;
+		/* height: 100vh; */
 		overflow: hidden;
+
+		position: absolute;
+		inset: 0;
 	}
 
 	.content > div.fullWidth {

@@ -13,7 +13,8 @@ export function getPlatform() {
 	}
 
 	if (/iPad|iPhone|iPod|iOS/.test(userAgent) || navigator.vendor === 'Apple Computer, Inc.') {
-		if (/CriOS|FxiOS|EdgiOS|FBIOS/.test(userAgent)) return 'ios-unsupported';
+		if (/FBIOS/.test(userAgent)) return 'ios-unsupported';
+		if (/CriOS|FxiOS|EdgiOS/.test(userAgent)) return 'ios-other';
 
 		return 'ios';
 	}

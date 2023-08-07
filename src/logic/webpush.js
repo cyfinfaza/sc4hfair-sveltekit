@@ -1,6 +1,7 @@
 import { writable } from 'svelte/store';
 import { isOnline } from 'logic/stores.js';
 import { getPlatform, isStandalone, checkIsStandalone } from './platform';
+import { browser } from '$app/environment';
 
 export function requestNotificationPermission() {
 	return new Promise((resolve, reject) => {
@@ -48,7 +49,7 @@ export async function getSubscription() {
  */
 export async function checkNotificationStatus() {
 	if (!('Notification' in window)) {
-		if (getPlatform() === 'ios' && !checkIsStandalone())
+		if (getPlatform().startsWith('ios') && !checkIsStandalone())
 			return {
 				available: false,
 				message: 'Notifications are only supported when added to the home screen',
@@ -131,7 +132,9 @@ export async function subscribe(dry = false) {
 		let receivedId;
 		await Promise.race([
 			testId,
-			new Promise((_, reject) => setTimeout(reject, getPlatform() === 'ios' ? 8000 : 20000)),
+			new Promise((_, reject) =>
+				setTimeout(reject, getPlatform().startsWith('ios') ? 12000 : 20000)
+			),
 		])
 			.then((id) => (receivedId = id))
 			.catch(() => {});
@@ -141,7 +144,7 @@ export async function subscribe(dry = false) {
 		// future: reply to server if matched and then have server add to db
 
 		if (!receivedId)
-			if (getPlatform() === 'ios')
+			if (getPlatform().startsWith('ios'))
 				return {
 					...data,
 					message:
@@ -186,6 +189,7 @@ export async function updateNotificationStatus() {
 	try {
 		notificationStatus.set(await checkNotificationStatus());
 	} catch (e) {
+		if (!browser) return; // no notifications on server
 		notificationStatus.set({ available: false, message: e.message });
 	}
 }
