@@ -8,18 +8,14 @@
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import Tabs from 'components/Tabs.svelte';
-	import { theme } from 'logic/theming.js';
 	import { eventIsFuture } from 'logic/scheduling.js';
-
-	import mapbox_theme_light from 'data/mapbox-color-themes/theme-light';
-	import mapbox_theme_dark from 'data/mapbox-color-themes/theme-dark';
 
 	export let data;
 
 	// the source/layer that contains our features
-	const style = 'mapbox://styles/cyfinfaza/cl6idgfjs004x16p9y241804x',
+	const style = 'mapbox://styles/cyfinfaza/clksqsyk001vj01p51e7m6ode',
 		source = 'composite',
-		sourceLayer = 'Fair_Tents_2022_with_names', // the name of the tileset
+		sourceLayer = 'Fair_Tents_2023_with_names', // the name of the tileset
 		sourceLayerId = 'Tents Flat'; // the name of the layer in the style that has the tileset
 
 	mapboxgl.accessToken =
@@ -47,16 +43,6 @@
 		filteredClubData = null;
 
 	let easterEggCount = 0;
-
-	const mapboxColorThemes = {
-		'theme-light': mapbox_theme_light,
-		'theme-dark': mapbox_theme_dark,
-	};
-	$: if (isMapLoaded) {
-		mapboxColorThemes[$theme].forEach((property) => {
-			map.setPaintProperty(...property);
-		});
-	}
 
 	$: if (isMapLoaded) {
 		if (previouslySelectedFeature) {
@@ -98,12 +84,16 @@
 			filter: ['==', 'slug', slug], // check feature slug
 		});
 		if (query.length !== 0) {
+			console.log(query);
 			// assuming that the biggest id is actually the one shown because otherwise i have no idea how to get the correct one
 			let element = query.reduce((a, b) => (a.id > b.id ? a : b));
 			console.log(element, query);
 
 			map.flyTo({
-				center: polylabel(element.geometry.coordinates), // use the center of the feature
+				center:
+					typeof element.geometry.coordinates[0] === 'number'
+						? element.geometry.coordinates
+						: polylabel(element.geometry.coordinates), // use the center of the feature
 				zoom: 18.5,
 				speed: 2.7, // this is done once on page load so make it go fast
 			});
@@ -137,7 +127,7 @@
 			if (toLocate) selectFeature(toLocate);
 		});
 
-		map.on('click', sourceLayerId, (e) => {
+		map.on('click', [sourceLayerId, 'Labels'], (e) => {
 			const feature = e.features[0];
 			console.log(selectedFeature, feature);
 			selectedFeature = feature;
@@ -174,7 +164,7 @@
 	});
 </script>
 
-<Layout title="Map" noPadding noHeaderPadding fixedHeightContent fullWidth>
+<Layout title="Map" noPadding noHeaderPadding fixedHeightContent fullWidth forceTheme="dark">
 	<div class="controls">
 		<LinkButton
 			label="Center on fair"

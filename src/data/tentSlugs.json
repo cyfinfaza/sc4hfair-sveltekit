@@ -10,6 +10,7 @@
 	"dogs": "Dogs",
 	"alpacas": "Alpacas",
 	"show": "4-H Show Tent",
+	"show-mini": "Show Tent",
 	"robotics": "Robotics",
 	"herpetology": "Herpetology",
 	"garden-bees": "Garden & Bees",
@@ -42,8 +43,12 @@
 	"cotton-candy": "Cotton Candy",
 	"italian-ice": "Italian Ice",
 
+	"parking-general": "General Parking",
+	"parking-handicapped": "Handicapped Parking",
 	"restrooms-inside": "Restrooms",
 	"restrooms-porta-potty": "Restrooms",
+	"wash-rack-1": "Wash Rack",
+	"wash-rack-2": "Wash Rack",
 
 	"horse-ring-1": "Horse Ring 1",
 	"horse-ring-2": "Horse Ring 2",
@@ -51,5 +56,6 @@
 	"go-kart-track": "Go Kart Track",
 	"rc-cars-track": "RC Cars Track",
 
-	"ted-blum-center": "4-H Center"
+	"ted-blum-center": "4-H Center",
+	"park-commission-headquarters": "Park Commission Headquarters"
 }

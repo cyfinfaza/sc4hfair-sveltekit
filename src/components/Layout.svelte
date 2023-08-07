@@ -12,6 +12,7 @@
 	export let noHeaderPadding = false;
 	export let fixedHeightContent = false;
 	export let fullWidth = false;
+	export let forceTheme = null;
 
 	const SITE_NAME = 'Somerset County 4‑H Fair';
 	const AUTHOR = 'Somerset County 4‑H';
@@ -51,7 +52,7 @@
 	<div
 		in:fly={{ duration: animationDuration, delay: animationDuration, y: 50, quintOut }}
 		out:fly={{ duration: animationDuration, y: -50, quintIn }}
-		class="content"
+		class={['content', forceTheme ? 'global-theme-' + forceTheme : null].filter(Boolean).join(' ')}
 		id="content"
 		class:noPadding
 		class:padTop={!noHeaderPadding}
