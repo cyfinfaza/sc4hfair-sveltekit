@@ -94,6 +94,7 @@ sw.addEventListener('activate', (event) => {
 	);
 });
 
+/** @param {FetchEvent} event */
 function cacheFirst(event, revalidateEtag = false) {
 	event.respondWith(
 		(async function () {
@@ -113,7 +114,9 @@ function cacheFirst(event, revalidateEtag = false) {
 							if (headEtag && cacheEtag !== headEtag) {
 								console.log('REVALIDATING: ', cachedResponse.url);
 								await cache.delete(event.request);
-								await cache.add(event.request);
+								const newReq = await fetch(event.request);
+								if (newReq.ok) await cache.put(event.request, newReq.clone());
+								else console.log('REVALIDATE NOT OK: ', newReq);
 								wasRevalidated = true; // regrab the response from the cache
 							}
 						})()
@@ -137,13 +140,15 @@ function cacheFirst(event, revalidateEtag = false) {
 					if (event.request.mode === 'navigate') return cache.match('/offline');
 					else return resp;
 				}
-				event.waitUntil(cache.put(event.request, resp.clone()));
+				if (resp.ok) event.waitUntil(cache.put(event.request, resp.clone()));
+				else console.log('FETCH NOT OK: ', resp);
 				return resp;
 			}
 		})()
 	);
 }
 
+/** @param {FetchEvent} event */
 function networkFirst(event) {
 	event.respondWith(
 		(async function () {
@@ -162,12 +167,13 @@ function networkFirst(event) {
 					else return resp;
 				}
 			}
-			event.waitUntil(cache.put(event.request, resp.clone()));
+			if (resp.ok) event.waitUntil(cache.put(event.request, resp.clone()));
 			return resp;
 		})()
 	);
 }
 
+/** @param {FetchEvent} event */
 function networkOnly(event) {
 	event.respondWith(async () => fetch(event.request));
 }

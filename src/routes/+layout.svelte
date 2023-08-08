@@ -77,7 +77,7 @@
 	}}
 />
 
-<slot />
+<slot data-sveltekit-reload={true} />
 
 <Modal show={$updated} on:confirm={skipWaiting} closeText="Later" confirmText="Load now">
 	<h2>New version available</h2>
