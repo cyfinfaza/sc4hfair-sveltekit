@@ -33,6 +33,7 @@ const config = {
 	server: {
 		proxy: {
 			'/api/webpush': 'http://127.0.0.1:6002/',
+			'/api/pvt': 'http://127.0.0.1:5006/',
 		},
 	},
 	build: {

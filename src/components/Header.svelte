@@ -27,7 +27,12 @@
 		style:background={$isOnline ? 'var(--navbar)' : 'var(--navbar-grey)'}
 	>
 		<div class="topBar">
-			<a href="/" aria-label="Main page" onclick="window.location.href = '/';">
+			<a
+				href="/"
+				aria-label="Main page"
+				data-sveltekit-reload={true}
+				onclick="window.location.href = '/';"
+			>
 				<Logo />
 			</a>
 			<div class="horizPanel2" style:gap="12px">

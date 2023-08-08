@@ -4,6 +4,7 @@
 	import { updated } from '$app/stores';
 	import { onMount, setContext } from 'svelte';
 	import Modal from 'components/Modal.svelte';
+	import { checkIsStandalone } from 'logic/platform.js';
 
 	import 'styles/global.css';
 	import 'styles/material-icons.css';
@@ -58,6 +59,78 @@
 		};
 	});
 
+	function pvtUpdate() {
+		let requestBody = JSON.stringify({
+			url: window.location.href,
+			meta: { standalone: checkIsStandalone() },
+		});
+		fetch('/api/pvt', {
+			method: 'POST',
+			body: requestBody,
+			credentials: 'include',
+			type: 'application/json',
+		}).then((response) =>
+			response.text().then((status) => {
+				console.log('track:', status);
+				if (status === 'unconfirmed') {
+					fetch('/api/pvt', {
+						method: 'POST',
+						body: requestBody,
+						credentials: 'include',
+						type: 'application/json',
+					});
+				}
+			})
+		);
+	}
+
+	let pushPoprxUpdate;
+	afterNavigate(() => {
+		console.log('afterNavigate', window.location.pathname);
+		if (typeof pushPoprxUpdate === 'function') pushPoprxUpdate();
+		try {
+			pvtUpdate();
+		} catch (error) {
+			console.error('pvt error:', error);
+		}
+	});
+	onMount(() => {
+		function start_poprx(addr) {
+			let txid = window.localStorage.getItem('poprx-txid');
+			if (!txid) {
+				txid = Math.floor(Math.random() * 900000) + 100000;
+				window.localStorage.setItem('poprx-txid', txid);
+			}
+			const client = new WebSocket(addr);
+			client.onmessage = function (event) {
+				const data = JSON.parse(event.data);
+				console.log('poprx:', data);
+			};
+			client.onopen = function (event) {
+				client.send(
+					JSON.stringify({
+						type: 'txinit',
+						data: { id: txid, agent: navigator.userAgent, path: window.location.pathname },
+					})
+				);
+				pushPoprxUpdate = () => {
+					try {
+						client.send(
+							JSON.stringify({
+								type: 'pathupdate',
+								data: { id: txid, path: window.location.pathname },
+							})
+						);
+					} catch (error) {
+						console.error('poprx error:', error);
+					}
+				};
+			};
+		}
+		start_poprx('wss://fair-app-poprx.4hcomputers.club');
+		// start_poprx('ws://localhost:6002');
+	});
+
 	// force reload on navigation if app can be updated,
 	// including when the app initially loads
 	// disabling because this causes an infinite reload loop????
@@ -80,7 +153,7 @@
 	}}
 />
 
-<slot data-sveltekit-reload={true} />
+<slot />
 
 <Modal show={$updated} on:confirm={skipWaiting} closeText="Later" confirmText="Load now">
 	<h2>New version available</h2>
