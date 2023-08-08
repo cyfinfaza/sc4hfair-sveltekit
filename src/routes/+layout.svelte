@@ -1,6 +1,6 @@
 <script>
 	import { browser, dev } from '$app/environment';
-	import { beforeNavigate } from '$app/navigation';
+	import { afterNavigate } from '$app/navigation';
 	import { updated } from '$app/stores';
 	import { onMount, setContext } from 'svelte';
 	import Modal from 'components/Modal.svelte';
@@ -56,14 +56,26 @@
 		};
 	});
 
-	// force reload on navigation if app can be updated
-	beforeNavigate(({ willUnload, to }) => {
-		if ($updated && !willUnload && to?.url) {
-			location.href = to.url.href;
+	// force reload on navigation if app can be updated,
+	// including when the app initially loads
+	afterNavigate(async ({ to }) => {
+		if ((await updated.check()) && to?.url) {
 			skipWaiting();
+			location.href = to.url.href;
 		}
 	});
 </script>
+
+<svelte:window
+	on:error={(e) => {
+		e.preventDefault();
+		console.error(e);
+	}}
+	on:unhandledrejection={(e) => {
+		e.preventDefault();
+		console.error(e);
+	}}
+/>
 
 <slot />
 

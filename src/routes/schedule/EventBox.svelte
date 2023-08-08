@@ -60,7 +60,7 @@
 			{#if event.endTime}
 				<p>
 					<!-- <DateTime date={event.time} duration={event.endTime} /> long -->
-					ends <DateTime date={event.endTime} calendar />
+					ends at <DateTime date={event.endTime} format="t" />
 				</p>
 			{/if}
 		</div>
