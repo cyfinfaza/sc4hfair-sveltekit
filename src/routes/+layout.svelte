@@ -60,12 +60,13 @@
 
 	// force reload on navigation if app can be updated,
 	// including when the app initially loads
-	beforeNavigate(async ({ to, willUnload }) => {
-		if ((await updated.check()) && !willUnload && to?.url) {
-			skipWaiting();
-			location.href = to.url.href;
-		}
-	});
+	// disabling because this causes an infinite reload loop????
+	// beforeNavigate(async ({ to, willUnload }) => {
+	// 	if ((await updated.check()) && !willUnload && to?.url) {
+	// 		skipWaiting();
+	// 		location.href = to.url.href;
+	// 	}
+	// });
 </script>
 
 <svelte:window
