@@ -44,45 +44,55 @@
 
 	let easterEggCount = 0;
 
-	$: if (isMapLoaded) {
-		if (previouslySelectedFeature) {
-			map.setFeatureState(
-				{
-					source: previouslySelectedFeature.source,
-					id: previouslySelectedFeature.id,
-					sourceLayer: previouslySelectedFeature.sourceLayer,
-				},
-				{
-					click: false,
-				}
-			);
-		}
-		if (selectedFeature) {
-			map.setFeatureState(
-				{
-					source: selectedFeature.source,
-					id: selectedFeature.id,
-					sourceLayer: selectedFeature.sourceLayer,
-				},
-				{
-					click: true,
-				}
-			);
-			previouslySelectedFeature = selectedFeature;
+	$: try {
+		if (isMapLoaded) {
+			if (previouslySelectedFeature) {
+				map.setFeatureState(
+					{
+						source: previouslySelectedFeature.source,
+						id: previouslySelectedFeature.id,
+						sourceLayer: previouslySelectedFeature.sourceLayer,
+					},
+					{
+						click: false,
+					}
+				);
+			}
+			if (selectedFeature) {
+				map.setFeatureState(
+					{
+						source: selectedFeature.source,
+						id: selectedFeature.id,
+						sourceLayer: selectedFeature.sourceLayer,
+					},
+					{
+						click: true,
+					}
+				);
+				previouslySelectedFeature = selectedFeature;
 
-			let slug = selectedFeature?.properties.slug;
-			filteredEventData = data.eventsByTent[slug]?.filter((event) => eventIsFuture(event));
-			filteredClubData = data.clubsByTent[slug];
-		} else {
-			previouslySelectedFeature = null;
+				let slug = selectedFeature?.properties.slug;
+				console.log(data);
+				filteredEventData = data.eventsByTent[slug]?.filter((event) => eventIsFuture(event));
+				filteredClubData = data.clubsByTent[slug];
+			} else {
+				previouslySelectedFeature = null;
+			}
 		}
+	} catch (e) {
+		console.error(e);
+		if (confirm('Unhandled error while selecting feature, reload?')) location?.reload();
 	}
 
-	function selectFeature(slug) {
+	async function selectFeature(slug) {
+		let zoom = map.getZoom();
+		map.setZoom(13);
+		await new Promise((resolve) => setTimeout(resolve, 200));
 		let query = map.querySourceFeatures(source, {
 			sourceLayer: sourceLayer,
 			filter: ['==', 'slug', slug], // check feature slug
 		});
+		map.setZoom(zoom);
 		if (query.length !== 0) {
 			console.log(query);
 			// assuming that the biggest id is actually the one shown because otherwise i have no idea how to get the correct one
@@ -105,25 +115,26 @@
 				};
 			});
 		} else {
-			console.warn('No feature found for slug:', toLocate);
+			console.warn('No feature found for slug:', slug);
 		}
 	}
 
 	onMount(() => {
 		if (map) return; // Initialize map only once
+
+		let toLocate = new URLSearchParams(window.location.search).get('locate');
+
 		map = new mapboxgl.Map({
 			container: mapContainer,
 			style,
 			center: [fairLng, fairLat],
-			zoom: fairZoom,
+			zoom: toLocate ? 15 : fairZoom,
 			attributionControl: false,
 		});
 
 		map.on('load', (_) => {
 			isMapLoaded = true;
 
-			// Locate a tent by its slug
-			let toLocate = new URLSearchParams(window.location.search).get('locate');
 			if (toLocate) selectFeature(toLocate);
 		});
 
@@ -134,6 +145,7 @@
 		});
 
 		window.map = map;
+		window.selectFeature = selectFeature;
 
 		geolocate = new mapboxgl.GeolocateControl({
 			positionOptions: {

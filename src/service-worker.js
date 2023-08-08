@@ -184,6 +184,7 @@ if (prerendered.length !== 0) {
 		const url = new URL(event.request.url);
 		if (
 			event.request.method !== 'GET' ||
+			url.pathname.endsWith('.js.map') ||
 			(sw.location.hostname === url.hostname && url.pathname.startsWith('/api')) || // webpush
 			(url.hostname.endsWith('.supabase.co') && url.pathname.startsWith('/auth/')) // supabase auth
 			// todo: pvt

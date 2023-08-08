@@ -1,6 +1,6 @@
 <script>
 	import { browser, dev } from '$app/environment';
-	import { afterNavigate } from '$app/navigation';
+	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { updated } from '$app/stores';
 	import { onMount, setContext } from 'svelte';
 	import Modal from 'components/Modal.svelte';
@@ -46,20 +46,22 @@
 		swRegistration.addEventListener('updatefound', handleSwUpdate);
 
 		// new sw has taken over
-		const reload = () => location.reload();
-		navigator.serviceWorker.addEventListener('controllerchange', reload);
+		// const reload = () => location.reload();
+		// navigator.serviceWorker.ready.then(() => {
+		// 	navigator.serviceWorker.addEventListener('controllerchange', reload);
+		// });
 
 		() => {
 			// cleanup
 			swRegistration?.removeEventListener('updatefound', handleSwUpdate);
-			navigator.serviceWorker.removeEventListener('controllerchange', reload);
+			// navigator.serviceWorker.removeEventListener('controllerchange', reload);
 		};
 	});
 
 	// force reload on navigation if app can be updated,
 	// including when the app initially loads
-	afterNavigate(async ({ to }) => {
-		if ((await updated.check()) && to?.url) {
+	beforeNavigate(async ({ to, willUnload }) => {
+		if ((await updated.check()) && !willUnload && to?.url) {
 			skipWaiting();
 			location.href = to.url.href;
 		}
@@ -69,7 +71,7 @@
 <svelte:window
 	on:error={(e) => {
 		e.preventDefault();
-		console.error(e);
+		console.error(e, e.error);
 	}}
 	on:unhandledrejection={(e) => {
 		e.preventDefault();

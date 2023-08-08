@@ -35,6 +35,9 @@ const config = {
 			'/api/webpush': 'http://127.0.0.1:6002/',
 		},
 	},
+	build: {
+		sourcemap: true,
+	},
 };
 
 export default config;
