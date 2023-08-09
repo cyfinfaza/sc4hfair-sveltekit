@@ -67,7 +67,7 @@
 						let tempCode = new URLSearchParams(new URL(code).search).get('code');
 						if (typeof tempCode === 'string') code = tempCode;
 					} catch (e) {} // if it fails, it isn't a URL with a code
-
+					console.log('scanned', code);
 					checkCode(code);
 				},
 				{
@@ -94,6 +94,8 @@
 		}
 	}
 
+	let scannerMessageTimeout;
+
 	function checkCode(code, fromUrl = false) {
 		let index = getIndexFromCode(code);
 		console.table({ fromUrl, $atIndex });
@@ -115,6 +117,8 @@
 			scanning = false;
 			scannerMessage = '';
 		}
+		if (scannerMessageTimeout) clearTimeout(scannerMessageTimeout);
+		scannerMessageTimeout = setTimeout(() => (scannerMessage = ''), 10000);
 		if (!clues[$atIndex]) return;
 		console.table({
 			code,
