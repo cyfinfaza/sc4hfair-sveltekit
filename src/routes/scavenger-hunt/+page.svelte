@@ -212,7 +212,7 @@
 		manualCode = '';
 	}}
 	on:confirm={() => {
-		checkCode(manualCode, false);
+		checkCode(manualCode?.toLowerCase(), false);
 	}}
 >
 	<p>Enter the 8 character code found in the bottom left corner of the sheet.</p>
