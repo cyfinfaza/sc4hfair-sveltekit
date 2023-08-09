@@ -7,11 +7,13 @@
 	import ClueBox from './ClueBox.svelte';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
-	import clues from 'data/shClues.json';
+	import shData from 'data/shClues.json';
 	import { browser } from '$app/environment';
 	import { onMount, setContext } from 'svelte';
 	import { writable } from 'svelte/store';
 	import Modal from 'components/Modal.svelte';
+
+	const clues = shData.clues;
 
 	const getIndexFromCode = (code) => clues.findIndex((clue) => clue.code === code);
 	const getOffsetIndexFromCode = (code) => getIndexFromCode(code) + 1;
@@ -95,11 +97,13 @@
 	function checkCode(code, fromUrl = false) {
 		let index = getIndexFromCode(code);
 		console.table({ fromUrl, $atIndex });
+		const clueIsInFalseList = shData.falseCodes.includes(code);
 		if (typeof code !== 'string' || !code) {
-			console.log('doing nothing');
+			console.log('doing nothing, code is not a string');
 		} else if (index === -1) {
 			if (fromUrl) scanning = true;
-			scannerMessage = 'Invalid code. Make sure you are scanning scavenger hunt codes.\xa0🙃';
+			if (clueIsInFalseList) scannerMessage = "This isn't the right code. Keep looking!\xa0😁";
+			else scannerMessage = 'Invalid code. Make sure you are scanning scavenger hunt codes.\xa0🙃';
 		} else if (index < $atIndex) {
 			if (fromUrl) scanning = true;
 			scannerMessage = "You've already scanned that code.";
