@@ -299,6 +299,10 @@
 							permission: {Notification.permission}<br />
 						</td>
 					</tr>
+					<tr>
+						<td>Origin</td>
+						<td>{location?.origin}</td>
+					</tr>
 				</table>
 			{/key}
 		{/if}

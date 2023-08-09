@@ -214,10 +214,22 @@
 		<LinkButton
 			icon="refresh"
 			on:click={async () => {
+				if (await caches.has('offline-cache-v2')) {
+					const cache = await caches.open('offline-cache-v2');
+					await Promise.all(
+						(
+							await cache.keys()
+						).map((req) => {
+							const url = new URL(req.url);
+							if (url.hostname === 'api.mapbox.com' && url.pathname.endsWith('.webp'))
+								return cache.delete(req);
+						})
+					);
+				}
 				if (await caches.has('mapbox-tiles')) {
 					await caches.delete('mapbox-tiles');
-					window.location.reload();
 				}
+				window.location.reload();
 			}}
 			acrylic
 		/>
