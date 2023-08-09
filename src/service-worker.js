@@ -13,7 +13,6 @@ const PRECACHE = ['/_app/version.json', ...build, ...files, ...prerendered];
 console.log('SW VERSION: ', version);
 
 sw.addEventListener('install', (event) => {
-	// sw.skipWaiting();
 	console.log('Service worker installing');
 	event.waitUntil(
 		(async () => {
@@ -46,6 +45,8 @@ sw.addEventListener('install', (event) => {
 				console.log('HOSTILE TAKEOVER OF APP V1');
 				await sw.skipWaiting();
 			}
+
+			await sw.skipWaiting();
 		})()
 	);
 });
@@ -63,15 +64,15 @@ sw.addEventListener('activate', (event) => {
 		Promise.allSettled([
 			sw.clients.claim(),
 
-			(async () => {
-				// ensure we are never running any old versions
-				// after we've taken over, iterate over all the current clients (windows)
-				const tabs = await sw.clients.matchAll({ type: 'window' });
-				tabs.forEach((tab) => {
-					// and refresh each one of them
-					tab.navigate(tab.url);
-				});
-			})(),
+			// (async () => {
+			// 	// ensure we are never running any old versions
+			// 	// after we've taken over, iterate over all the current clients (windows)
+			// 	const tabs = await sw.clients.matchAll({ type: 'window' });
+			// 	tabs.forEach((tab) => {
+			// 		// and refresh each one of them
+			// 		tab.navigate(tab.url);
+			// 	});
+			// })(),
 
 			// does this work?
 			(async () => {

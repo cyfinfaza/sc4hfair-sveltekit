@@ -15,7 +15,15 @@
 
 	/** @type {ServiceWorkerRegistration|undefined} */
 	let swRegistration;
-	const skipWaiting = () => swRegistration?.waiting?.postMessage({ type: 'SKIP_WAITING' }); // ask for the new sw to take over & reload us
+	// const skipWaiting = () => swRegistration?.waiting?.postMessage({ type: 'SKIP_WAITING' }); // ask for the new sw to take over & reload us
+
+	let controllerChangeOccurred = false;
+
+	$: {
+		if ($updated && swRegistration) {
+			swRegistration.update();
+		}
+	}
 
 	onMount(async () => {
 		if (!browser) return;
@@ -23,39 +31,39 @@
 		swRegistration = await navigator.serviceWorker.getRegistration();
 		if (!swRegistration) return;
 
-		// always force update if possible
-		if (dev) skipWaiting();
-
-		// https://whatwebcando.today/articles/handling-service-worker-updates/
-
-		const handleSwUpdate = () => {
-			console.log('service worker update detected!');
-			swRegistration.installing.addEventListener(
-				'statechange',
-				() => {
-					if (dev) skipWaiting();
-					if (swRegistration.waiting && navigator.serviceWorker.controller) {
-						// there's an old sw running and a new sw waiting to install
-						// let sveltekit decide if we need to show the proompt
-						updated.check();
-						// then in the prompt, we will ask to go through with the update or wait for it to happen naturally
-					}
-				},
-				{ once: true }
-			);
-		};
-		swRegistration.addEventListener('updatefound', handleSwUpdate);
-
 		// new sw has taken over
-		// const reload = () => location.reload();
-		// navigator.serviceWorker.ready.then(() => {
-		// 	navigator.serviceWorker.addEventListener('controllerchange', reload);
-		// });
+		const onControllerChange = () => (controllerChangeOccurred = true);
+		navigator.serviceWorker.ready.then(() => {
+			navigator.serviceWorker.addEventListener('controllerchange', onControllerChange);
+		});
+
+		// // always force update if possible
+		// if (dev) skipWaiting();
+
+		// // https://whatwebcando.today/articles/handling-service-worker-updates/
+
+		// const handleSwUpdate = () => {
+		// 	console.log('service worker update detected!');
+		// 	swRegistration.installing.addEventListener(
+		// 		'statechange',
+		// 		() => {
+		// 			if (dev) skipWaiting();
+		// 			if (swRegistration.waiting && navigator.serviceWorker.controller) {
+		// 				// there's an old sw running and a new sw waiting to install
+		// 				// let sveltekit decide if we need to show the proompt
+		// 				updated.check();
+		// 				// then in the prompt, we will ask to go through with the update or wait for it to happen naturally
+		// 			}
+		// 		},
+		// 		{ once: true }
+		// 	);
+		// };
+		// swRegistration.addEventListener('updatefound', handleSwUpdate);
 
 		() => {
 			// cleanup
-			swRegistration?.removeEventListener('updatefound', handleSwUpdate);
-			// navigator.serviceWorker.removeEventListener('controllerchange', reload);
+			// swRegistration?.removeEventListener('updatefound', handleSwUpdate);
+			navigator.serviceWorker.removeEventListener('controllerchange', onControllerChange);
 		};
 	});
 
@@ -155,7 +163,12 @@
 
 <slot />
 
-<Modal show={$updated} on:confirm={skipWaiting} closeText="Later" confirmText="Load now">
-	<h2>New version available</h2>
-	<p>A new version of the app is available. Load the new version now?</p>
+<Modal
+	show={controllerChangeOccurred}
+	on:confirm={() => window.location.reload()}
+	closeText="Later"
+	confirmText="Refresh now"
+>
+	<h2>New version ready</h2>
+	<p>A new version of the app has been downloaded. Refresh now to load the new version.</p>
 </Modal>
