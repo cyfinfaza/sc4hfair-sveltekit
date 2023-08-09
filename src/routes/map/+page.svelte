@@ -210,6 +210,18 @@
 		/>
 	</div>
 	<div class="mapContainer" class:easterEgg={easterEggCount >= 50} bind:this={mapContainer} />
+	<div class="bottomRight">
+		<LinkButton
+			icon="refresh"
+			on:click={async () => {
+				if (await caches.has('mapbox-tiles')) {
+					await caches.delete('mapbox-tiles');
+					window.location.reload();
+				}
+			}}
+			acrylic
+		/>
+	</div>
 	<div
 		class="tentInfo"
 		class:hidden={!selectedFeature}
@@ -387,5 +399,12 @@
 		.mapboxgl-ctrl-top-right {
 			display: none;
 		}
+	}
+
+	.bottomRight {
+		position: fixed;
+		bottom: 0;
+		right: 0;
+		padding: 8px;
 	}
 </style>
