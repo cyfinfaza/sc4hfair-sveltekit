@@ -134,8 +134,17 @@
 					}
 				};
 			};
+			return client;
 		}
-		start_poprx('wss://fair-app-poprx.4hcomputers.club');
+		let client = start_poprx('wss://fair-app-poprx.4hcomputers.club');
+		document.addEventListener('visibilitychange', (e) => {
+			if (
+				document.visibilityState === 'visible' &&
+				(!client || client.readyState === 2 || client.readyState === 3)
+			)
+				client = start_poprx('wss://fair-app-poprx.4hcomputers.club');
+			else client.close();
+		});
 		// start_poprx('ws://localhost:6002');
 	});
 
