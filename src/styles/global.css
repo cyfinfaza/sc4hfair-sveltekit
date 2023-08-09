@@ -41,6 +41,7 @@ body, .global-theme-light {
 	);
 	--backdrop-blur: blur(12px);
 	--theme-transition: 0.5s ease;
+	--qr-scanner-overlay-color: rgba(255, 255, 255, 0.3);
 	
 	color: var(--text);
 }
@@ -69,6 +70,7 @@ body.theme-dark, .global-theme-dark {
 		rgba(0, 0, 0, var(--image-dimmer-opacity)),
 		rgba(0, 0, 0, var(--image-dimmer-opacity))
 	);
+	--qr-scanner-overlay-color: rgba(0, 0, 0, 0.3);
 	
 	color: var(--text);
 }

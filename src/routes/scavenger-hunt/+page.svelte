@@ -283,7 +283,7 @@
 				100px,
 				rgba(0, 0, 0, 0)
 			);
-			box-shadow: 0 0 0 16vw rgba(0, 0, 0, 0.3) inset;
+			box-shadow: 0 0 0 16vw var(--qr-scanner-overlay-color) inset;
 		}
 		.scannerButtons {
 			display: flex;
