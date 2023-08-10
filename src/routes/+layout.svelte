@@ -1,10 +1,10 @@
 <script>
-	import { browser, dev } from '$app/environment';
-	import { afterNavigate, beforeNavigate } from '$app/navigation';
+	import { browser } from '$app/environment';
+	import { afterNavigate } from '$app/navigation';
 	import { updated } from '$app/stores';
 	import { onMount, setContext } from 'svelte';
 	import Modal from 'components/Modal.svelte';
-	import { checkIsStandalone } from 'logic/platform.js';
+	import { pvtUpdate } from 'logic/pvt.js';
 
 	import 'styles/global.css';
 	import 'styles/material-icons.css';
@@ -66,34 +66,6 @@
 			navigator.serviceWorker.removeEventListener('controllerchange', onControllerChange);
 		};
 	});
-
-	function pvtUpdate() {
-		let requestBody = JSON.stringify({
-			url: window.location.href,
-			meta: {
-				standalone: checkIsStandalone(),
-				sh_2023_code: localStorage.getItem('sh_2023_code') || undefined,
-			},
-		});
-		fetch('/api/pvt', {
-			method: 'POST',
-			body: requestBody,
-			credentials: 'include',
-			type: 'application/json',
-		}).then((response) =>
-			response.text().then((status) => {
-				console.log('track:', status);
-				if (status === 'unconfirmed') {
-					fetch('/api/pvt', {
-						method: 'POST',
-						body: requestBody,
-						credentials: 'include',
-						type: 'application/json',
-					});
-				}
-			})
-		);
-	}
 
 	let pushPoprxUpdate;
 	afterNavigate(() => {
