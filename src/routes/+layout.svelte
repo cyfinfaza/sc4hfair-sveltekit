@@ -4,7 +4,7 @@
 	import { updated } from '$app/stores';
 	import { onMount, setContext } from 'svelte';
 	import Modal from 'components/Modal.svelte';
-	import { pvtUpdate } from 'logic/pvt.js';
+	import { pvtUpdate, pushPoprxUpdate, startPoprx } from 'logic/analytics.js';
 
 	import 'styles/global.css';
 	import 'styles/material-icons.css';
@@ -67,10 +67,8 @@
 		};
 	});
 
-	let pushPoprxUpdate;
 	afterNavigate(() => {
 		console.log('afterNavigate', window.location.pathname);
-		if (typeof pushPoprxUpdate === 'function') pushPoprxUpdate();
 		try {
 			pvtUpdate();
 		} catch (error) {
@@ -78,48 +76,18 @@
 		}
 	});
 	onMount(() => {
-		function start_poprx(addr) {
-			let txid = window.localStorage.getItem('poprx-txid');
-			if (!txid) {
-				txid = Math.floor(Math.random() * 900000) + 100000;
-				window.localStorage.setItem('poprx-txid', txid);
-			}
-			const client = new WebSocket(addr);
-			client.onmessage = function (event) {
-				const data = JSON.parse(event.data);
-				console.log('poprx:', data);
-			};
-			client.onopen = function (event) {
-				client.send(
-					JSON.stringify({
-						type: 'txinit',
-						data: { id: txid, agent: navigator.userAgent, path: window.location.pathname },
-					})
-				);
-				pushPoprxUpdate = () => {
-					try {
-						client.send(
-							JSON.stringify({
-								type: 'pathupdate',
-								data: { id: txid, path: window.location.pathname },
-							})
-						);
-					} catch (error) {
-						console.error('poprx error:', error);
-					}
-				};
-			};
-			return client;
-		}
-		let client = start_poprx('wss://fair-app-poprx.4hcomputers.club');
+		let client = startPoprx('wss://fair-app-poprx.4hcomputers.club');
 		document.addEventListener('visibilitychange', (e) => {
 			if (
 				document.visibilityState === 'visible' &&
 				(!client || client.readyState === 2 || client.readyState === 3)
 			)
-				client = start_poprx('wss://fair-app-poprx.4hcomputers.club');
+				client = startPoprx('wss://fair-app-poprx.4hcomputers.club');
 			else client.close();
 		});
+		return () => {
+			client.close();
+		};
 		// start_poprx('ws://localhost:6002');
 	});
 

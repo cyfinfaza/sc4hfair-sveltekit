@@ -17,11 +17,10 @@ requestsCollection = db.requests
 
 app = Flask(__name__)
 cors = CORS(app, supports_credentials=True)
-app.config.update(SESSION_COOKIE_SAMESITE='None', SESSION_COOKIE_SECURE=True)
+app.config.update(SSSION_COOKIE_NAME='pvt_s', SESSION_COOKIE_SAMESITE='None', SESSION_COOKIE_SECURE=True)
 # DO NOT CHANGE THIS UNLESS YOU WANT ALL REGISTERED SESSIONS TO BREAK
 app.secret_key = '--------'
 app.permanent_session_lifetime = timedelta(days=365)
-app.session_cookie_name = 'pvt_s'
 
 
 @app.before_request
