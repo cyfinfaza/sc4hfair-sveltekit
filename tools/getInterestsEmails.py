@@ -8,6 +8,7 @@ load_dotenv()
 SUPABASE_PG_PASSWORD = environ.get('SUPABASE_PG_PASSWORD') or getpass(
 	"Enter Supabase Postgres password: ")
 
+EXCLUDE_EMAILS = ["24cdingwall@gmail.com", "ccreativecnd@gmail.com", "cyfinfaza@gmail.com"]
 
 def getInterestsEmails():
 	conn = psycopg2.connect(database="postgres",
@@ -20,6 +21,9 @@ def getInterestsEmails():
 	cursor.execute(
 		"select interests.interest_slug, auth.users.email, auth.users.raw_user_meta_data from interests inner join auth.users on auth.users.id=interests.owner")
 	interestsData = cursor.fetchall()
+
+	#filter out all interests with excluded emails
+	interestsData = list(filter(lambda interest: interest[1] not in EXCLUDE_EMAILS, interestsData))
 
 	interestEmailsForEachClub = {}
 	for interest in interestsData:
@@ -48,18 +52,23 @@ def getInterestsEmails():
 
 if __name__ == "__main__":
 	interestEmails = getInterestsEmails()
-	markdownOutput = '# 4-H Fair App Interest List Emails Report\n\n'
-	htmlOutput = """<html>
+	topMessage = "As a part of the interest list feature in the 4-H Fair App, we collect the username and email of every person who adds a club to their interest list so that we can report this data to club leaders. Below is a list of usernames/emails who expressed interest in each club. If a club is not listed, this means that no fair app users added that club to their interest list. Club leaders should consider adding emails from this list to their club's mailing list."
+	markdownOutput = f'# 4-H Fair App Interest List Emails Report  \n{topMessage}  \n'
+	htmlOutput = f"""<html>
 	<head>
 		<title>4-H Fair App Interest List Emails Report</title>
 		<style>
-			body {
+			body {{
 				font-family: sans-serif;
-			}
+			}}
+			h2 {{
+				break-after: avoid;
+			}}
 		</style>
 	</head>
 	<body>
 	<h1>4-H Fair App Interest List Emails Report</h1>
+	<p>{topMessage}</p>
 	"""
 	for entry in interestEmails:
 		markdownOutput += f"## {entry['clubName']}  \n"
@@ -71,8 +80,9 @@ if __name__ == "__main__":
 		htmlOutput += '</ul>'
 		emailsSemicolonSeparated = '; '.join(
 			map(lambda person: person['email'], entry['people']))
-		markdownOutput += f"Quick copy paste: {emailsSemicolonSeparated}  \n"
-		htmlOutput += f"<p>Quick copy paste: {emailsSemicolonSeparated}</p>"
+		if len(entry['people']) > 1:
+			markdownOutput += f"Quick copy paste: {emailsSemicolonSeparated}  \n"
+			htmlOutput += f"<p>Quick copy paste: {emailsSemicolonSeparated}</p>"
 	htmlOutput += '</body></html>'
 	print(markdownOutput)
 	import tempfile
