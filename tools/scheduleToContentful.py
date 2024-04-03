@@ -6,21 +6,11 @@ python scheduleToContentful.py
 
 """
 
-import config
-import sys
+import contentful
 import csv
-import requests
 import hashlib
 
 contentTypeId = 'scheduledEvent'
-
-noPublish = '--no-publish' in sys.argv
-
-session = requests.Session()
-session.headers.update({
-	'Authorization': 'Bearer ' + config.cmaToken,
-	'Content-Type': 'application/vnd.contentful.management.v1+json',
-})
 
 tempEvents = {}
 
@@ -37,7 +27,7 @@ with open('schedule.csv') as csvfile:
 						"sys": {
 							"type": "Link",
 							"linkType": "Tag",
-							"id": "2023"
+							"id": contentful.yearTagId
 						}
 					}
 				]
@@ -78,7 +68,7 @@ def doEvent(id):
 		# update
 		headers['X-Contentful-Version'] = str(event['version'])
 
-	newData = session.put(f'https://api.contentful.com/spaces/{config.spaceId}/environments/{config.environmentId}/entries/{id}', json=event['entry'], headers=headers)
+	newData = contentful.session.put(f'https://api.contentful.com/spaces/{contentful.spaceId}/environments/{contentful.environmentId}/entries/{id}', json=event['entry'], headers=headers)
 
 	if newData.status_code != 200 and newData.status_code != 201:
 		print('error')
@@ -99,7 +89,7 @@ def doEvent(id):
 
 # get list of all previous entries
 # the update api requires the version number of the entry to be updated
-entries = session.get(f'https://api.contentful.com/spaces/{config.spaceId}/environments/{config.environmentId}/entries?content_type={contentTypeId}&select=sys.id,sys.version&sys.archivedAt[exists]=false&limit=1000').json()
+entries = contentful.session.get(f'https://api.contentful.com/spaces/{contentful.spaceId}/environments/{contentful.environmentId}/entries?content_type={contentTypeId}&select=sys.id,sys.version&sys.archivedAt[exists]=false&limit=1000').json()
 
 for entry in entries['items']:
 	id = entry['sys']['id']
@@ -115,19 +105,12 @@ for entry in entries['items']:
 		headers = {
 			'X-Contentful-Version': str(version),
 		}
-		session.delete(f'https://api.contentful.com/spaces/{config.spaceId}/environments/{config.environmentId}/entries/{id}/published', headers=headers)
-		session.put(f'https://api.contentful.com/spaces/{config.spaceId}/environments/{config.environmentId}/entries/{id}/archived', headers=headers)
+		contentful.session.delete(f'https://api.contentful.com/spaces/{contentful.spaceId}/environments/{contentful.environmentId}/entries/{id}/published', headers=headers)
+		contentful.session.put(f'https://api.contentful.com/spaces/{contentful.spaceId}/environments/{contentful.environmentId}/entries/{id}/archived', headers=headers)
 
 # create the rest that we aren't modifying
 for id in tempEvents:
 	print('creating', id)
 	doEvent(id)
 
-if not noPublish and len(publishPayload) > 0:
-	bulkReq = session.post(f'https://api.contentful.com/spaces/{config.spaceId}/environments/{config.environmentId}/bulk_actions/publish', json={
-		'entities': {
-			'items': publishPayload,
-		},
-	})
-
-	print('bulk publish status', bulkReq.status_code, bulkReq.text)
+contentful.conditionalBulkPublish(publishPayload)

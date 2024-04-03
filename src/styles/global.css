@@ -212,6 +212,23 @@ hr {
 	flex-wrap: wrap;
 }
 
+.tags {
+	gap: 4px;
+	display: flex;
+	max-width: 100%;
+}
+.tags > * {
+	all: unset;
+	font-weight: bold;
+	background: var(--light-2);
+	padding: 2px 4px;
+	border-radius: 4px;
+
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
 .center {
 	text-align: center;
 }

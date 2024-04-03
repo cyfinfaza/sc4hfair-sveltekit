@@ -14,7 +14,7 @@
 	$: results = exactSearch(
 		data.clubs,
 		'name',
-		['description', 'meetingWhen', 'meetingLocation', 'grades'],
+		['description', 'meetingWhen', 'meetingLocation', 'grades', 'tags'],
 		searchQuery
 	);
 </script>

@@ -6,7 +6,7 @@ python sponsorsToContentful.py
 
 """
 
-import config
+import contentful
 import csv
 import copy
 from time import sleep
@@ -36,7 +36,7 @@ with open('sponsors.csv') as csvfile:
 						"sys": {
 							"type": "Link",
 							"linkType": "Tag",
-							"id": "2023"
+							"id": contentful.yearTagId
 						}
 					}
 				]
@@ -74,7 +74,7 @@ def doUpdate(heading):
 		# update
 		headers['X-Contentful-Version'] = str(data['version'])
 
-	newData = getattr(config.session, 'put' if id else 'post')(f'https://api.contentful.com/spaces/{config.spaceId}/environments/{config.environmentId}/entries{f"/{id}" if id else ""}', json=data['entry'], headers=headers)
+	newData = getattr(contentful.session, 'put' if id else 'post')(f'https://api.contentful.com/spaces/{contentful.spaceId}/environments/{contentful.environmentId}/entries{f"/{id}" if id else ""}', json=data['entry'], headers=headers)
 
 	if newData.status_code != 200 and newData.status_code != 201:
 		print('error')
@@ -99,7 +99,7 @@ def doUpdate(heading):
 
 # get list of all previous entries
 # the update api requires the version number of the entry to be updated
-prevEntries = config.session.get(f'https://api.contentful.com/spaces/{config.spaceId}/environments/{config.environmentId}/entries?content_type={contentTypeId}&select=fields,sys.id,sys.version&sys.archivedAt[exists]=false&limit=1000').json()
+prevEntries = contentful.session.get(f'https://api.contentful.com/spaces/{contentful.spaceId}/environments/{contentful.environmentId}/entries?content_type={contentTypeId}&select=fields,sys.id,sys.version&sys.archivedAt[exists]=false&limit=1000').json()
 print(prevEntries)
 
 for entry in prevEntries['items']:
@@ -125,19 +125,12 @@ for entry in prevEntries['items']:
 		headers = {
 			'X-Contentful-Version': str(version),
 		}
-		config.session.delete(f'https://api.contentful.com/spaces/{config.spaceId}/environments/{config.environmentId}/entries/{id}/published', headers=headers)
-		config.session.put(f'https://api.contentful.com/spaces/{config.spaceId}/environments/{config.environmentId}/entries/{id}/archived', headers=headers)
+		contentful.session.delete(f'https://api.contentful.com/spaces/{contentful.spaceId}/environments/{contentful.environmentId}/entries/{id}/published', headers=headers)
+		contentful.session.put(f'https://api.contentful.com/spaces/{contentful.spaceId}/environments/{contentful.environmentId}/entries/{id}/archived', headers=headers)
 
 # create the rest that we aren't modifying
 for heading in newEntries:
 	print('creating', heading)
 	doUpdate(heading)
 
-if not config.noPublish and len(publishPayload) > 0:
-	bulkReq = config.session.post(f'https://api.contentful.com/spaces/{config.spaceId}/environments/{config.environmentId}/bulk_actions/publish', json={
-		'entities': {
-			'items': publishPayload,
-		},
-	})
-
-	print('bulk publish status', bulkReq.status_code, bulkReq.text)
+contentful.conditionalBulkPublish(publishPayload)

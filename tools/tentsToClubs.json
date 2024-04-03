@@ -2,7 +2,7 @@
 	"dog-show": [],
 	"goats": ["branchburg-livestock", "just-kidding"],
 	"model-trains": ["somerset-4h-trainmasters"],
-	"dairy-beef": ["new-centre-dairy"],
+	"dairy-beef": ["new-centre-dairy", "new-center-dairy-prep"],
 	"sheep": ["sheepfold", "woolly-ones"],
 	"mechanical-sciences": ["broken-props-model-airplane", "somerset-sentinels-rocket-club"],
 	"rc-cars": ["radio-control-car-club"],
@@ -35,7 +35,9 @@
 		"handy-sew-sew",
 		"prep-lego-maniacs",
 		"prep-chefs",
-		"puppet-design-prep-club"
+		"puppet-design-prep-club",
+		"lego-masters",
+		"mad-scientists-prep-club"
 	],
 	"arts-sciences": [
 		"4h-anime-manga-club",
@@ -65,7 +67,13 @@
 		"dollars-sense",
 		"hawkeye-archers",
 		"pokemon-club",
-		"yoga"
+		"yoga",
+		"crafter-masters",
+		"4h-game-on-club",
+		"thats-sew-crafty",
+		"dollar-data",
+		"hip-hop-hoppers",
+		"outdoor-club"
 	],
 	"go-kart-track": ["4h-gokart-club"]
 }

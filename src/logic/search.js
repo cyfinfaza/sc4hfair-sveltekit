@@ -1,5 +1,6 @@
 export function exactSearch(objList, priorityKey, secondaryKeys, query) {
 	function prepare(text) {
+		if (Array.isArray(text)) text = text.join(',');
 		if (typeof text !== 'string') {
 			console.error('exactSearch error: cannot prepare non-string', text);
 			text = '';

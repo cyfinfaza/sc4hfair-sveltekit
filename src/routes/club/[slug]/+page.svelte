@@ -29,7 +29,14 @@
 		<LinkButton label="See all clubs" icon="groups" href="/clubs" />
 		<LinkButton label="View interest list" icon="list" href="/interests" disabled={!$isOnline} />
 	</div>
-	<h1 style="text-transform: uppercase;">{club.name}</h1>
+	<h1 style="text-transform: uppercase;">
+		{club.name}
+		<div class="tags" style="text-transform: uppercase;">
+			{#each club.tags as tag}
+				<div title={tag.toUpperCase()}>{tag}</div>
+			{/each}
+		</div>
+	</h1>
 	<div class="optionsButtonsPanel">
 		{#if ($interestsSlugs || []).includes(club.slug)}
 			<LinkButton
@@ -91,5 +98,9 @@
 	.clubDescription :global(img) {
 		width: 100%;
 		height: auto;
+	}
+
+	.tags > * {
+		font-size: 0.5em;
 	}
 </style>

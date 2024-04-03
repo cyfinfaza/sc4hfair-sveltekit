@@ -30,6 +30,7 @@ const clubQuery = `{
 			meetingWhen
 			listingWebsite
 			tent
+			tags
 		}
 	}
 }`;

@@ -6,7 +6,6 @@
 	import { onMount, tick } from 'svelte';
 
 	export let club;
-	let slugList = [];
 
 	export let autoTarget = false;
 	/** @type {HTMLDivElement} */
@@ -21,7 +20,14 @@
 </script>
 
 <div class="clubEntry" id={club.slug} class:targeted={autoTarget} bind:this={div}>
-	<h2>{club.name}</h2>
+	<h2>
+		<span>{club.name}</span>
+		<div class="tags">
+			{#each club.tags as tag}
+				<div title={tag.toUpperCase()}>{tag}</div>
+			{/each}
+		</div>
+	</h2>
 	<div class="description">
 		<SvelteMarkdown
 			renderers={{ image: null }}
@@ -77,6 +83,24 @@
 
 		> h2 {
 			text-transform: uppercase;
+			display: flex;
+			align-items: center;
+			flex-wrap: wrap;
+
+			@media (max-width: 600px) {
+				// force all tags to be on a new line
+				flex-direction: column;
+				align-items: unset;
+				justify-content: center;
+			}
+
+			> span {
+				flex-grow: 1;
+			}
+
+			.tags {
+				font-size: 0.6em;
+			}
 		}
 
 		> .description {

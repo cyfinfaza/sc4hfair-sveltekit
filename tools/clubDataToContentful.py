@@ -9,28 +9,18 @@ possible arguments:
 
 """
 
-import config
+import contentful
 import json
-import requests
-import sys
 
 contentTypeId = 'club'
-
-noPublish = '--no-publish' in sys.argv
 
 data = json.load(open('clubData.json'))
 allSlugs = [club['slug'] for club in data]
 
-session = requests.Session()
-session.headers.update({
-	'Authorization': 'Bearer ' + config.cmaToken,
-	'Content-Type': 'application/vnd.contentful.management.v1+json',
-})
-
 # get list of all previous entries
 # the update api requires the version number of the entry to be updated
 # we can grab them all in bulk at the start
-entries = session.get(f'https://api.contentful.com/spaces/{config.spaceId}/environments/{config.environmentId}/entries?content_type={contentTypeId}&select=sys.id,sys.version,fields.slug&sys.archivedAt[exists]=false').json()
+entries = contentful.session.get(f'https://api.contentful.com/spaces/{contentful.spaceId}/environments/{contentful.environmentId}/entries?content_type={contentTypeId}&select=sys.id,sys.version,fields.slug&sys.archivedAt[exists]=false').json()
 
 if entries['total'] > entries['limit']:
 	print('todo: implement paging')
@@ -45,10 +35,10 @@ for entry in entries['items']:
 
 	if slug not in allSlugs:
 		print('archiving', slug)
-		session.delete(f'https://api.contentful.com/spaces/{config.spaceId}/environments/{config.environmentId}/entries/{id}/published', headers={
+		contentful.session.delete(f'https://api.contentful.com/spaces/{contentful.spaceId}/environments/{contentful.environmentId}/entries/{id}/published', headers={
 			'X-Contentful-Version': str(version),
 		})
-		req = session.put(f'https://api.contentful.com/spaces/{config.spaceId}/environments/{config.environmentId}/entries/{id}/archived', headers={
+		req = contentful.session.put(f'https://api.contentful.com/spaces/{contentful.spaceId}/environments/{contentful.environmentId}/entries/{id}/archived', headers={
 			'X-Contentful-Version': str(version),
 		})
 
@@ -72,7 +62,7 @@ for club in data:
 		}
 	}
 
-	for key in ['description', 'meetingLocation', 'meetingWhen', 'grades', 'clubWebsite', 'tent']:
+	for key in ['description', 'meetingLocation', 'meetingWhen', 'grades', 'clubWebsite', 'tent', 'tags']:
 		if key in club:
 			entry['fields'][key] = {
 				"en-US": club[key]
@@ -92,7 +82,7 @@ for club in data:
 	
 	# print(club['slug'], entry, headers)
 
-	newData = session.put(f'https://api.contentful.com/spaces/{config.spaceId}/environments/{config.environmentId}/entries/{entryId}', json=entry, headers=headers)
+	newData = contentful.session.put(f'https://api.contentful.com/spaces/{contentful.spaceId}/environments/{contentful.environmentId}/entries/{entryId}', json=entry, headers=headers)
 
 	if newData.status_code != 200 and newData.status_code != 201:
 		print('error')
@@ -113,11 +103,4 @@ for club in data:
 		}
 	})
 
-if not noPublish and len(publishPayload) > 0:
-	bulkReq = session.post(f'https://api.contentful.com/spaces/{config.spaceId}/environments/{config.environmentId}/bulk_actions/publish', json={
-		'entities': {
-			'items': publishPayload,
-		},
-	})
-
-	print('bulk publish status', bulkReq.status_code, bulkReq.json()['sys']['status'], bulkReq.json())
+contentful.conditionalBulkPublish(publishPayload)
