@@ -9,9 +9,10 @@
 	import LinkButton from 'components/LinkButton.svelte';
 	import shData from 'data/shClues.json';
 	import { browser } from '$app/environment';
-	import { onMount, setContext } from 'svelte';
+	import { onMount, setContext, tick } from 'svelte';
 	import { writable } from 'svelte/store';
 	import Modal from 'components/Modal.svelte';
+	import { pvtUpdate } from 'logic/pvt';
 
 	const clues = shData.clues;
 
@@ -116,6 +117,10 @@
 			$atIndex = index + 1;
 			scanning = false;
 			scannerMessage = '';
+			(async () => {
+				await tick();
+				pvtUpdate('sh', $atIndex);
+			})();
 		}
 		if (scannerMessageTimeout) clearTimeout(scannerMessageTimeout);
 		scannerMessageTimeout = setTimeout(() => (scannerMessage = ''), 10000);
@@ -212,7 +217,7 @@
 		manualCode = '';
 	}}
 	on:confirm={() => {
-		checkCode(manualCode, false);
+		checkCode(manualCode?.toLowerCase(), false);
 	}}
 >
 	<p>Enter the 8 character code found in the bottom left corner of the sheet.</p>
