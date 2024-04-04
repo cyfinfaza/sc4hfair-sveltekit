@@ -32,8 +32,15 @@ def test_webpush(sub_info, id):
 			data=json.dumps({ 'type': 'test', 'id': id }),
 			vapid_private_key=WEBPUSH_PRIVATE_KEY,
 			vapid_claims={'sub': 'mailto:vapid_claims@4hcomputers.club'},
+			# fix for windows (https://learn.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/push-request-response-headers)
+			headers={'X-WNS-Type': 'wns/raw', 'X-WNS-Cache-Policy': 'no-cache'}
 		)
 		return True
+	except WebPushException as e:
+		print('WebPushException', e.args)
+		print(e.response.text)
+		print(e.response.headers)
+		return False
 	except Exception as e:
 		print(e.args)
 		return False
