@@ -119,7 +119,7 @@
 			scannerMessage = '';
 			(async () => {
 				await tick();
-				pvtUpdate('sh', $atIndex);
+				pvtUpdate();
 			})();
 		}
 		if (scannerMessageTimeout) clearTimeout(scannerMessageTimeout);
@@ -142,16 +142,19 @@
 	<div class="center">
 		<h1>2023 Scavenger Hunt</h1>
 		<p>
-			Welcome to the 4‑H Fair Scavenger Hunt! Each clue will lead you to a QR Code, and when you
-			scan it, it will unlock the next clue. The last clue will lead you to your prize: a $1
-			<a href="/map?locate=food">food</a> voucher for the fair and maybe something else...
+			Welcome to the 4‑H Fair Scavenger Hunt! Each clue will lead you to a <strong>QR code</strong>,
+			which when scanned will unlock the next clue. The last clue will lead you to your prize: a $1
+			<a href="/map?locate=food">fair food</a> voucher and maybe something else…
 		</p>
-		<p>
-			If you're stuck on a clue, try looking at the <a href="/map">fair map</a>, talking to other
-			4‑Hers, or searching for information online. You can get a hint on each clue if you're stuck,
-			but if you choose to you won't get a "perfect score". Go to <a href="/settings">settings</a> to
-			reset the scavenger hunt, though only one prize may be claimed per person.
-		</p>
+		<p style="margin-bottom: 0;">If you're stuck on a clue, try:</p>
+		<div style="display: flex; justify-content: center;">
+			<ul style="margin: 0; text-align: left;">
+				<li>looking at the <a href="/map">fair map</a> or <a href="/clubs">clubs list</a></li>
+				<li>talking to other 4‑Hers (they love to share)</li>
+				<li>using a hint (they're free)</li>
+				<li>searching for information in other resources</li>
+			</ul>
+		</div>
 		<p>Hints used: {$hintsUsed.length}</p>
 		{#each clues as _, index}
 			<ClueBox {index} />
@@ -163,7 +166,7 @@
 	<div
 		class="scanner"
 		class:hidden={!scanning || !compatible}
-		aria-hidden={!scanning || compatible}
+		aria-hidden={!scanning || !compatible}
 	>
 		<div>
 			<!-- svelte-ignore a11y-media-has-caption -->
@@ -208,6 +211,11 @@
 			</div>
 		</div>
 	</div>
+
+	<p>
+		You can reset the scavenger hunt in <a href="/settings">settings</a>, but only one prize may be
+		claimed per group.
+	</p>
 </Layout>
 
 <Modal

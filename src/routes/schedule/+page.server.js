@@ -16,12 +16,17 @@ const query = `{
 	}
 }`;
 
-export async function load() {
-	const resp = await queryContentful(query);
-	const events = resp.scheduledEventCollection?.items;
-
+let events = [],
 	/** @type {string[]} */
-	const eventTentsList = ['All', ...new Set(events.map((event) => event.tent))].filter(Boolean);
+	eventTentsList = [];
+
+export async function load() {
+	if (events.length === 0) {
+		const resp = await queryContentful(query);
+		events = resp.scheduledEventCollection?.items;
+
+		eventTentsList = ['All', ...new Set(events.map((event) => event.tent))].filter(Boolean);
+	}
 
 	return { events, eventTentsList };
 }
