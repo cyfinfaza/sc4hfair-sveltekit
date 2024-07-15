@@ -3,6 +3,7 @@ from os import environ
 import requests
 import sys
 from time import sleep
+from uuid import uuid4
 
 dotenv.load_dotenv()
 
@@ -68,17 +69,29 @@ def conditionalBulkPublish(publishPayload):
 		},
 	})
 
-	print('bulk publish status', bulkReq.status_code, bulkReq.json()['sys']['status'], bulkReq.json())
+	print('waiting on bulk publish... status', bulkReq.status_code, bulkReq.json()['sys']['status'], bulkReq.json())
 
 	# wait for bulk publish to finish
 	while True:
 		sleep(5)
 		statusReq = session.get(f'https://api.contentful.com/spaces/{spaceId}/environments/{environmentId}/bulk_actions/actions/{bulkReq.json()["sys"]["id"]}')
 		status = statusReq.json()['sys']['status']
-		print('waiting on bulk publish, status', status)
+		print('waiting on bulk publish... status', status)
 		if status == 'succeeded':
 			break
 
 	if webhookPreviousActive:
 		setWebhookActive(vercelWebhookId, True) # reenable
 		requests.get(webhookUrl) # manually trigger
+
+base62alphabet: str = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+base: int = len(base62alphabet)	
+def to_base62(input: int):
+	output = ''
+	while input != 0:
+		output = base62alphabet[input % base] + output
+		input //= base
+	return output
+
+def new_id():
+	return to_base62(uuid4().int)

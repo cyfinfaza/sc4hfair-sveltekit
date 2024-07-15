@@ -44,9 +44,9 @@ with open('schedule.csv') as csvfile:
 				entry['fields'][key] = {
 					"en-US": event[key]
 				}
-		
-		# this is unique enough and should prevent exact duplicates
-		id = hashlib.md5(f"{event['title']}{event['time']}".encode()).hexdigest()
+
+		# this is unique enough and should prevent exact duplicates from being created, but still allow for the same event to be updated
+		id = contentful.to_base62(int.from_bytes(hashlib.md5(f"{event['title']}{event['time']}".encode()).digest(), 'big'))
 
 		tempEvents[id] = {
 			'entry': entry,
