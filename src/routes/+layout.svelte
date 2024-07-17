@@ -1,5 +1,5 @@
 <script>
-	import { browser } from '$app/environment';
+	import { browser, version } from '$app/environment';
 	import { afterNavigate } from '$app/navigation';
 	import { updated } from '$app/stores';
 	import { onMount, setContext } from 'svelte';
@@ -18,6 +18,23 @@
 	// const skipWaiting = () => swRegistration?.waiting?.postMessage({ type: 'SKIP_WAITING' }); // ask for the new sw to take over & reload us
 
 	let controllerChangeOccurred = false;
+	let newVersionVerified = false;
+	$: {
+		if (controllerChangeOccurred) {
+			console.log('controller change occurred, verifying new version');
+			fetch('/_app/version.json', {
+				cache: 'no-cache',
+				headers: { 'Cache-Control': 'no-cache' },
+			})
+				.then((res) => res.json())
+				.then((versionData) => {
+					if (versionData.version !== version) {
+						newVersionVerified = true;
+					}
+				})
+				.catch((e) => console.error('failed to verify new version', e));
+		}
+	}
 
 	$: {
 		if ($updated && swRegistration) {
@@ -148,7 +165,7 @@
 <slot />
 
 <Modal
-	show={controllerChangeOccurred}
+	show={newVersionVerified}
 	on:confirm={() => window.location.reload()}
 	closeText="Later"
 	confirmText="Refresh now"
