@@ -3,6 +3,7 @@
 	import 'mapbox-gl/dist/mapbox-gl.css';
 	import polylabel from 'polylabel';
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 
 	import DateTime from 'components/DateTime.svelte';
 	import Layout from 'components/Layout.svelte';
@@ -243,14 +244,24 @@
 		<div>
 			<h2>
 				{selectedFeature?.properties.name || selectedFeature?.properties.slug || '-'}
-				<LinkButton
-					label="Close"
-					icon="close"
-					on:click={() => {
-						selectedFeature = null;
-					}}
-					acrylic
-				/>
+				<div>
+					{#if selectedFeature?.properties.slug === 'food'}
+						<LinkButton
+							label="Menu"
+							icon="fastfood"
+							on:click={() => goto('/food')}
+							acrylic
+						/>
+					{/if}
+					<LinkButton
+						label="Close"
+						icon="close"
+						on:click={() => {
+							selectedFeature = null;
+						}}
+						acrylic
+					/>
+				</div>
 			</h2>
 			{#key selectedFeature}
 				<Tabs
