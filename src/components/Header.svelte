@@ -53,6 +53,7 @@
 			<div class="menuGrid">
 				<LinkButton header label="Latest" icon="home" href="/" />
 				<LinkButton header label="Map" icon="map" href="/map" />
+				<LinkButton header label="Food" icon="fastfood" href="/food" />
 				<LinkButton header label="Schedule" icon="event_note" href="/schedule" />
 				<LinkButton header label="Clubs" icon="groups" href="/clubs" />
 				<LinkButton header label="Interest List" icon="list_alt" href="/interests" />
