@@ -8,8 +8,7 @@
 	let searchQuery = '',
 		results = [];
 
-	// todo: add ability to search inside items array
-	$: results = exactSearch(data.foodVendors, 'name', [], searchQuery);
+	$: results = exactSearch(searchQuery, data.foodVendors, 'name', ['name'], true);
 </script>
 
 <Layout title="Food">
@@ -26,15 +25,17 @@
 	</div>
 	<div class="columnCentered">
 		{#each results as vendor}
-			<h2>{vendor.name}</h2>
-			<table>
-				{#each vendor.items as item}
-					<tr>
-						<td>{item.key}</td>
-						<td>{item.value}</td>
-					</tr>
-				{/each}
-			</table>
+			{#if vendor.items.length}
+				<h2>{vendor.name}</h2>
+				<ul>
+					{#each vendor.items as item}
+						<li>
+							<span>{item.key}</span>
+							<span>{item.value}</span>
+						</li>
+					{/each}
+				</ul>
+			{/if}
 		{/each}
 	</div>
 </Layout>
@@ -58,12 +59,32 @@
 		margin-bottom: 8px;
 	}
 
-	table {
+	ul {
 		width: 100%;
 		max-width: 40ch;
 		padding: 0 8px;
 
-		td:last-child {
+		padding: 0;
+		overflow-x: hidden;
+		list-style: none;
+
+		li span {
+			background-color: var(--bg);
+		}
+		li :first-child {
+			padding-right: 0.33ch;
+
+			&:after {
+				content: ' . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .';
+				float: left;
+				width: 0;
+				white-space: nowrap;
+				color: var(--text-translucent);
+			}
+		}
+		li :last-child {
+			padding-left: 0.33ch;
+			float: right;
 			text-align: right;
 		}
 	}

@@ -11,12 +11,13 @@
 	$: browser && window.sessionStorage.setItem('clubs_searchQuery', searchQuery);
 
 	let results = [];
-	$: results = exactSearch(
-		data.clubs,
-		'name',
-		['description', 'meetingWhen', 'meetingLocation', 'grades', 'tags'],
-		searchQuery
-	);
+	$: results = exactSearch(searchQuery, data.clubs, 'name', [
+		'description',
+		'meetingWhen',
+		'meetingLocation',
+		'grades',
+		'tags',
+	]);
 </script>
 
 <Layout title="Clubs">
