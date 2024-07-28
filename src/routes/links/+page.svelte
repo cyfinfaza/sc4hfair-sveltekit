@@ -15,21 +15,12 @@
 			<LinkButton icon="open_in_new" external href="https://4histops.org" label="Open link" />
 		</div>
 		<div class="box">
-			<h2>Clothing Fundraiser</h2>
+			<h2>Want Your Project Here?</h2>
 			<p>
-				Support Somerset County 4‑H by purchasing some awesome merchandise.<br />
+				For 4‑H clubs: If you're working on a project applicable to all fair visitors, let us know
+				so we can add your link here.
 			</p>
-			<p>
-				Items get sent to any address 4-5 weeks after the shop closes. Don't wait. The store closes
-				on August 18th. Know a 4‑H member or volunteer? Drop their name in the check out box to help
-				them earn rewards.
-			</p>
-			<LinkButton
-				icon="open_in_new"
-				external
-				href="https://fancloth.shop/1CXP8"
-				label="Open link"
-			/>
+			<LinkButton icon="message" href="/feedback" label="Contact us" />
 		</div>
 	</div>
 </Layout>

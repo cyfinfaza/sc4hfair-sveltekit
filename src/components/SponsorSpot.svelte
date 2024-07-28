@@ -14,9 +14,9 @@
 			let chosenTier = Math.random();
 
 			// because not all tiers are used this year, split into the mainer ones
-			if (chosenTier < 0.25) chosenTier = ['sky']; // 25% but from one
+			if (chosenTier < 0.25) chosenTier = ['clover', 'sky']; // 25% but from one
 			else if (chosenTier < 0.8) chosenTier = ['gold', 'silver', 'bronze']; // 55% the rest
-			else chosenTier = ['custom', 'automobile', 'friends-family']; // 20% but from many
+			else chosenTier = ['copper', 'custom', 'automobile', 'friends-family']; // 20% but from many
 
 			let filteredSponsors = sponsors.filter((ad) => chosenTier.includes(ad.tier));
 
