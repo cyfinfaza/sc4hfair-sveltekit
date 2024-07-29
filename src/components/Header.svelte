@@ -53,9 +53,9 @@
 			<div class="menuGrid">
 				<LinkButton header label="Latest" icon="home" href="/" />
 				<LinkButton header label="Map" icon="map" href="/map" />
+				<LinkButton header label="Food" icon="fastfood" href="/food" />
 				<LinkButton header label="Schedule" icon="event_note" href="/schedule" />
 				<LinkButton header label="Clubs" icon="groups" href="/clubs" />
-				<LinkButton header label="Interest List" icon="list_alt" href="/interests" />
 				<LinkButton header label="Scavenger Hunt" icon="travel_explore" href="/scavenger-hunt" />
 			</div>
 			<div class="menuBottom">
@@ -68,6 +68,7 @@
 					icon="message"
 					href="/feedback"
 				/>
+				<LinkButton headerSmall label="Interest list" icon="list_alt" href="/interests" />
 				<LinkButton headerSmall label="Fair sponsors" icon="monetization_on" href="/sponsors" />
 				<!-- <LinkButton headerSmall disabled={!$isOnline} label="About 4‑H" href="https://4histops.org">
 					<svelte:fragment slot="iconElement">

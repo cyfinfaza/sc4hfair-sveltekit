@@ -27,22 +27,15 @@
 
 	let results = [];
 	$: results = exactSearch(
-		data.events
-			.filter(
-				(element) =>
-					((selectedTent === 'All' || selectedTent === element.tent) &&
-						(eventIsFuture(element) || showingPast)) ||
-					(browser && window.location?.hash === '#' + element.id)
-			)
-			.map((element) => {
-				return {
-					...element,
-					tentName: tentSlugs[element.tent] || element.tent,
-				};
-			}),
+		searchQuery,
+		data.events.filter(
+			(element) =>
+				((selectedTent === 'All' || selectedTent === element.tent) &&
+					(eventIsFuture(element) || showingPast)) ||
+				(browser && window.location?.hash === '#' + element.id)
+		),
 		'title',
-		['tentName'],
-		searchQuery
+		['tentName']
 	).filter((element) => !showingOnlyStarredEvents || starredEvents.includes(element.sys.id));
 </script>
 
