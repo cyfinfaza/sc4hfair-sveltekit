@@ -10,7 +10,7 @@ html {
 body, .global-theme-light {
 	--accent: #009959;
 	--text: #111;
-	--text-translucent: #1112;
+	--text-translucent: #1114;
 	--text-translucent-2: #111a;
 	--bg: #ededed;
 	--status-bar: #009959ff;
@@ -35,10 +35,7 @@ body, .global-theme-light {
 	--grey-text: #333;
 	--button-shadow: 0 0 8px -3px #0008;
 	--image-dimmer-opacity: 0.6;
-	--image-dimmer: linear-gradient(
-		rgba(255, 255, 255, var(--image-dimmer-opacity)),
-		rgba(255, 255, 255, var(--image-dimmer-opacity))
-	);
+	--image-dimmer: linear-gradient(rgba(255, 255, 255, var(--image-dimmer-opacity)), rgba(255, 255, 255, var(--image-dimmer-opacity)));
 	--backdrop-blur: blur(12px);
 	--theme-transition: 0.5s ease;
 	--qr-scanner-overlay-color: rgba(255, 255, 255, 0.3);
@@ -66,10 +63,7 @@ body.theme-dark, .global-theme-dark {
 	/* --navbar-text: #fafafa; */
 	--navbar-accent: #0003;
 	--button-shadow: 0 0 8px -2px #000;
-	--image-dimmer: linear-gradient(
-		rgba(0, 0, 0, var(--image-dimmer-opacity)),
-		rgba(0, 0, 0, var(--image-dimmer-opacity))
-	);
+	--image-dimmer: linear-gradient(rgba(0, 0, 0, var(--image-dimmer-opacity)), rgba(0, 0, 0, var(--image-dimmer-opacity)));
 	--qr-scanner-overlay-color: rgba(0, 0, 0, 0.3);
 	
 	color: var(--text);
@@ -82,11 +76,7 @@ body.theme-dark, .global-theme-dark {
 @supports (backdrop-filter: var(--backdrop-blur)) {
 	body, .global-theme-light {
 		--navbar: linear-gradient(var(--status-bar) 0%, #009959aa 64px, #00995988 128px) !important;
-		--navbar-grey: linear-gradient(
-			var(--status-bar) 0%,
-			#888888aa 64px,
-			#88888888 128px
-		) !important;
+		--navbar-grey: linear-gradient(var(--status-bar) 0%, #888888aa 64px, #88888888 128px) !important;
 		--light-blur: #fdfdfd33;
 	}
 
@@ -114,10 +104,7 @@ body {
 	background-color: var(--selection);
 }
 
-body,
-input,
-button,
-select {
+body, input, button, select {
 	font-family: 'DM Sans', sans-serif;
 	word-wrap: break-word;
 }
@@ -151,9 +138,7 @@ div {
 	align-items: center;
 }
 
-select,
-button,
-input {
+select, button, input {
 	color: inherit;
 	transition: color var(--theme-transition);
 	background-color: var(--light);
@@ -164,15 +149,12 @@ input {
 	outline: none;
 }
 
-button,
-input {
+button, input {
 	font-size: 1em;
 	padding: 0.3em;
 }
 
-code,
-pre,
-kbd {
+code, pre, kbd {
 	font-family: 'DM Mono', monospace;
 }
 

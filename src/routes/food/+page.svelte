@@ -49,14 +49,15 @@
 		align-items: center;
 		gap: 8px;
 		flex-wrap: wrap;
-	}
-	.filterOptions > * {
-		margin-block: 0;
+
+		> * {
+			margin-block: 0;
+		}
 	}
 
 	h2 {
 		text-align: center;
-		margin-bottom: 8px;
+		margin: 4px 0;
 	}
 
 	ul {
@@ -68,24 +69,34 @@
 		overflow-x: hidden;
 		list-style: none;
 
-		li span {
-			background-color: var(--bg);
-		}
-		li :first-child {
-			padding-right: 0.33ch;
+		li {
+			display: flex;
 
-			&:after {
-				content: ' . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .';
-				float: left;
-				width: 0;
-				white-space: nowrap;
-				color: var(--text-translucent);
+			// span {
+			// 	background: var(--bg);
+			// }
+			:first-child {
+				padding-right: 0.66ch;
 			}
-		}
-		li :last-child {
-			padding-left: 0.33ch;
-			float: right;
-			text-align: right;
+			:last-child {
+				padding-left: 0.66ch;
+				text-align: right;
+				order: 2;
+			}
+			&:before {
+				content: '';
+				order: 1;
+				flex-grow: 1;
+
+				// content: '.  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .';
+				// width: 0;
+				// white-space: nowrap;
+				// color: var(--text-translucent);
+
+				// transform: translateY(-30%);
+				margin-bottom: 0.3em;
+				border-bottom: dotted 0.25ch var(--text-translucent);
+			}
 		}
 	}
 </style>
