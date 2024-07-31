@@ -40,7 +40,6 @@ for tentKey in tentData:
 		entryId, version = previousData[clubSlug]
 		print('updating', clubSlug)
 
-
 		req = contentful.session.patch(f'https://api.contentful.com/spaces/{contentful.spaceId}/environments/{contentful.environmentId}/entries/{entryId}', headers={
 			'Content-Type': 'application/json-patch+json',
 			'X-Contentful-Version': str(version),

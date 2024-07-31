@@ -165,3 +165,5 @@ for clubListing in ['https://4histops.org/clubs', 'https://4histops.org/4-h-prep
 with open('clubData.json', 'w') as file:
 	json.dump(clubData, file, indent='\t')
 	file.close()
+
+print('\nclub data updated, run `python clubDataToContentful.py` to publish')

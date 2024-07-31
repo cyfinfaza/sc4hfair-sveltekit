@@ -25,7 +25,7 @@
 		"meetingLocation": "Ted Blum 4\u2011H Center",
 		"meetingWhen": "The 1st Wednesday of every month at 7:30 pm",
 		"grades": "4-13",
-		"tent": "goats"
+		"tent": "dairy-beef"
 	},
 	{
 		"listingWebsite": "https://4histops.org/chaps-spurs",
@@ -261,20 +261,6 @@
 		"meetingLocation": "Ted Blum 4\u2011H Center",
 		"meetingWhen": "The 3rd Friday of every month at 7:30pm",
 		"grades": "1-13",
-		"tent": "arts-sciences"
-	},
-	{
-		"listingWebsite": "https://4histops.org/sach",
-		"slug": "sach",
-		"tags": [
-			"community service & leadership",
-			"sach"
-		],
-		"name": "Student Ambassadors For Community Health (Sach)",
-		"description": "This club focuses on improving health in the Bound Brook Community. Somerset County 4-H in partnership with Middle Earth are able to empower youth to identify unique health challenges in their community and create solutions to shape positive change. This club is a great way for members to learn skills in leadership, business, government operations, problem solving, teamwork, and most importantly, creativity!\n\nTo learn more about our partner, Middle Earth, visit their website: http://www.middleearthnj.org/\ufeff. To learn more about the SACH program, visit their website at https://studentambassadorsnj.org/.",
-		"meetingLocation": "Middle Earth Center - 520 North Bridge Street, Bridgewater",
-		"meetingWhen": "The 2nd and 4th Tuesday of every month from 6-8pm",
-		"grades": "9-13",
 		"tent": "arts-sciences"
 	},
 	{

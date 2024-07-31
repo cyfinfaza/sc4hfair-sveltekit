@@ -1,8 +1,8 @@
 {
 	"dog-show": [],
-	"goats": ["branchburg-livestock", "just-kidding"],
+	"goats": ["just-kidding"],
 	"model-trains": ["somerset-4h-trainmasters"],
-	"dairy-beef": ["new-centre-dairy", "new-center-dairy-prep"],
+	"dairy-beef": ["branchburg-livestock", "new-centre-dairy", "new-center-dairy-prep"],
 	"sheep": ["sheepfold", "woolly-ones"],
 	"mechanical-sciences": ["broken-props-model-airplane", "somerset-sentinels-rocket-club"],
 	"rc-cars": ["radio-control-car-club"],
