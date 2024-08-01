@@ -10,6 +10,7 @@ import requests
 import json
 import sys
 import csv
+from datetime import datetime
 
 sheetId = sys.argv[1] if len(sys.argv) > 1 else input("Sheet ID: ")
 
@@ -32,7 +33,7 @@ for row in rows:
 			"hint": hint,
 		})
 
-output = json.dumps({"clues": clues, "falseCodes": falseCodes}, indent='\t')
+output = json.dumps({"year": datetime.now().year, "clues": clues, "falseCodes": falseCodes}, indent='\t')
 
 with open(sys.argv[2] if len(sys.argv) > 2 else input("Save output to: "), "w") as f:
 	f.write(output)

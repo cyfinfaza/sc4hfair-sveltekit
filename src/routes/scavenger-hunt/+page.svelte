@@ -3,30 +3,29 @@
 	// I'm not going to try and do a fancy thing or whatever to prevent it
 	// You win, come join the 4-H Computer Club
 
-	import QrScanner from 'qr-scanner';
-	import ClueBox from './ClueBox.svelte';
+	import { browser } from '$app/environment';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
-	import shData from 'data/shClues.json';
-	import { browser } from '$app/environment';
-	import { onMount, setContext, tick } from 'svelte';
-	import { writable } from 'svelte/store';
 	import Modal from 'components/Modal.svelte';
+	import { year, clues, falseCodes } from 'data/shClues.json';
+	import { SCAVENGER_HUNT_CODE, SCAVENGER_HUNT_HINTS } from 'logic/constants';
 	import { pvtUpdate } from 'logic/pvt';
+	import QrScanner from 'qr-scanner';
+	import { onDestroy, onMount, setContext, tick } from 'svelte';
+	import { writable } from 'svelte/store';
+	import ClueBox from './ClueBox.svelte';
 
-	const clues = shData.clues;
+	const currentYear = new Date().getFullYear();
+	const enabled = clues.length && year === currentYear;
 
 	const getIndexFromCode = (code) => clues.findIndex((clue) => clue.code === code);
 	const getOffsetIndexFromCode = (code) => getIndexFromCode(code) + 1;
 
-	const storageKeyPrefix = `sh_2023_`;
-
 	let atIndex = writable(0);
-	$: if ($atIndex > 0) localStorage.setItem(storageKeyPrefix + 'code', clues[$atIndex - 1].code);
+	$: if ($atIndex > 0) localStorage.setItem(SCAVENGER_HUNT_CODE, clues[$atIndex - 1].code);
 
 	let hintsUsed = writable([]);
-	$: if ($hintsUsed.length)
-		localStorage.setItem(storageKeyPrefix + 'hints', JSON.stringify($hintsUsed));
+	$: if ($hintsUsed.length) localStorage.setItem(SCAVENGER_HUNT_HINTS, JSON.stringify($hintsUsed));
 
 	setContext('sh', {
 		atIndex,
@@ -43,11 +42,13 @@
 		scannerMessage = '';
 
 	onMount(async () => {
+		if (!enabled) return;
+
 		if (browser) {
-			let tmpIndex = getOffsetIndexFromCode(localStorage.getItem(storageKeyPrefix + 'code'));
+			let tmpIndex = getOffsetIndexFromCode(localStorage.getItem(SCAVENGER_HUNT_CODE));
 			if (tmpIndex) $atIndex = tmpIndex;
 
-			let hints = JSON.parse(localStorage.getItem(storageKeyPrefix + 'hints'));
+			let hints = JSON.parse(localStorage.getItem(SCAVENGER_HUNT_HINTS));
 			if (hints && hints.length > 0) $hintsUsed = hints;
 
 			checkCode(new URLSearchParams(window.location.search).get('code'), true); // Code from a scanned URL bringing them here
@@ -83,24 +84,40 @@
 		() => qrScanner.destroy();
 	});
 
+	onMount(() => {
+		if (!browser || !enabled) return;
+		let removeCallback = () => {};
+		navigator.permissions.query({ name: 'camera' }).then((permissionStatus) => {
+			// let the library figure it out the first time
+			const handleChange = () => {
+				console.log(`camera permission state has changed to ${permissionStatus.state}`);
+				compatible = permissionStatus.state === 'granted';
+			};
+			permissionStatus.addEventListener('change', handleChange);
+			removeCallback = () => permissionStatus.removeEventListener('change', handleChange);
+		});
+		return () => removeCallback();
+	});
+
 	$: if (compatible) {
-		if (scanning)
+		if (scanning) {
 			qrScanner.start().catch((e) => {
 				console.error(e);
 				compatible = false;
 			});
-		else {
+		} else {
 			scannerMessage = '';
 			qrScanner.stop();
 		}
 	}
 
+	/** @type {ReturnType<typeof setTimeout>} */
 	let scannerMessageTimeout;
 
 	function checkCode(code, fromUrl = false) {
 		let index = getIndexFromCode(code);
 		console.table({ fromUrl, $atIndex });
-		const clueIsInFalseList = shData.falseCodes.includes(code);
+		const clueIsInFalseList = falseCodes.includes(code);
 		if (typeof code !== 'string' || !code) {
 			console.log('doing nothing, code is not a string');
 		} else if (index === -1) {
@@ -117,10 +134,7 @@
 			$atIndex = index + 1;
 			scanning = false;
 			scannerMessage = '';
-			(async () => {
-				await tick();
-				pvtUpdate();
-			})();
+			tick().then(() => pvtUpdate());
 		}
 		if (scannerMessageTimeout) clearTimeout(scannerMessageTimeout);
 		scannerMessageTimeout = setTimeout(() => (scannerMessage = ''), 10000);
@@ -139,28 +153,39 @@
 </script>
 
 <Layout title="Scavenger Hunt">
-	<div class="center">
-		<h1>2023 Scavenger Hunt</h1>
-		<p>
-			Welcome to the 4‑H Fair Scavenger Hunt! Each clue will lead you to a <strong>QR code</strong>,
-			which when scanned will unlock the next clue. The last clue will lead you to your prize: a $1
-			<a href="/map?locate=food">fair food</a> voucher and maybe something else…
-		</p>
-		<p style="margin-bottom: 0;">If you're stuck on a clue, try:</p>
-		<div style="display: flex; justify-content: center;">
-			<ul style="margin: 0; text-align: left;">
-				<li>looking at the <a href="/map">fair map</a> or <a href="/clubs">clubs list</a></li>
-				<li>talking to other 4‑Hers (they love to share)</li>
-				<li>using a hint (they're free)</li>
-				<li>searching for information in other resources</li>
-			</ul>
+	{#if enabled}
+		<div class="center">
+			<h1>{year} Scavenger Hunt</h1>
+			<p>
+				Welcome to the 4‑H Fair Scavenger Hunt! Each clue will lead you to a <strong>QR code</strong
+				>, which when scanned will unlock the next clue. The last clue will lead you to your prize:
+				a $1
+				<a href="/map?locate=food">fair food</a> voucher and maybe something else…
+			</p>
+			<p style="margin-bottom: 0;">If you're stuck on a clue, try:</p>
+			<div style="display: flex; justify-content: center;">
+				<ul style="margin: 0; text-align: left;">
+					<li>looking at the <a href="/map">fair map</a> or <a href="/clubs">clubs list</a></li>
+					<li>talking to other 4‑Hers (they love to share)</li>
+					<li>using a hint (they're free)</li>
+					<li>searching for information in other resources</li>
+				</ul>
+			</div>
+			<p>Hints used: {$hintsUsed.length}</p>
+			{#each clues as _, index}
+				<ClueBox {index} />
+			{/each}
+			<ClueBox winner />
 		</div>
-		<p>Hints used: {$hintsUsed.length}</p>
-		{#each clues as _, index}
-			<ClueBox {index} />
-		{/each}
-		<ClueBox winner />
-	</div>
+
+		<p>
+			You can reset the scavenger hunt in <a href="/settings">settings</a>, but only one prize may
+			be claimed per group.
+		</p>
+	{:else}
+		<h1>{currentYear} Scavenger Hunt</h1>
+		<p>The scavenger hunt is not ready yet, come back when the fair starts!</p>
+	{/if}
 
 	<!-- this div needs to always be rendered so the qr library doesn't die -->
 	<div
@@ -211,11 +236,6 @@
 			</div>
 		</div>
 	</div>
-
-	<p>
-		You can reset the scavenger hunt in <a href="/settings">settings</a>, but only one prize may be
-		claimed per group.
-	</p>
 </Layout>
 
 <Modal
@@ -253,10 +273,12 @@
 		padding: 8px;
 		box-sizing: border-box;
 		transition: 360ms cubic-bezier(0.82, 0.03, 0.09, 1);
+		opacity: 1;
 
 		&.hidden {
 			transform: translateY(calc(100% + 128px));
 			pointer-events: none;
+			opacity: 0;
 		}
 
 		& > div {

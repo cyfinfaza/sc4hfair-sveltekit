@@ -1,3 +1,4 @@
+import { SCAVENGER_HUNT_CODE } from 'logic/constants';
 import { checkIsStandalone } from 'logic/platform';
 
 export function pvtUpdate() {
@@ -7,7 +8,7 @@ export function pvtUpdate() {
 			url: window.location.href,
 			meta: {
 				standalone: checkIsStandalone(),
-				sh_2023_code: localStorage.getItem('sh_2023_code') || undefined,
+				[SCAVENGER_HUNT_CODE]: localStorage.getItem(SCAVENGER_HUNT_CODE) || undefined,
 			},
 		}),
 		credentials: 'include',
