@@ -4,6 +4,7 @@
 	// You win, come join the 4-H Computer Club
 
 	import { browser } from '$app/environment';
+	import { replaceState } from '$app/navigation';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import Modal from 'components/Modal.svelte';
@@ -52,7 +53,7 @@
 			if (hints && hints.length > 0) $hintsUsed = hints;
 
 			checkCode(new URLSearchParams(window.location.search).get('code'), true); // Code from a scanned URL bringing them here
-			window.history.replaceState(null, null, window.location.pathname);
+			replaceState(window.location.pathname, null);
 		}
 
 		try {
@@ -168,7 +169,7 @@
 			</p>
 			<p style="margin-bottom: 0;">If you're stuck on a clue, try:</p>
 			<div style="display: flex; justify-content: center;">
-				<ul style="margin: 0; text-align: left;">
+				<ul style="margin: 0; text-align: left; padding-inline-start: 1em;">
 					<li>looking at the <a href="/map">fair map</a> or <a href="/clubs">clubs list</a></li>
 					<li>talking to other 4‑Hers (they love to share)</li>
 					<li>using a hint (they're free)</li>
