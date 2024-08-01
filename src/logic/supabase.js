@@ -77,9 +77,7 @@ async function removeCachedData() {
 			keys.map(async (key) => {
 				const cache = await globalThis.caches.open(key);
 				await Promise.all(
-					(
-						await cache.keys()
-					).map(async (req) => {
+					(await cache.keys()).map(async (req) => {
 						if (req.url.includes('.supabase.co/')) await cache.delete(req);
 					})
 				);

@@ -16,3 +16,6 @@ yarn.lock
 
 # Shipped directly to the browser
 src/app.html
+
+src/data/mapbox-color-themes/*
+tools/*.json

@@ -37,7 +37,8 @@
 <dialog
 	bind:this={dialog}
 	on:close={() => {
-		if (dialog.returnValue === 'confirm') dispatch('confirm'); // when explicitly confirming
+		if (dialog.returnValue === 'confirm')
+			dispatch('confirm'); // when explicitly confirming
 		else dispatch('cancel'); // for any other reason (click out, etc.)
 		show = false;
 		dispatch('close', dialog.returnValue); // always (for resetting content or handling a custom return), DONE LAST
@@ -113,10 +114,10 @@
 			}
 			.content {
 				> :global(*) {
+					margin-block: 0.5em;
 					&:first-child {
 						margin-top: 0;
 					}
-					margin-block: 0.5em;
 				}
 			}
 		}

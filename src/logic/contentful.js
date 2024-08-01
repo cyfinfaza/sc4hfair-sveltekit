@@ -6,9 +6,7 @@ export async function queryContentful(query) {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${atob(
-					'VFJsQ28xQmxUbXB3eUtJT0hKMDhYMmxZQWFOTmxjZUY0MTVLTW1La01Gaw=='
-				)}`,
+				'Authorization': `Bearer ${atob('VFJsQ28xQmxUbXB3eUtJT0hKMDhYMmxZQWFOTmxjZUY0MTVLTW1La01Gaw==')}`,
 			},
 		}
 	);

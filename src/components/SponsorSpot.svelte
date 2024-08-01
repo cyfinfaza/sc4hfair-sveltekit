@@ -14,8 +14,10 @@
 			let chosenTier = Math.random();
 
 			// because not all tiers are used this year, split into the mainer ones
-			if (chosenTier < 0.25) chosenTier = ['clover', 'sky']; // 25% but from one
-			else if (chosenTier < 0.8) chosenTier = ['gold', 'silver', 'bronze']; // 55% the rest
+			if (chosenTier < 0.25)
+				chosenTier = ['clover', 'sky']; // 25% but from one
+			else if (chosenTier < 0.8)
+				chosenTier = ['gold', 'silver', 'bronze']; // 55% the rest
 			else chosenTier = ['copper', 'custom', 'automobile', 'friends-family']; // 20% but from many
 
 			let filteredSponsors = sponsors.filter((ad) => chosenTier.includes(ad.tier));
@@ -40,9 +42,9 @@
 			<h2>
 				{#if !listMode}
 					<span class="disclosure">
-						{sponsor.tier
-							? (sponsor.tier === 'friends-family' ? 'FRIENDS & FAMILY' : sponsor.tier) + ' '
-							: ''}FAIR SPONSOR
+						{sponsor.tier ?
+							(sponsor.tier === 'friends-family' ? 'FRIENDS & FAMILY' : sponsor.tier) + ' '
+						:	''}FAIR SPONSOR
 					</span>
 				{/if}
 				{sponsor.heading}

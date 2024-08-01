@@ -8,7 +8,7 @@
 	export let data;
 
 	let searchQuery = (browser && window.sessionStorage.getItem('clubs_searchQuery')) || '';
-	$: browser && window.sessionStorage.setItem('clubs_searchQuery', searchQuery);
+	$: if (browser) window.sessionStorage.setItem('clubs_searchQuery', searchQuery);
 
 	let results = [];
 	$: results = exactSearch(searchQuery, data.clubs, 'name', [

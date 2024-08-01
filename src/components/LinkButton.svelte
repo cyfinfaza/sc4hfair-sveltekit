@@ -35,6 +35,8 @@
 <svelte:element
 	this={elementType}
 	type="button"
+	role="button"
+	tabindex="0"
 	{href}
 	on:click={onClick}
 	class="container button"

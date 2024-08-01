@@ -49,8 +49,8 @@
 <noscript>JavaScript is required to use this app.</noscript>
 {#key title}
 	<div
-		in:fly={{ duration: animationDuration, delay: animationDuration, y: 50, quintOut }}
-		out:fly={{ duration: animationDuration, y: -50, quintIn }}
+		in:fly|global={{ duration: animationDuration, delay: animationDuration, y: 50, quintOut }}
+		out:fly|global={{ duration: animationDuration, y: -50, quintIn }}
 		class={['content', forceTheme ? 'global-theme-' + forceTheme : null].filter(Boolean).join(' ')}
 		id="content"
 		class:noPadding

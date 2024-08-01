@@ -123,9 +123,9 @@ function cacheFirst(event, revalidateEtag = false) {
 						})()
 					);
 				}
-				return wasRevalidated
-					? await cache.match(event.request, { ignoreSearch: true })
-					: cachedResponse;
+				return wasRevalidated ?
+						await cache.match(event.request, { ignoreSearch: true })
+					:	cachedResponse;
 			} else {
 				console.log('CACHE MISS: ', event.request.url);
 				let resp;

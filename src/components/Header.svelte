@@ -12,7 +12,8 @@
 	export let offsetContent = true;
 </script>
 
-<div
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<nav
 	class="invisible"
 	style:height={offsetContent ? null : 0}
 	on:keydown={(e) => {
@@ -84,7 +85,7 @@
 			</div>
 		</div>
 	</div>
-</div>
+</nav>
 
 <style lang="scss">
 	.visible {

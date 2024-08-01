@@ -41,9 +41,10 @@
 	<p>
 		We don't share any personally identifying information publicly or with third-parties besides
 		<a href="https://4histops.org">Somerset County 4‑H</a>, except when required to by law. If you
-		use the <a href="/interests">club interest manager</a>, your provided name, email address, phone
-		number, and other relavent information will be shared with leaders of the clubs you marked as
-		interested in.
+		use the
+		<a href="/interests">club interest manager</a>, your provided name, email address, phone number,
+		and other relavent information will be shared with leaders of the clubs you marked as interested
+		in.
 	</p>
 	<p>
 		Our website may link to external sites that are not operated by us. Please be aware that we have

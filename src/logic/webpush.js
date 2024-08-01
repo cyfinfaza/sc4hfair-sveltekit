@@ -72,9 +72,9 @@ export async function checkNotificationStatus() {
 		// if we aren't granted, it doesn't matter if we already have a subscription as we can't send
 		// if we try to get the subscription without permission, 💀
 		registered:
-			Notification.permission == 'granted'
-				? (await subscribe(true)).registered // dry check, will not send a test notification
-				: false,
+			Notification.permission == 'granted' ?
+				(await subscribe(true)).registered // dry check, will not send a test notification
+			:	false,
 	};
 }
 

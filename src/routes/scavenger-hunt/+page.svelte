@@ -57,7 +57,7 @@
 
 		try {
 			compatible = typeof navigator === 'object' && (await QrScanner.hasCamera());
-		} catch (e) {
+		} catch (_) {
 			compatible = false;
 		}
 		if (!compatible) return;
@@ -70,7 +70,7 @@
 					try {
 						let tempCode = new URLSearchParams(new URL(code).search).get('code');
 						if (typeof tempCode === 'string') code = tempCode;
-					} catch (e) {
+					} catch (_) {
 						// if it fails, it isn't a URL with a code
 					}
 					console.log('scanned', code);
@@ -145,7 +145,7 @@
 		if (!clues[$atIndex]) return;
 		console.table({
 			code,
-			index: index,
+			'index': index,
 			'current code': clues[$atIndex].code,
 			'current index': $atIndex,
 			'current clue': clues[$atIndex].clue,

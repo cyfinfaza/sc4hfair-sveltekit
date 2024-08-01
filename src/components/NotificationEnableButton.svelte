@@ -14,14 +14,14 @@
 	<LinkButton
 		label={(!$isOnline && 'Notifications unavailable offline') ||
 			loading ||
-			($notificationStatus?.available
-				? $notificationStatus?.registered
-					? 'Notifications enabled (tap to disable)'
-					: 'Notifications disabled (tap to enable)'
-				: 'Notifications unavailable')}
-		icon={$notificationStatus?.available && $notificationStatus?.registered
-			? 'notifications'
-			: 'notifications_off'}
+			($notificationStatus?.available ?
+				$notificationStatus?.registered ?
+					'Notifications enabled (tap to disable)'
+				:	'Notifications disabled (tap to enable)'
+			:	'Notifications unavailable')}
+		icon={$notificationStatus?.available && $notificationStatus?.registered ?
+			'notifications'
+		:	'notifications_off'}
 		disabled={loading !== null || !$notificationStatus?.available || !$isOnline}
 		active={$notificationStatus?.available && $notificationStatus?.registered}
 		on:click={async () => {

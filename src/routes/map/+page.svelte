@@ -102,9 +102,9 @@
 
 			map.flyTo({
 				center:
-					typeof element.geometry.coordinates[0] === 'number'
-						? element.geometry.coordinates
-						: polylabel(element.geometry.coordinates), // use the center of the feature
+					typeof element.geometry.coordinates[0] === 'number' ?
+						element.geometry.coordinates
+					:	polylabel(element.geometry.coordinates), // use the center of the feature
 				zoom: 18.5,
 				speed: 2.7, // this is done once on page load so make it go fast
 			});
@@ -196,16 +196,12 @@
 			acrylic
 		/>
 		<LinkButton
-			label={trackUserLocationRecenter
-				? 'Center on me'
-				: trackUserLocationActive
-				? 'Stop locating me'
-				: 'Locate me'}
-			icon={trackUserLocationRecenter
-				? 'gps_not_fixed'
-				: trackUserLocationActive
-				? 'gps_off'
-				: 'gps_fixed'}
+			label={trackUserLocationRecenter ? 'Center on me'
+			: trackUserLocationActive ? 'Stop locating me'
+			: 'Locate me'}
+			icon={trackUserLocationRecenter ? 'gps_not_fixed'
+			: trackUserLocationActive ? 'gps_off'
+			: 'gps_fixed'}
 			on:click={() => {
 				geolocate.trigger();
 			}}
@@ -221,9 +217,7 @@
 				if (await caches.has('offline-cache-v2')) {
 					const cache = await caches.open('offline-cache-v2');
 					await Promise.all(
-						(
-							await cache.keys()
-						).map((req) => {
+						(await cache.keys()).map((req) => {
 							const url = new URL(req.url);
 							if (url.hostname === 'api.mapbox.com' && url.pathname.endsWith('.webp'))
 								return cache.delete(req);
@@ -337,6 +331,7 @@
 		z-index: 11;
 		transition: 360ms cubic-bezier(0.82, 0.03, 0.09, 1);
 		padding: 8px;
+		pointer-events: none;
 
 		&.hidden {
 			transform: translateY(calc(100% + 128px));
@@ -348,7 +343,6 @@
 			height: auto;
 		}
 
-		pointer-events: none;
 		> * {
 			pointer-events: auto;
 			background-color: var(--light-blur);
@@ -403,23 +397,21 @@
 		}
 	}
 
-	:global {
-		.mapboxgl-map {
-			font-family: inherit;
-		}
+	:global(.mapboxgl-map) {
+		font-family: inherit;
+	}
 
-		.mapboxgl-ctrl-scale {
-			background-color: var(--light-blur);
-			backdrop-filter: var(--backdrop-blur);
-			border-radius: 5px 5px 0 0;
-			color: var(--text);
-			border: none;
-			border-bottom: 2px solid var(--text);
-		}
+	:global(.mapboxgl-ctrl-scale) {
+		background-color: var(--light-blur);
+		backdrop-filter: var(--backdrop-blur);
+		border-radius: 5px 5px 0 0;
+		color: var(--text);
+		border: none;
+		border-bottom: 2px solid var(--text);
+	}
 
-		.mapboxgl-ctrl-top-right {
-			display: none;
-		}
+	:global(.mapboxgl-ctrl-top-right) {
+		display: none;
 	}
 
 	.bottomRight {

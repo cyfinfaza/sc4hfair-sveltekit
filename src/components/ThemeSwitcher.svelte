@@ -4,16 +4,12 @@
 
 	export let header = false;
 
-	let nextThemeID;
-	let currentThemeIndex;
-	let currentTheme;
-	let themeIcon;
+	let nextThemeID, currentTheme, themeIcon;
 	$: {
 		currentTheme =
 			themes.filter((item, index) => {
 				if (item.id === $theme) {
 					nextThemeID = themes.length - 1 === index ? themes[0].id : themes[index + 1].id;
-					currentThemeIndex = index;
 					return true;
 				}
 				return false;

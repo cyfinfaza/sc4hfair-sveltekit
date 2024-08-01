@@ -152,9 +152,9 @@
 		}}
 	>
 		<p>
-			Are you sure you want to reset {confirmReset === 'sh'
-				? 'your scavenger hunt progress'
-				: 'this'}? You will not be able to restore it.
+			Are you sure you want to reset {confirmReset === 'sh' ?
+				'your scavenger hunt progress'
+			:	'this'}? You will not be able to restore it.
 		</p>
 		{#if confirmReset === 'sh'}
 			<p>Note that you may only claim one prize per person.</p>
@@ -171,6 +171,7 @@
 		<LinkButton label="Privacy Policy" href="/privacy-policy" icon="policy" />
 	</p>
 	<div style:opacity={0.5}>
+		<!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
 		<code
 			role="button"
 			tabindex="0"

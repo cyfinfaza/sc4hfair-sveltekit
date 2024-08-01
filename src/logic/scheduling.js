@@ -4,7 +4,7 @@ export const addHoursToDate = (date, hours) => new Date(date.getTime() + hours *
 
 export const eventIsFuture = (event) =>
 	Date.now() <
-	(event.endTime
-		? new Date(event.endTime)
-		: addHoursToDate(new Date(event.time), DEFAULT_EVENT_DURATION_HOURS)
+	(event.endTime ?
+		new Date(event.endTime)
+	:	addHoursToDate(new Date(event.time), DEFAULT_EVENT_DURATION_HOURS)
 	).getTime();
