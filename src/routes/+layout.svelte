@@ -87,7 +87,8 @@
 
 	let pushPoprxUpdate;
 	afterNavigate(({ to }) => {
-		console.log('afterNavigate', to?.url.href);
+		const href = to?.url.href;
+		console.log('afterNavigate', href);
 
 		const kioskSwitch = to?.url.searchParams.get('kiosk');
 		if (kioskSwitch === 'enable') $kioskMode = true;
@@ -100,7 +101,7 @@
 		if (typeof pushPoprxUpdate === 'function') pushPoprxUpdate();
 
 		try {
-			pvtUpdate({ referrer });
+			pvtUpdate({ href, referrer });
 		} catch (error) {
 			console.error('pvt error:', error);
 		}
