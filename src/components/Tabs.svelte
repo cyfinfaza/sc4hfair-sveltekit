@@ -8,7 +8,7 @@
 {#if actualTabs.length > 0}
 	<div class="container">
 		{#each tabs as { name: tab }, i}
-			<button class="tab" class:selected={i === selectedTab} on:click={(_) => (selectedTab = i)}>
+			<button class="tab" class:selected={i === selectedTab} on:click={() => (selectedTab = i)}>
 				{tab}
 			</button>
 		{/each}

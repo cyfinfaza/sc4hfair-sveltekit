@@ -1,4 +1,3 @@
-import { page } from '$app/stores';
 import { getClubs } from 'logic/contentful.js';
 
 /** @type {import('./$types').PageLoad} */

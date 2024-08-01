@@ -2,7 +2,7 @@
 	import mapboxgl from 'mapbox-gl';
 	import 'mapbox-gl/dist/mapbox-gl.css';
 	import polylabel from 'polylabel';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { goto } from '$app/navigation';
 
 	import DateTime from 'components/DateTime.svelte';
@@ -133,8 +133,11 @@
 			attributionControl: false,
 		});
 
-		map.on('load', (_) => {
+		map.on('load', () => {
 			isMapLoaded = true;
+
+			map.resize();
+			tick().then(() => map.resize());
 
 			if (toLocate) selectFeature(toLocate);
 		});
@@ -246,12 +249,7 @@
 				{selectedFeature?.properties.name || selectedFeature?.properties.slug || '-'}
 				<div>
 					{#if selectedFeature?.properties.slug === 'food'}
-						<LinkButton
-							label="Menu"
-							icon="fastfood"
-							on:click={() => goto('/food')}
-							acrylic
-						/>
+						<LinkButton label="Menu" icon="fastfood" on:click={() => goto('/food')} acrylic />
 					{/if}
 					<LinkButton
 						label="Close"

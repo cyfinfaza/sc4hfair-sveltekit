@@ -4,7 +4,6 @@
 
 	import { fly } from 'svelte/transition';
 	import { quintOut, quintIn } from 'svelte/easing';
-	import { onMount } from 'svelte';
 
 	export let title = '';
 	export let description = 'The Somerset County 4‑H Fair App';

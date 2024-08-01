@@ -2,7 +2,7 @@
 	export let value = false;
 </script>
 
-<button class="theButton" class:on={value} on:click={(_) => (value = !value)}>
+<button class="theButton" class:on={value} on:click={() => (value = !value)}>
 	<slot />
 </button>
 

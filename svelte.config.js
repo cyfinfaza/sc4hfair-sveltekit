@@ -23,7 +23,7 @@ const config = {
 			// manually check every 5 minutes for updates
 			// the browser will only check for a sw update on reload
 			// but the user might leave the app open so we still want to get those updates
-			pollInterval: 300_000,
+			pollInterval: 300000,
 		},
 	},
 	preprocess: [

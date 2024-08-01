@@ -40,7 +40,7 @@
 					<span class="material-icons" aria-hidden="true">cloud_off</span>
 				{/if}
 				<LoadingRing loading={$navigating} />
-				<button type="button" class="menuButton button" on:click={(_) => ($menuOpen = !$menuOpen)}>
+				<button type="button" class="menuButton button" on:click={() => ($menuOpen = !$menuOpen)}>
 					<div class="menuIconContainer">
 						<i class="material-icons" aria-hidden="true" class:inactive={$menuOpen}>menu</i>
 						<i class="material-icons" aria-hidden="true" class:inactive={!$menuOpen}>close</i>

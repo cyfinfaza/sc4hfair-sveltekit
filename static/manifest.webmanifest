@@ -63,23 +63,27 @@
 			"name": "Map",
 			"description": "Map of the fairgrounds",
 			"url": "/map",
-			"icons": [{
-				"src": "icons/map-192x192.png",
-				"type": "image/png",
-				"sizes": "192x192",
-				"purpose": "any"
-			}]
+			"icons": [
+				{
+					"src": "icons/map-192x192.png",
+					"type": "image/png",
+					"sizes": "192x192",
+					"purpose": "any"
+				}
+			]
 		},
 		{
 			"name": "Schedule",
 			"description": "Schedule of events",
 			"url": "/schedule",
-			"icons": [{
-				"src": "icons/schedule-192x192.png",
-				"type": "image/png",
-				"sizes": "192x192",
-				"purpose": "any"
-			}]
+			"icons": [
+				{
+					"src": "icons/schedule-192x192.png",
+					"type": "image/png",
+					"sizes": "192x192",
+					"purpose": "any"
+				}
+			]
 		}
 	]
 }

@@ -12,7 +12,7 @@
 		"package": "svelte-kit package",
 		"preview": "vite preview",
 		"postinstall": "svelte-kit sync",
-		"lint": "prettier --check --plugin-search-dir=. . && eslint .",
+		"lint": "prettier --check --plugin-search-dir=. .; eslint .",
 		"format": "prettier --write --plugin-search-dir=. .",
 		"dev-pvt": "python api/pvt/index.py",
 		"dev-webpush": "python api/webpush/index.py"

@@ -144,7 +144,7 @@
 							.delete()
 							.match({ owner: $session.user.id });
 						if (error) alert(error.message);
-						else interestsSlugs.update(() => []);
+						else interestsSlugs.set([]);
 					}
 					goto('/interests');
 					break;

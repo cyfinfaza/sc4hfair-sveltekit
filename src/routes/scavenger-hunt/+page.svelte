@@ -11,7 +11,7 @@
 	import { SCAVENGER_HUNT_CODE, SCAVENGER_HUNT_HINTS } from 'logic/constants';
 	import { pvtUpdate } from 'logic/pvt';
 	import QrScanner from 'qr-scanner';
-	import { onDestroy, onMount, setContext, tick } from 'svelte';
+	import { onMount, setContext, tick } from 'svelte';
 	import { writable } from 'svelte/store';
 	import ClueBox from './ClueBox.svelte';
 
@@ -57,7 +57,9 @@
 
 		try {
 			compatible = typeof navigator === 'object' && (await QrScanner.hasCamera());
-		} catch (e) {}
+		} catch (e) {
+			compatible = false;
+		}
 		if (!compatible) return;
 
 		try {
@@ -68,7 +70,9 @@
 					try {
 						let tempCode = new URLSearchParams(new URL(code).search).get('code');
 						if (typeof tempCode === 'string') code = tempCode;
-					} catch (e) {} // if it fails, it isn't a URL with a code
+					} catch (e) {
+						// if it fails, it isn't a URL with a code
+					}
 					console.log('scanned', code);
 					checkCode(code);
 				},

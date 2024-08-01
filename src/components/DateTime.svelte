@@ -63,7 +63,7 @@
 			d = dateO.diff(d, ['years', 'months', 'days', 'hours', 'minutes']);
 			if (d.valueOf() < 0) d = d.negate();
 			d = Duration.fromObject(
-				Object.fromEntries(Object.entries(d.toObject()).filter(([_, val]) => val !== 0))
+				Object.fromEntries(Object.entries(d.toObject()).filter(([, val]) => val !== 0))
 			); // remove 0s so they don't show up in the final string
 			durationString = d.toHuman({ floor: true });
 		}

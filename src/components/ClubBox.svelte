@@ -44,7 +44,7 @@
 				label="Remove"
 				disabled={!$isOnline}
 				icon="remove"
-				on:click={(_) => removeInterest(club.slug)}
+				on:click={() => removeInterest(club.slug)}
 				lightFont
 			/>
 		{:else}

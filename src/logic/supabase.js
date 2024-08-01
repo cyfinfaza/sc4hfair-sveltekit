@@ -19,10 +19,10 @@ export async function initSupabaseClient() {
 		window.supabase = client;
 		const sess = (await client.auth.getSession())?.data?.session;
 		console.log(sess);
-		session.update((_) => sess);
+		session.set(sess);
 		refresh();
 		client.auth.onAuthStateChange(async (event, sess) => {
-			session.update((_) => sess);
+			session.set(sess);
 			refresh();
 		});
 		isOnline.subscribe((online) => {
@@ -34,7 +34,7 @@ export async function initSupabaseClient() {
 
 export async function refresh() {
 	const sess = (await client.auth.getSession())?.data?.session;
-	session.update((_) => sess);
+	session.set(sess);
 	console.log(sess);
 	if (sess) {
 		try {
@@ -51,7 +51,7 @@ export async function refresh() {
 		let { data: results, error } = await client.from('interests').select('*');
 		if (error) console.error(error);
 		console.log(results);
-		interestsSlugs.update(() => results.map((result) => result.interest_slug));
+		interestsSlugs.set(results.map((result) => result.interest_slug));
 	} else {
 		await removeCachedData();
 	}
@@ -69,7 +69,7 @@ export async function login(provider, redirect = '/interests') {
 
 /** when logging out, we don't want to keep stale login/user data */
 async function removeCachedData() {
-	interestsSlugs.update(() => []);
+	interestsSlugs.set([]);
 	if (browser) {
 		// delete any cached supabase responses
 		const keys = await globalThis.caches.keys();
@@ -95,7 +95,7 @@ export async function logout() {
 		localStorage.removeItem(client.auth.storageKey);
 		const sess = (await client.auth.getSession()).data.session;
 		if (sess !== null) throw new Error('Failed to clear Supabase session');
-		session.update((_) => sess);
+		session.set(sess);
 	} else {
 		await client.auth.signOut();
 	}

@@ -84,7 +84,7 @@
 					lightFont
 				/>
 			{/if}
-			<LinkButton icon="star" active={starred} on:click={(_) => toggleStarredEvent(event.sys.id)} />
+			<LinkButton icon="star" active={starred} on:click={() => toggleStarredEvent(event.sys.id)} />
 		</div>
 	</div>
 </div>

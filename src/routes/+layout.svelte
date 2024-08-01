@@ -106,7 +106,7 @@
 				const data = JSON.parse(event.data);
 				console.log('poprx:', data);
 			};
-			client.onopen = function (event) {
+			client.onopen = function () {
 				client.send(
 					JSON.stringify({
 						type: 'txinit',
@@ -129,7 +129,7 @@
 			return client;
 		}
 		let client = start_poprx('wss://fair-app-poprx.4hcomputers.club');
-		document.addEventListener('visibilitychange', (e) => {
+		document.addEventListener('visibilitychange', () => {
 			if (
 				document.visibilityState === 'visible' &&
 				(!client || client.readyState === 2 || client.readyState === 3)

@@ -7,7 +7,7 @@ const query = `{
 			items
 		}
 	}
-}`
+}`;
 
 let loadedData = false,
 	foodVendors = [];

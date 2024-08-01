@@ -30,7 +30,7 @@
 	</div>
 	<div class="filterOptions">
 		<input type="text" placeholder="Search" bind:value={searchQuery} />
-		<button style:display={searchQuery ? null : 'none'} on:click={(_) => (searchQuery = '')}
+		<button style:display={searchQuery ? null : 'none'} on:click={() => (searchQuery = '')}
 			>Clear</button
 		>
 	</div>

@@ -97,10 +97,9 @@ export async function subscribe(dry = false) {
 	let testId, handleSwMessage;
 	if (!dry) {
 		// prepare to get a test message
-		let resolveTestId, rejectTestId;
-		testId = new Promise((resolve, reject) => {
+		let resolveTestId;
+		testId = new Promise((resolve) => {
 			resolveTestId = resolve;
-			rejectTestId = reject;
 		});
 		// var broadcast = new BroadcastChannel('push-test');
 		// broadcast.onmessage = (e) => {
