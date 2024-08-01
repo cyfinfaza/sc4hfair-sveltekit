@@ -5,19 +5,21 @@
 
 	import { browser } from '$app/environment';
 	import { replaceState } from '$app/navigation';
+	import KioskPitch from 'components/KioskPitch.svelte';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import Modal from 'components/Modal.svelte';
 	import { year, clues, falseCodes } from 'data/shClues.json';
 	import { SCAVENGER_HUNT_CODE, SCAVENGER_HUNT_HINTS } from 'logic/constants';
 	import { pvtUpdate } from 'logic/pvt';
+	import { kioskMode } from 'logic/stores';
 	import QrScanner from 'qr-scanner';
 	import { onMount, setContext, tick } from 'svelte';
 	import { writable } from 'svelte/store';
 	import ClueBox from './ClueBox.svelte';
 
 	const currentYear = new Date().getFullYear();
-	const enabled = clues.length && year === currentYear;
+	const enabled = clues.length && year === currentYear && !$kioskMode;
 
 	const getIndexFromCode = (code) => clues.findIndex((clue) => clue.code === code);
 	const getOffsetIndexFromCode = (code) => getIndexFromCode(code) + 1;
@@ -187,60 +189,72 @@
 			You can reset the scavenger hunt in <a href="/settings">settings</a>, but only one prize may
 			be claimed per group.
 		</p>
-	{:else}
-		<h1>{currentYear} Scavenger Hunt</h1>
-		<p>The scavenger hunt is not ready yet, come back when the fair starts!</p>
-	{/if}
 
-	<!-- this div needs to always be rendered so the qr library doesn't die -->
-	<div
-		class="scanner"
-		class:hidden={!scanning || !compatible}
-		aria-hidden={!scanning || !compatible}
-	>
-		<div>
-			<!-- svelte-ignore a11y-media-has-caption -->
-			<video bind:this={videoElement} />
-			<div class="scannerOverlay showSquare">
-				<div class="scannerButtons">
+		<!-- this div needs to always be rendered so the qr library doesn't die -->
+		<div
+			class="scanner"
+			class:hidden={!scanning || !compatible}
+			aria-hidden={!scanning || !compatible}
+		>
+			<div>
+				<!-- svelte-ignore a11y-media-has-caption -->
+				<video bind:this={videoElement} />
+				<div class="scannerOverlay showSquare">
+					<div class="scannerButtons">
+						<LinkButton
+							label="Enter manually"
+							icon="keyboard"
+							on:click={() => (showEnterManuallyPrompt = true)}
+							acrylic
+						/>
+						<LinkButton label="Close" icon="close" on:click={() => (scanning = false)} acrylic />
+					</div>
+					<p class="scannerMessage">
+						{scannerMessage ||
+							"Try changing the angle to remove any glare. If the code won't scan, click the top left button to manually enter the code."}
+					</p>
+				</div>
+			</div>
+		</div>
+		<!-- copy of scanner box for uncompatible devices -->
+		<div
+			class="scanner fallback"
+			class:hidden={!scanning || compatible}
+			aria-hidden={!scanning || compatible}
+		>
+			<div class="scannerOverlay">
+				<LinkButton label="Close" icon="close" on:click={() => (scanning = false)} acrylic />
+				<div class="scannerMessage">
+					<p>{scannerMessage}</p>
+					<p>
+						The scavenger hunt recommends a QR scanner. Check that your browser is allowing the app
+						camera access to use the built-in one, or use an external scanner.
+					</p>
+					<p>Alternatively, you can manually enter the code:</p>
 					<LinkButton
 						label="Enter manually"
 						icon="keyboard"
 						on:click={() => (showEnterManuallyPrompt = true)}
-						acrylic
 					/>
-					<LinkButton label="Close" icon="close" on:click={() => (scanning = false)} acrylic />
 				</div>
-				<p class="scannerMessage">
-					{scannerMessage ||
-						"Try changing the angle to remove any glare. If the code won't scan, click the top left button to manually enter the code."}
-				</p>
 			</div>
 		</div>
-	</div>
-	<!-- copy of scanner box for uncompatible devices -->
-	<div
-		class="scanner fallback"
-		class:hidden={!scanning || compatible}
-		aria-hidden={!scanning || compatible}
-	>
-		<div class="scannerOverlay">
-			<LinkButton label="Close" icon="close" on:click={() => (scanning = false)} acrylic />
-			<div class="scannerMessage">
-				<p>{scannerMessage}</p>
-				<p>
-					The scavenger hunt recommends a QR scanner. Check that your browser is allowing the app
-					camera access to use the built-in one, or use an external scanner.
-				</p>
-				<p>Alternatively, you can manually enter the code:</p>
-				<LinkButton
-					label="Enter manually"
-					icon="keyboard"
-					on:click={() => (showEnterManuallyPrompt = true)}
-				/>
-			</div>
+	{:else}
+		<div class="center">
+			<h1>{currentYear} Scavenger Hunt</h1>
+			{#if $kioskMode}
+				<KioskPitch>
+					<p>
+						The scavenger hunt is not available at the kiosk. Please use a personal device to
+						participate!
+					</p>
+					<p>Trust me, it's a lot of fun… and there's even a prize!</p>
+				</KioskPitch>
+			{:else}
+				<p>The scavenger hunt is not ready yet, come back when the fair starts!</p>
+			{/if}
 		</div>
-	</div>
+	{/if}
 </Layout>
 
 <Modal

@@ -1,10 +1,11 @@
 <script>
 	import { browser, version } from '$app/environment';
-	import { afterNavigate } from '$app/navigation';
+	import { afterNavigate, replaceState } from '$app/navigation';
 	import { updated } from '$app/stores';
 	import { onMount, setContext } from 'svelte';
 	import Modal from 'components/Modal.svelte';
 	import { pvtUpdate } from 'logic/pvt.js';
+	import { kioskMode } from 'logic/stores.js';
 
 	import 'styles/global.css';
 	import 'styles/material-icons.css';
@@ -85,15 +86,26 @@
 	});
 
 	let pushPoprxUpdate;
-	afterNavigate(() => {
-		console.log('afterNavigate', window.location.pathname);
+	afterNavigate(({ to }) => {
+		console.log('afterNavigate', to?.url.href);
+
+		const kioskSwitch = to?.url.searchParams.get('kiosk');
+		if (kioskSwitch === 'enable') $kioskMode = true;
+		else if (kioskSwitch === 'disable') $kioskMode = false;
+
+		const referrer = to?.url.searchParams.get('referrer');
+
+		if (kioskSwitch || referrer) replaceState(to.url.pathname, null);
+
 		if (typeof pushPoprxUpdate === 'function') pushPoprxUpdate();
+
 		try {
-			pvtUpdate();
+			pvtUpdate({ referrer });
 		} catch (error) {
 			console.error('pvt error:', error);
 		}
 	});
+
 	onMount(() => {
 		function start_poprx(addr) {
 			let txid = window.localStorage.getItem('poprx-txid');
@@ -104,7 +116,7 @@
 			const client = new WebSocket(addr);
 			client.onmessage = function (event) {
 				const data = JSON.parse(event.data);
-				console.log('poprx:', data);
+				// console.log('poprx:', data);
 			};
 			client.onopen = function () {
 				client.send(
@@ -138,6 +150,7 @@
 			else client.close();
 		});
 		// start_poprx('ws://localhost:6002');
+		() => client.close();
 	});
 
 	// force reload on navigation if app can be updated,

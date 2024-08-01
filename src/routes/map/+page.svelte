@@ -219,8 +219,7 @@
 					await Promise.all(
 						(await cache.keys()).map((req) => {
 							const url = new URL(req.url);
-							if (url.hostname === 'api.mapbox.com' && url.pathname.endsWith('.webp'))
-								return cache.delete(req);
+							if (url.hostname === 'api.mapbox.com') return cache.delete(req);
 						})
 					);
 				}

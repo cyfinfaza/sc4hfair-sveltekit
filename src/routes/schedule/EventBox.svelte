@@ -6,6 +6,7 @@
 	import { share, canWebShare } from 'logic/webshare.js';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { kioskMode } from 'logic/stores';
 
 	export let event;
 	export let index = 0;
@@ -84,7 +85,13 @@
 					lightFont
 				/>
 			{/if}
-			<LinkButton icon="star" active={starred} on:click={() => toggleStarredEvent(event.sys.id)} />
+			{#if !$kioskMode}
+				<LinkButton
+					icon="star"
+					active={starred}
+					on:click={() => toggleStarredEvent(event.sys.id)}
+				/>
+			{/if}
 		</div>
 	</div>
 </div>

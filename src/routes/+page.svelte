@@ -1,11 +1,12 @@
 <script>
 	import InstallInstructions from 'components/InstallInstructions.svelte';
+	import KioskPitch from 'components/KioskPitch.svelte';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import Post from 'components/Post.svelte';
 	import { queryContentful } from 'logic/contentful.js';
 	import { isStandalone } from 'logic/platform.js';
-	import { menuOpen } from 'logic/stores.js';
+	import { kioskMode, menuOpen } from 'logic/stores.js';
 	import { notificationStatus } from 'logic/webpush.js';
 	import { onMount } from 'svelte';
 	import NotificationEnableButton from 'components/NotificationEnableButton.svelte';
@@ -35,7 +36,9 @@
 
 <Layout>
 	<h1 class="center">Welcome to the Somerset County 4‑H Fair.</h1>
-	{#if showSetupBox}
+	{#if $kioskMode}
+		<KioskPitch title="Enjoying the app?" />
+	{:else if showSetupBox}
 		<div class="installBox">
 			<h2 style="text-align: center">Finish setting up the fair app</h2>
 			<hr />
@@ -62,7 +65,7 @@
 				<NotificationEnableButton />
 			</p>
 			<hr />
-			<p>
+			<p class="bottom">
 				<strong>
 					You can find these options later in <a href="/settings">settings</a>.
 				</strong>
@@ -93,19 +96,7 @@
 
 <style lang="scss">
 	.installBox {
-		width: 100%;
-		border-radius: 8px;
-		padding: 12px;
-		margin-bottom: 20px;
-		box-sizing: border-box;
-		border: 2px solid var(--text-translucent);
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-		> :global(*) {
-			margin: 0;
-		}
-		> :last-child {
+		> .bottom {
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
@@ -123,13 +114,6 @@
 			.material-icons {
 				font-size: 21px; // kinda jank but makes it appear the same size as the text
 			}
-		}
-		h2 {
-			font-size: 1.2em;
-		}
-		hr {
-			margin-top: 4px;
-			margin-bottom: 4px;
 		}
 	}
 </style>

@@ -3,8 +3,9 @@
 	import { goto } from '$app/navigation';
 	import { writable } from 'svelte/store';
 	import { isStandalone } from 'logic/platform.js';
-	import { isOnline } from 'logic/stores.js';
+	import { isOnline, kioskMode } from 'logic/stores.js';
 	import InstallInstructions from 'components/InstallInstructions.svelte';
+	import KioskPitch from 'components/KioskPitch.svelte';
 	import LabeledInput from 'components/LabeledInput.svelte';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
@@ -56,110 +57,115 @@
 </script>
 
 <Layout title="Settings">
-	<h1>Account</h1>
-	{#if $session}
-		<p>You are signed in as <strong>{$session?.user?.email}</strong></p>
-		<p>
-			<LinkButton label="Sign out" icon="logout" on:click={() => logout()} />
-		</p>
-		<h2>
-			Additional information <small>(optional)</small>
-		</h2>
-		<table style="width: 100%; margin: 1rem 0;">
-			<tbody>
-				<LabeledInput {form} name="fullName" label="Full name" />
-				<LabeledInput {form} name="preferredEmail" label="Preferred email" type="email" />
-				<LabeledInput {form} name="phone" label="Phone number" type="tel" />
-				<LabeledInput
-					{form}
-					name="graduation"
-					label="Graduation year"
-					type="number"
-					min="1900"
-					max="2099"
-					step="1"
-				/>
-			</tbody>
-		</table>
-		<LinkButton
-			label="Save"
-			icon="save"
-			on:click={() => {
-				client.auth.updateUser({ data: $form });
-				cloudForm = { ...$form };
-			}}
-			disabled={isInfoFormDisabled($form, cloudForm) || !$isOnline}
-			alert={!isInfoFormDisabled($form, cloudForm)}
-		/>
-	{:else if !$isOnline}
-		<NoOffline />
+	{#if $kioskMode}
+		<h1>Enjoying the app?</h1>
+		<KioskPitch box={false} />
 	{:else}
-		<SignInButtons redirect="/settings" />
-	{/if}
-
-	<h1>Add to homescreen</h1>
-	{#if $isStandalone}
-		<p>This site is already running in standalone mode.</p>
-	{:else}
-		<p>To add the fair app to your homescreen:</p>
-		<InstallInstructions />
-	{/if}
-
-	<h1 id="notifications">Notifications</h1>
-	<NotificationEnableButton />
-
-	<h1>Clear data</h1>
-	<p class="horizPanel2">
-		<LinkButton
-			label="Reset Scavenger Hunt"
-			on:click={() => (confirmReset = 'sh')}
-			icon="restart_alt"
-		/>
+		<h1>Account</h1>
 		{#if $session}
+			<p>You are signed in as <strong>{$session?.user?.email}</strong></p>
+			<p>
+				<LinkButton label="Sign out" icon="logout" on:click={() => logout()} />
+			</p>
+			<h2>
+				Additional information <small>(optional)</small>
+			</h2>
+			<table style="width: 100%; margin: 1rem 0;">
+				<tbody>
+					<LabeledInput {form} name="fullName" label="Full name" />
+					<LabeledInput {form} name="preferredEmail" label="Preferred email" type="email" />
+					<LabeledInput {form} name="phone" label="Phone number" type="tel" />
+					<LabeledInput
+						{form}
+						name="graduation"
+						label="Graduation year"
+						type="number"
+						min="1900"
+						max="2099"
+						step="1"
+					/>
+				</tbody>
+			</table>
 			<LinkButton
-				label="Clear Interest List"
-				on:click={() => (confirmReset = 'interests')}
-				icon="clear_all"
+				label="Save"
+				icon="save"
+				on:click={() => {
+					client.auth.updateUser({ data: $form });
+					cloudForm = { ...$form };
+				}}
+				disabled={isInfoFormDisabled($form, cloudForm) || !$isOnline}
+				alert={!isInfoFormDisabled($form, cloudForm)}
 			/>
+		{:else if !$isOnline}
+			<NoOffline />
+		{:else}
+			<SignInButtons redirect="/settings" />
 		{/if}
-	</p>
-	<Modal
-		show={!!confirmReset}
-		danger
-		on:close={() => (confirmReset = '')}
-		on:confirm={async () => {
-			switch (confirmReset) {
-				case 'sh':
-					for (let i = 0; i < localStorage.length; i++) {
-						const key = localStorage.key(i);
-						if (key?.startsWith('sh_')) localStorage.removeItem(key);
-					}
-					goto('/scavenger-hunt');
-					break;
-				case 'interests':
-					localStorage.removeItem('cim_intent');
-					if (client) {
-						const { error } = await client
-							.from('interests')
-							.delete()
-							.match({ owner: $session.user.id });
-						if (error) alert(error.message);
-						else interestsSlugs.set([]);
-					}
-					goto('/interests');
-					break;
-			}
-		}}
-	>
-		<p>
-			Are you sure you want to reset {confirmReset === 'sh' ?
-				'your scavenger hunt progress'
-			:	'this'}? You will not be able to restore it.
+
+		<h1>Add to homescreen</h1>
+		{#if $isStandalone}
+			<p>This site is already running in standalone mode.</p>
+		{:else}
+			<p>To add the fair app to your homescreen:</p>
+			<InstallInstructions />
+		{/if}
+
+		<h1 id="notifications">Notifications</h1>
+		<NotificationEnableButton />
+
+		<h1>Clear data</h1>
+		<p class="horizPanel2">
+			<LinkButton
+				label="Reset Scavenger Hunt"
+				on:click={() => (confirmReset = 'sh')}
+				icon="restart_alt"
+			/>
+			{#if $session}
+				<LinkButton
+					label="Clear Interest List"
+					on:click={() => (confirmReset = 'interests')}
+					icon="clear_all"
+				/>
+			{/if}
 		</p>
-		{#if confirmReset === 'sh'}
-			<p>Note that you may only claim one prize per person.</p>
-		{/if}
-	</Modal>
+		<Modal
+			show={!!confirmReset}
+			danger
+			on:close={() => (confirmReset = '')}
+			on:confirm={async () => {
+				switch (confirmReset) {
+					case 'sh':
+						for (let i = 0; i < localStorage.length; i++) {
+							const key = localStorage.key(i);
+							if (key?.startsWith('sh_')) localStorage.removeItem(key);
+						}
+						goto('/scavenger-hunt');
+						break;
+					case 'interests':
+						localStorage.removeItem('cim_intent');
+						if (client) {
+							const { error } = await client
+								.from('interests')
+								.delete()
+								.match({ owner: $session.user.id });
+							if (error) alert(error.message);
+							else interestsSlugs.set([]);
+						}
+						goto('/interests');
+						break;
+				}
+			}}
+		>
+			<p>
+				Are you sure you want to reset {confirmReset === 'sh' ?
+					'your scavenger hunt progress'
+				:	'this'}? You will not be able to restore it.
+			</p>
+			{#if confirmReset === 'sh'}
+				<p>Note that you may only claim one prize per person.</p>
+			{/if}
+		</Modal>
+	{/if}
 
 	<h1>About</h1>
 	<p>

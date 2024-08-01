@@ -1,7 +1,7 @@
 import { SCAVENGER_HUNT_CODE } from 'logic/constants';
 import { checkIsStandalone } from 'logic/platform';
 
-export function pvtUpdate() {
+export function pvtUpdate({ referrer = undefined }) {
 	let reqInit = {
 		method: 'POST',
 		body: JSON.stringify({
@@ -9,6 +9,8 @@ export function pvtUpdate() {
 			meta: {
 				standalone: checkIsStandalone(),
 				[SCAVENGER_HUNT_CODE]: localStorage.getItem(SCAVENGER_HUNT_CODE) || undefined,
+				referrer: referrer || undefined,
+				kiosk: localStorage.getItem('kiosk') === '1' || undefined,
 			},
 		}),
 		credentials: 'include',

@@ -5,6 +5,7 @@
 	import EventBox from './EventBox.svelte';
 	import { eventIsFuture } from 'logic/scheduling.js';
 	import { exactSearch } from 'logic/search.js';
+	import { kioskMode } from 'logic/stores.js';
 	import { browser } from '$app/environment';
 
 	export let data;
@@ -52,7 +53,9 @@
 		</select>
 		<input type="text" placeholder="Search" bind:value={searchQuery} />
 		<ToggleButton bind:value={showingPast}>Show Past Events</ToggleButton>
-		<ToggleButton bind:value={showingOnlyStarredEvents}>Show Only Starred Events</ToggleButton>
+		{#if !$kioskMode}
+			<ToggleButton bind:value={showingOnlyStarredEvents}>Show Only Starred Events</ToggleButton>
+		{/if}
 	</div>
 	<div class="columnCentered">
 		{#each results as event, i (event.sys.id)}

@@ -257,3 +257,26 @@ kbd {
 	margin-inline: 1px;
 	font-size: 0.78em;
 }
+
+.installBox {
+	width: 100%;
+	border-radius: 8px;
+	padding: 12px;
+	margin-bottom: 20px;
+	box-sizing: border-box;
+	border: 2px solid var(--text-translucent);
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+
+	> * {
+		margin: 0;
+	}
+	h2 {
+		font-size: 1.2em;
+	}
+	hr {
+		margin-top: 4px;
+		margin-bottom: 4px;
+	}
+}

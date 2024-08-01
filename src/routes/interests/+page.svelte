@@ -1,10 +1,11 @@
 <script>
 	import ClubBox from 'components/ClubBox.svelte';
+	import KioskPitch from 'components/KioskPitch.svelte';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import NoOffline from 'components/NoOffline.svelte';
 	import SignInButtons from 'components/SignInButtons.svelte';
-	import { isOnline } from 'logic/stores.js';
+	import { isOnline, kioskMode } from 'logic/stores.js';
 	import {
 		interestsSlugs,
 		session,
@@ -43,30 +44,34 @@
 	<div class="center">
 		<h1>Interest List</h1>
 		<p>Keep a list of clubs you are interested in</p>
-		<p>
-			{#if $session}
-				Signed in as <strong>{$session.user.email}</strong>
-			{:else}
-				You are not signed in.
+		{#if $kioskMode}
+			<KioskPitch />
+		{:else}
+			<p>
+				{#if $session}
+					Signed in as <strong>{$session.user.email}</strong>
+				{:else}
+					You are not signed in.
+				{/if}
+			</p>
+			{#if reqLoginMessage}
+				<p style="color: red;">Sign in to add this item to your interest list.</p>
 			{/if}
-		</p>
-		{#if reqLoginMessage}
-			<p style="color: red;">Sign in to add this item to your interest list.</p>
+			<p class="horizPanel" style="white-space: nowrap;">
+				{#if $session}
+					<LinkButton
+						label={$isOnline ? 'Add Clubs to List' : 'View clubs'}
+						icon="open_in_new"
+						href="/clubs"
+					/>
+					<LinkButton label="Sign out" icon="logout" on:click={() => logout()} />
+				{:else if !$isOnline}
+					<NoOffline />
+				{:else}
+					<SignInButtons redirect="/interests" />
+				{/if}
+			</p>
 		{/if}
-		<p class="horizPanel" style="white-space: nowrap;">
-			{#if $session}
-				<LinkButton
-					label={$isOnline ? 'Add Clubs to List' : 'View clubs'}
-					icon="open_in_new"
-					href="/clubs"
-				/>
-				<LinkButton label="Sign out" icon="logout" on:click={() => logout()} />
-			{:else if !$isOnline}
-				<NoOffline />
-			{:else}
-				<SignInButtons redirect="/interests" />
-			{/if}
-		</p>
 	</div>
 	<div class="columnCentered">
 		{#if $session && !$isOnline && results.length === 0}
