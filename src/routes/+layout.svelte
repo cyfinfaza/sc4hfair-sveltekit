@@ -1,6 +1,6 @@
 <script>
 	import { browser, version } from '$app/environment';
-	import { afterNavigate, replaceState } from '$app/navigation';
+	import { afterNavigate, beforeNavigate, replaceState } from '$app/navigation';
 	import { updated } from '$app/stores';
 	import { onMount, setContext } from 'svelte';
 	import Modal from 'components/Modal.svelte';
@@ -10,6 +10,7 @@
 	import 'styles/global.css';
 	import 'styles/material-icons.css';
 	import 'styles/fonts.css';
+	import KioskPitch from 'components/KioskPitch.svelte';
 
 	export let data;
 	setContext('sponsors', data?.sponsors || []);
@@ -151,7 +152,6 @@
 			else client.close();
 		});
 		// start_poprx('ws://localhost:6002');
-		() => client.close();
 	});
 
 	// force reload on navigation if app can be updated,
@@ -163,6 +163,9 @@
 	// 		location.href = to.url.href;
 	// 	}
 	// });
+
+	/** @type {Modal} */
+	let externalLinkModal;
 </script>
 
 <svelte:window
@@ -173,6 +176,15 @@
 	on:unhandledrejection={(e) => {
 		e.preventDefault();
 		console.error(e);
+	}}
+	on:click={(e) => {
+		const target = event.target.closest('a');
+		if (!target) return;
+		const url = new URL(target.href, window.location.origin);
+		if (url.origin !== window.location.origin) {
+			e.preventDefault();
+			externalLinkModal.showModal();
+		}
 	}}
 />
 
@@ -186,4 +198,13 @@
 >
 	<h2>New version ready</h2>
 	<p>A new version of the app has been downloaded. Refresh now to load the new version.</p>
+</Modal>
+
+<Modal show={false} bind:this={externalLinkModal} confirmation={false} closeText="Cancel">
+	<div class="center">
+		<KioskPitch box={false}>
+			<h2 style="margin-top: 0;">Visiting External Link</h2>
+			<p>You can't exit the app in the kiosk, try on your own device!</p>
+		</KioskPitch>
+	</div>
 </Modal>

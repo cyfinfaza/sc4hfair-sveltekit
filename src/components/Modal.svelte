@@ -17,6 +17,10 @@
 		else dialog.close();
 	}
 
+	export const showModal = () => {
+		show = true;
+	};
+
 	onMount(async () => {
 		// polyfill for some slightly older safari versions that we still kinda need to support
 		if (!window.HTMLDialogElement) {

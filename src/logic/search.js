@@ -1,3 +1,22 @@
+/** @param {string|string[]} text */
+function prepare(text) {
+	if (Array.isArray(text)) text = text.join(',');
+	if (typeof text !== 'string') {
+		console.error('exactSearch error: cannot prepare non-string', text);
+		text = '';
+	}
+	return text
+		.trim()
+		.toLowerCase()
+		.normalize('NFKD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.replace(/4(?:-|\u2010|\u2011)?(h|$)/g, '4h');
+}
+
+// const getObjValue = (obj, key) => prepare(new Function('obj', `return obj.${key}`)(obj));
+const getObjValue = (obj, key) =>
+	prepare(key.split('.').reduce((acc, k) => (acc ? acc[k] : undefined), obj));
+
 /**
  * @param {string} query
  * @param {{[key: string]: string, items?: [{key: string, value: string}]}[]} objList
@@ -14,28 +33,9 @@ export function exactSearch(
 ) {
 	const t0 = performance.now();
 
-	/** @param {string|string[]} text */
-	function prepare(text) {
-		if (Array.isArray(text)) text = text.join(',');
-		if (typeof text !== 'string') {
-			console.error('exactSearch error: cannot prepare non-string', text);
-			text = '';
-		}
-		return text
-			.trim()
-			.toLowerCase()
-			.normalize('NFKD')
-			.replace(/[\u0300-\u036f]/g, '')
-			.replace(/4(?:-|\u2010|\u2011)?(h|$)/g, '4h');
-	}
-
-	// const getObjValue = (obj, key) => prepare(new Function('obj', `return obj.${key}`)(obj));
-	const getObjValue = (obj, key) =>
-		prepare(key.split('.').reduce((acc, k) => (acc ? acc[k] : undefined), obj));
-
-	query = prepare(query);
 	let results = objList;
 	if (query) {
+		query = prepare(query);
 		// search for exact match, returning first objects that match primary key, then secondary key
 		// in special case of items, filter out unrelated items first then show full secondary keys later
 		if (searchItemsKV) {
