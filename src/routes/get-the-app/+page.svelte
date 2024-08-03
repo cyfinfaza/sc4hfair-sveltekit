@@ -391,6 +391,8 @@
 		align-items: center;
 		justify-content: center;
 		gap: 4em;
+		padding: 2em;
+		box-sizing: border-box;
 		img {
 			height: 30em;
 		}
