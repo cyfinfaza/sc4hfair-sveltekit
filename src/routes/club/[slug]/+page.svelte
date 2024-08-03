@@ -85,7 +85,9 @@
 	<p><strong>Where:</strong> {club.meetingLocation}</p>
 	<p><strong>When:</strong> {club.meetingWhen}</p>
 	<p><strong>Grades:</strong> {club.grades}</p>
-	<p><a href={club.listingWebsite}>View on 4histops.org</a></p>
+	{#if !$kioskMode}
+		<p><a href={club.listingWebsite}>View on 4histops.org</a></p>
+	{/if}
 </Layout>
 
 <style>

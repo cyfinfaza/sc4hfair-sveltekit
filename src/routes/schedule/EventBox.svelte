@@ -74,7 +74,7 @@
 					href={`/map?locate=${event.tent}`}
 				/>
 			{/if}
-			{#if canWebShare()}
+			{#if canWebShare() && !$kioskMode}
 				<LinkButton
 					icon="share"
 					on:click={() => {
