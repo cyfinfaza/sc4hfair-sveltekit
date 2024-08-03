@@ -2,7 +2,7 @@
 	import ClubBox from 'components/ClubBox.svelte';
 	import Layout from 'components/Layout.svelte';
 	import { exactSearch } from 'logic/search.js';
-	import { isOnline } from 'logic/stores.js';
+	import { isOnline, kioskMode } from 'logic/stores.js';
 	import { browser } from '$app/environment';
 
 	export let data;
@@ -23,10 +23,12 @@
 <Layout title="Clubs">
 	<div class="center">
 		<h1>Clubs</h1>
-		<p>
-			Tap the +Add button to add a club to your interest list.
-			{#if $isOnline}<a href="/interests">View interest list</a>{/if}
-		</p>
+		{#if !$kioskMode}
+			<p>
+				Tap the +Add button to add a club to your interest list.
+				{#if $isOnline}<a href="/interests">View interest list</a>{/if}
+			</p>
+		{/if}
 	</div>
 	<div class="filterOptions">
 		<input type="text" placeholder="Search" bind:value={searchQuery} />

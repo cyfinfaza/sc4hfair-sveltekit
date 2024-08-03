@@ -1,9 +1,10 @@
 <script>
 	import Header from 'components/Header.svelte';
-	import { menuOpen } from 'logic/stores';
+	import { menuOpen, kioskMode } from 'logic/stores';
 
 	import { fly } from 'svelte/transition';
 	import { quintOut, quintIn } from 'svelte/easing';
+	import KioskMenu from './KioskMenu.svelte';
 
 	export let title = '';
 	export let description = 'The Somerset County 4‑H Fair App';
@@ -55,6 +56,7 @@
 		id="content"
 		class:noPadding
 		class:fixedHeightContent
+		class:kioskMode={$kioskMode}
 		on:focusin={() => ($menuOpen = false)}
 	>
 		<div class:fullWidth>
@@ -62,8 +64,11 @@
 		</div>
 	</div>
 {/key}
+{#if $kioskMode}
+	<div class="kioskBar"><KioskMenu /></div>
+{/if}
 
-<style>
+<style lang="scss">
 	.content {
 		padding: 8px;
 		width: 100%;
@@ -76,7 +81,7 @@
 	}
 
 	.content.noPadding {
-		padding: 0;
+		padding: 0 !important;
 	}
 	.content.fixedHeightContent {
 		/* height: 100vh; */
@@ -84,6 +89,28 @@
 
 		position: absolute;
 		inset: 0;
+	}
+
+	.kioskBar {
+		position: fixed;
+		height: 100%;
+		width: 30%;
+		box-sizing: border-box;
+		background: var(--bg);
+	}
+
+	.content.kioskMode {
+		position: absolute;
+		right: 0;
+		width: 70%;
+		box-sizing: border-box;
+		padding: 1em;
+		&.fixedHeightContent {
+			right: 0;
+			top: 0;
+			bottom: 0;
+			left: unset;
+		}
 	}
 
 	.content > div.fullWidth {

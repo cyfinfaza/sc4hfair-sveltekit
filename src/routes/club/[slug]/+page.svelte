@@ -2,7 +2,7 @@
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import { canWebShare, share } from 'logic/webshare.js';
-	import { isOnline } from 'logic/stores';
+	import { isOnline, kioskMode } from 'logic/stores';
 	import SvelteMarkdown from 'svelte-markdown';
 	import {
 		interestsSlugs,
@@ -27,7 +27,9 @@
 		style="whitespace: nowrap; justify-content: flex-start; margin-top: 16px;"
 	>
 		<LinkButton label="See all clubs" icon="groups" href="/clubs" />
-		<LinkButton label="View interest list" icon="list" href="/interests" disabled={!$isOnline} />
+		{#if !$kioskMode}
+			<LinkButton label="View interest list" icon="list" href="/interests" disabled={!$isOnline} />
+		{/if}
 	</div>
 	<h1 style="text-transform: uppercase;">
 		{club.name}
@@ -38,22 +40,24 @@
 		</div>
 	</h1>
 	<div class="optionsButtonsPanel">
-		{#if ($interestsSlugs || []).includes(club.slug)}
-			<LinkButton
-				label="Remove from interest list"
-				disabled={!$isOnline}
-				icon="remove"
-				on:click={() => removeInterest(club.slug)}
-				lightFont
-			/>
-		{:else}
-			<LinkButton
-				label="Add to interest list"
-				disabled={!$isOnline}
-				icon="add"
-				on:click={() => addInterest(club.slug)}
-				lightFont
-			/>
+		{#if !$kioskMode}
+			{#if ($interestsSlugs || []).includes(club.slug)}
+				<LinkButton
+					label="Remove from interest list"
+					disabled={!$isOnline}
+					icon="remove"
+					on:click={() => removeInterest(club.slug)}
+					lightFont
+				/>
+			{:else}
+				<LinkButton
+					label="Add to interest list"
+					disabled={!$isOnline}
+					icon="add"
+					on:click={() => addInterest(club.slug)}
+					lightFont
+				/>
+			{/if}
 		{/if}
 		{#if club.tent}
 			<LinkButton
@@ -63,7 +67,7 @@
 				lightFont
 			/>
 		{/if}
-		{#if canWebShare()}
+		{#if canWebShare() && !$kioskMode}
 			<LinkButton
 				label="Share"
 				icon="share"

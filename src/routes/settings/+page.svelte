@@ -237,6 +237,11 @@
 						});
 					}}
 				/>
+				{#if $kioskMode}
+					<LinkButton icon="logout" label="Exit Kiosk" href="/?kiosk=disable"></LinkButton>
+				{:else}
+					<LinkButton icon="tv" label="Enter Kiosk" href="/?kiosk=enable"></LinkButton>
+				{/if}
 			</div>
 			<hr />
 			<div class="horizPanel2">
