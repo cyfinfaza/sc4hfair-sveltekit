@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { writable } from 'svelte/store';
 	import { isStandalone } from 'logic/platform.js';
-	import { isOnline, kioskMode } from 'logic/stores.js';
+	import { isOnline, kioskMode, kioskMenuSize } from 'logic/stores.js';
 	import InstallInstructions from 'components/InstallInstructions.svelte';
 	import KioskPitch from 'components/KioskPitch.svelte';
 	import LabeledInput from 'components/LabeledInput.svelte';
@@ -39,7 +39,18 @@
 	let confirmReset = ''; // modal for confirmation
 
 	let showingAdditionalBuildInfo = dev,
-		showDebugModal = false;
+		showDebugModal = false,
+		showKioskSizeAdjuster = false;
+
+	function toggleFullscreen() {
+		if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+			if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+			else document.documentElement.webkitRequestFullscreen();
+		} else if (document.exitFullscreen) {
+			if (document.fullscreenElement) document.exitFullscreen();
+			else document.webkitExitFullscreen();
+		}
+	}
 
 	onMount(async () => {
 		client = await initSupabaseClient();
@@ -237,10 +248,24 @@
 						});
 					}}
 				/>
+				<LinkButton
+					icon="fullscreen"
+					label="Toggle FS"
+					on:click={() => {
+						toggleFullscreen();
+					}}
+				/>
 				{#if $kioskMode}
-					<LinkButton icon="logout" label="Exit Kiosk" href="/?kiosk=disable"></LinkButton>
+					<LinkButton icon="logout" label="Exit Kiosk" href="/settings?kiosk=disable"></LinkButton>
+					<LinkButton
+						icon="expand_content"
+						label="Kiosk Menu Size"
+						on:click={() => {
+							showKioskSizeAdjuster = true;
+						}}
+					></LinkButton>
 				{:else}
-					<LinkButton icon="tv" label="Enter Kiosk" href="/?kiosk=enable"></LinkButton>
+					<LinkButton icon="tv" label="Enter Kiosk" href="/settings?kiosk=enable"></LinkButton>
 				{/if}
 			</div>
 			<hr />
@@ -318,5 +343,16 @@
 				</table>
 			{/key}
 		{/if}
+	</Modal>
+	<Modal bind:show={showKioskSizeAdjuster} confirmation={false}>
+		<h2>Adjust Kiosk Menu Size</h2>
+		<input
+			type="range"
+			min="10"
+			max="90"
+			style="width: 80%; display: block;"
+			bind:value={$kioskMenuSize}
+		/>
+		<p>{$kioskMenuSize}</p>
 	</Modal>
 </Layout>

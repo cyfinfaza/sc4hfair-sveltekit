@@ -1,6 +1,6 @@
 <script>
 	import Header from 'components/Header.svelte';
-	import { menuOpen, kioskMode } from 'logic/stores';
+	import { menuOpen, kioskMode, kioskMenuSize } from 'logic/stores';
 
 	import { fly } from 'svelte/transition';
 	import { quintOut, quintIn } from 'svelte/easing';
@@ -17,6 +17,13 @@
 	const SITE_NAME = 'Somerset County 4‑H Fair';
 	const AUTHOR = 'Somerset County 4‑H';
 	const animationDuration = 150;
+
+	let kioskSizeString;
+	let contentSizeString;
+	$: {
+		kioskSizeString = $kioskMenuSize + '%';
+		contentSizeString = 100 - $kioskMenuSize + '%';
+	}
 </script>
 
 <svelte:window
@@ -57,6 +64,7 @@
 		class:noPadding
 		class:fixedHeightContent
 		class:kioskMode={$kioskMode}
+		style:width={$kioskMode ? contentSizeString : undefined}
 		on:focusin={() => ($menuOpen = false)}
 	>
 		<div class:fullWidth>
@@ -65,7 +73,7 @@
 	</div>
 {/key}
 {#if $kioskMode}
-	<div class="kioskBar"><KioskMenu /></div>
+	<div class="kioskBar" style:width={$kioskMode ? kioskSizeString : undefined}><KioskMenu /></div>
 {/if}
 
 <style lang="scss">
