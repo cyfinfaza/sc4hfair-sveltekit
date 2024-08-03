@@ -7,6 +7,30 @@
 	/** overrides button text, used while an operation (like fetch) is happening */
 	let loading = 'Loading notification status…';
 
+	export const onClick = async () => {
+		if (loading !== null || !$notificationStatus?.available) return;
+		try {
+			// await updateNotificationStatus();
+			let data;
+			console.log($notificationStatus);
+			if (!$notificationStatus?.registered) {
+				loading = 'Enabling notifications…';
+				data = await subscribe();
+			} else {
+				loading = 'Disabling notifications…';
+				data = await unsubscribe();
+			}
+			notificationStatus.update((oldStatus) => ({
+				available: oldStatus.available,
+				registered: data.registered,
+				message: data.message,
+			}));
+		} catch (e) {
+			notificationStatus.update((oldStatus) => ({ ...oldStatus, message: e.message })); // we failed, revert with message
+		}
+		loading = null;
+	};
+
 	$: if ($notificationStatus.ready !== false) loading = null;
 </script>
 
@@ -24,29 +48,7 @@
 		:	'notifications_off'}
 		disabled={loading !== null || !$notificationStatus?.available || !$isOnline}
 		active={$notificationStatus?.available && $notificationStatus?.registered}
-		on:click={async () => {
-			if (loading !== null || !$notificationStatus?.available) return;
-			try {
-				// await updateNotificationStatus();
-				let data;
-				console.log($notificationStatus);
-				if (!$notificationStatus?.registered) {
-					loading = 'Enabling notifications…';
-					data = await subscribe();
-				} else {
-					loading = 'Disabling notifications…';
-					data = await unsubscribe();
-				}
-				notificationStatus.update((oldStatus) => ({
-					available: oldStatus.available,
-					registered: data.registered,
-					message: data.message,
-				}));
-			} catch (e) {
-				notificationStatus.update((oldStatus) => ({ ...oldStatus, message: e.message })); // we failed, revert with message
-			}
-			loading = null;
-		}}
+		on:click={() => onClick()}
 	/>
 	{#if $notificationStatus?.message}
 		<p style="color: red; font-size: 0.9rem;">

@@ -11,6 +11,7 @@
 	import 'styles/material-icons.css';
 	import 'styles/fonts.css';
 	import KioskPitch from 'components/KioskPitch.svelte';
+	import { canWebShare } from 'logic/webshare.js';
 
 	export let data;
 	setContext('sponsors', data?.sponsors || []);
@@ -163,6 +164,8 @@
 	// 		location.href = to.url.href;
 	// 	}
 	// });
+
+	$: $canWebShare = browser && navigator.share && !$kioskMode;
 
 	/** @type {Modal} */
 	let externalLinkModal;

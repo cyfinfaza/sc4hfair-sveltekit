@@ -1,6 +1,8 @@
 import { browser } from '$app/environment';
+import { get, writable } from 'svelte/store';
+import { kioskMode } from './stores';
 
-export const canWebShare = () => browser && navigator.share;
+export const canWebShare = writable(false);
 
 export function share(title, url) {
 	if (navigator.share) {

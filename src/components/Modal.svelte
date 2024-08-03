@@ -7,7 +7,7 @@
 	export let danger = false; // when you're deleting something
 	export let confirmation = true; // false only shows the close button
 	export let closeText = null;
-	export let confirmText = null;
+	export let confirmText = 'Confirm';
 
 	/** @type {HTMLDialogElement} */
 	let dialog;
@@ -19,6 +19,10 @@
 
 	export const showModal = () => {
 		show = true;
+	};
+
+	export const close = () => {
+		show = false;
 	};
 
 	onMount(async () => {
@@ -40,12 +44,19 @@
 <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 <dialog
 	bind:this={dialog}
-	on:close={() => {
+	on:close={(e) => {
+		let canceled = false;
+		const cancel = () => {
+			dialog.showModal();
+			canceled = true;
+		};
 		if (dialog.returnValue === 'confirm')
-			dispatch('confirm'); // when explicitly confirming
-		else dispatch('cancel'); // for any other reason (click out, etc.)
-		show = false;
-		dispatch('close', dialog.returnValue); // always (for resetting content or handling a custom return), DONE LAST
+			dispatch('confirm', { cancel }); // when explicitly confirming
+		else dispatch('cancel', { cancel }); // for any other reason (click out, etc.)
+		if (!canceled) {
+			show = false;
+			dispatch('close', dialog.returnValue); // always (for resetting content or handling a custom return), DONE LAST
+		}
 		dialog.returnValue = '';
 	}}
 	on:click|self={() => dialog.close()}
@@ -63,7 +74,7 @@
 			{#if confirmation}
 				<LinkButton
 					icon={danger ? 'delete' : 'check'}
-					label={confirmText || 'Confirm'}
+					label={confirmText}
 					props={{ type: 'submit', value: 'confirm' }}
 					{danger}
 					active={!danger}
@@ -86,7 +97,8 @@
 	// pollyfill
 	dialog :global(+ .backdrop) {
 		background-color: rgba(0, 0, 0, 0.4);
-		animation: fade 250ms ease;
+		// fixme: show animation only when dialog isn't already open
+		// animation: fade 250ms ease;
 	}
 
 	dialog[open] {

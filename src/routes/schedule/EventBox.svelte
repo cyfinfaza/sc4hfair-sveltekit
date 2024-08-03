@@ -10,8 +10,9 @@
 
 	export let event;
 	export let index = 0;
-	export let starred;
-	export let toggleStarredEvent;
+	export let subscribed = false;
+	/** @type {(eventId: string, subscribed: boolean) => void} */
+	export let setEventSubscription;
 
 	const timeLabels = {
 		past: {
@@ -74,7 +75,7 @@
 					href={`/map?locate=${event.tent}`}
 				/>
 			{/if}
-			{#if canWebShare()}
+			{#if $canWebShare}
 				<LinkButton
 					icon="share"
 					on:click={() => {
@@ -86,10 +87,18 @@
 				/>
 			{/if}
 			{#if !$kioskMode}
+				{@const hasStarted = Date.now() > new Date(event.time).getTime()}
+				{@const alt =
+					hasStarted ? 'Event already started'
+					: subscribed ? 'Cancel notification'
+					: 'Notify me'}
 				<LinkButton
-					icon="star"
-					active={starred}
-					on:click={() => toggleStarredEvent(event.sys.id)}
+					class={subscribed ? 'jiggle' : ''}
+					icon={subscribed ? 'notifications_active' : 'notifications_none'}
+					active={subscribed}
+					disabled={hasStarted}
+					props={{ 'aria-label': alt, 'title': alt }}
+					on:click={() => setEventSubscription(event.sys.id, !subscribed)}
 				/>
 			{/if}
 		</div>
@@ -184,5 +193,20 @@
 			transform: scale(0.88);
 			opacity: 0;
 		}
+	}
+
+	@keyframes jiggle {
+		0% {
+			transform: rotate(-10deg);
+		}
+		50% {
+			transform: rotate(10deg);
+		}
+		100% {
+			transform: rotate(0deg);
+		}
+	}
+	:global(.jiggle .material-icons) {
+		animation: jiggle 0.5s ease-in-out 1;
 	}
 </style>

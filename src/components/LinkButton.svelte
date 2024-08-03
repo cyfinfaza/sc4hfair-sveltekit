@@ -18,6 +18,8 @@
 	export let danger = false; // red background
 	export let external = false; // open link in new tab
 	export let props = {}; // additional props for the button element
+	let className = '';
+	export { className as class }; // additional classes for the button element
 
 	const dispatch = createEventDispatcher();
 	function onClick(e) {
@@ -39,7 +41,7 @@
 	tabindex="0"
 	{href}
 	on:click={onClick}
-	class="container button"
+	class={`container button ${className || ''}`}
 	class:alert
 	class:header
 	class:headerSmall

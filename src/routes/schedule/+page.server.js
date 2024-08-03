@@ -21,6 +21,7 @@ let events = [],
 	/** @type {string[]} */
 	eventTentsList = [];
 
+/** @satisfies {import('./$types').PageServerLoad} */
 export async function load() {
 	if (events.length === 0) {
 		const resp = await queryContentful(query);

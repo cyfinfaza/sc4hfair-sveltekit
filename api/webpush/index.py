@@ -1,5 +1,7 @@
 # fmt: off
 from datetime import datetime
+import dateutil.parser
+from dateutil.tz import UTC
 from flask import Flask, request, session, Response
 from flask_cors import CORS
 import pymongo
@@ -7,7 +9,9 @@ import dotenv
 from os import environ
 from pywebpush import webpush, WebPushException
 import json
+from bson import json_util
 from uuid import uuid4
+from functools import wraps
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -22,6 +26,7 @@ WEBPUSH_PRIVATE_KEY = environ.get('WEBPUSH_PRIVATE_KEY')
 client = pymongo.MongoClient(MONGODB_SECRET)
 db = client.webpush
 subscriptionsCollection = db.subscriptions
+scheduledNotificationsCollection = db.scheduledNotifications
 
 def test_webpush(sub_info, id):
 	'''Send a visible test notification, client should confirm it includes the correct id'''
@@ -51,12 +56,12 @@ def json_response(status, message=None, data=None):
 	elif 400 <= status <= 599: d['type'] = 'error'
 	if data: d.update(data)
 	if message: d['message'] = message
-	return Response(json.dumps(d), status=status, mimetype='application/json')
+	return Response(json_util.dumps(d), status=status, mimetype='application/json')
 
-def success_json(message=None, data=None):
-	return json_response(200, message, data)
-def error_json(message=None, data=None):
-	return json_response(400, message, data)
+def success_json(message=None, data=None, status=200):
+	return json_response(status, message, data)
+def error_json(message=None, data=None, status=400):
+	return json_response(status, message, data)
 
 # show number of subscriptions
 @app.route('/api/webpush', methods=['GET'])
@@ -110,7 +115,7 @@ def main():
 		# modify db if necessary
 		if not dry:
 			subscriptionsCollection.update_one({'subscription_info': sub_info}, {'$set': {
-				'created': datetime.utcnow(),
+				'created': datetime.now(tz=UTC),
 				'subscription_info': sub_info,
 				'user_agent': str(request.user_agent),
 				'track_id': 'track_id' in session and session['track_id'] or None,
@@ -154,7 +159,7 @@ def main():
 		# try updating the old entry if we can, otherwise create a new entry
 		if sub_info and not alreadyExists: # newSubscription
 			op = subscriptionsCollection.update_one(query, {'$set': {
-				'created': datetime.utcnow(),
+				'created': datetime.now(tz=UTC),
 				'subscription_info': sub_info,
 				'user_agent': str(request.user_agent),
 				'track_id': 'track_id' in session and session['track_id'] or None,
@@ -175,6 +180,124 @@ def main():
 			'result': result,
 			'already_exists': alreadyExists,
 		})
+
+def check_subscription_info():
+	'''
+	Retrieves subscription info from query for GET or json body for anything else and passes it on
+	'''
+	def decorator(f):
+		@wraps(f)
+		def wrapper(*args, **kwargs):
+			sub_info = None
+
+			if request.method == 'GET':
+				if 'subscription' in request.args:
+					try:
+						sub_info = json.loads(request.args.get('subscription'))
+					except json.decoder.JSONDecodeError:
+						return error_json('Invalid subscription')
+			else:
+				sub_info = (request.get_json() or {}).get('subscription')
+
+			if sub_info is None: return error_json('No subscription info')
+			request.environ['sub_info'] = sub_info
+
+			return f(*args, **kwargs)
+		return wrapper
+	return decorator
+
+@app.route('/api/webpush/scheduledNotifications', methods=['GET'])
+@check_subscription_info()
+def get_all_scheduled_notifications():
+	pipeline = [
+		# match the subscription by sub_info
+		{
+			'$match': {
+				'subscription_info': {
+					'$eq': request.environ['sub_info']
+				}
+			}
+		},
+		# lookup scheduled notifications
+		{
+			'$lookup': {
+				'from': 'scheduledNotifications',
+				'localField': '_id',
+				'foreignField': 'target',
+				'as': 'notifications'
+			}
+		},
+		# project to reshape the output
+		{
+			'$project': {
+				'_id': False,
+				'subscriptionId': {'$toString': '$_id'},
+				'eventIds': {
+					'$map': {
+						'input': '$notifications',
+						'as': 'notification',
+						'in': '$$notification.eventId'
+					}
+				}
+			}
+		}
+	]
+
+	result = list(subscriptionsCollection.aggregate(pipeline))
+
+	if len(result) == 0:
+		return error_json('Subscription not found')
+
+	return success_json(data=result[0])
+
+@app.route('/api/webpush/scheduledNotifications', methods=['POST'])
+@check_subscription_info()
+def create_scheduled_notification():
+	data = request.get_json() or {}
+
+	when = dateutil.parser.isoparse(data.get('when'))
+	now = datetime.now(tz=UTC)
+
+	if when < now: return error_json('Notification time must be in the future')
+
+	sub_info = request.environ['sub_info']
+	subscription = subscriptionsCollection.find_one({'subscription_info': sub_info}, projection={'_id': True})
+	if not subscription: return error_json('Subscription not found')
+
+	notification = {
+		'target': subscription['_id'],
+		'eventId': data.get('eventId'),
+		'when': when,
+		'created': now,
+	}
+
+	result = scheduledNotificationsCollection.find_one_and_update(
+		{'target': subscription['_id'], 'eventId': data.get('eventId')},
+		{'$set': notification}, # update the record, allows us to change the time if we want
+		upsert=True,
+		return_document=pymongo.ReturnDocument.AFTER
+	)
+
+	return success_json(data={'notification': result})
+
+@app.route('/api/webpush/scheduledNotifications', methods=['DELETE'])
+@check_subscription_info()
+def delete_scheduled_notification():
+	data = request.get_json() or {}
+
+	sub_info = request.environ['sub_info']
+	subscription = subscriptionsCollection.find_one({'subscription_info': sub_info}, projection={'_id': True})
+	if not subscription: return error_json('Subscription not found')
+
+	delete_result = scheduledNotificationsCollection.delete_one({
+		'target': subscription['_id'],
+		'eventId': data.get('eventId')
+	})
+
+	if delete_result.deleted_count == 0:
+		return error_json('Notification not found or already deleted')
+
+	return success_json()
 
 if __name__ == '__main__':
 	app.run(debug=True, port=6002)

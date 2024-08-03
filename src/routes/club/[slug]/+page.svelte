@@ -63,7 +63,7 @@
 				lightFont
 			/>
 		{/if}
-		{#if canWebShare()}
+		{#if $canWebShare}
 			<LinkButton
 				label="Share"
 				icon="share"

@@ -90,6 +90,7 @@ def doEvent(id):
 # get list of all previous entries
 # the update api requires the version number of the entry to be updated
 entries = contentful.session.get(f'https://api.contentful.com/spaces/{contentful.spaceId}/environments/{contentful.environmentId}/entries?content_type={contentTypeId}&select=sys.id,sys.version&sys.archivedAt[exists]=false&limit=1000').json()
+if entries['total'] > entries['limit']: print('todo: implement paging')
 
 for entry in entries['items']:
 	id = entry['sys']['id']

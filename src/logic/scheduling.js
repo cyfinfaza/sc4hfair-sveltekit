@@ -8,3 +8,5 @@ export const eventIsFuture = (event) =>
 		new Date(event.endTime)
 	:	addHoursToDate(new Date(event.time), DEFAULT_EVENT_DURATION_HOURS)
 	).getTime();
+
+export const MINUTES_BEFORE_NOTIFICATION = 10;

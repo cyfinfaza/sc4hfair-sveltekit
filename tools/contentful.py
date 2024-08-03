@@ -54,31 +54,36 @@ def setWebhookActive(webhookId, active) -> tuple[bool, str]:
 	
 	return (previousActive, data['url'])
 
-def conditionalBulkPublish(publishPayload):
-	"""
-	publish entries in bulk if there are any, including noPublish & webhook safety
-	"""
+def bulkAction(bulkPayload, action):
+	if len(bulkPayload) == 0: return
 
-	if noPublish or len(publishPayload) == 0: return
-
-	(webhookPreviousActive, webhookUrl) = setWebhookActive(vercelWebhookId, False)
-
-	bulkReq = session.post(f'https://api.contentful.com/spaces/{spaceId}/environments/{environmentId}/bulk_actions/publish', json={
+	bulkReq = session.post(f'https://api.contentful.com/spaces/{spaceId}/environments/{environmentId}/bulk_actions/{action}', json={
 		'entities': {
-			'items': publishPayload,
+			'items': bulkPayload,
 		},
 	})
 
-	print('waiting on bulk publish... status', bulkReq.status_code, bulkReq.json()['sys']['status'], bulkReq.json())
+	print(f'waiting on bulk {action}... status', bulkReq.status_code, bulkReq.json()['sys']['status'], bulkReq.json())
 
-	# wait for bulk publish to finish
+	# wait for bulk action to finish
 	while True:
 		sleep(5)
 		statusReq = session.get(f'https://api.contentful.com/spaces/{spaceId}/environments/{environmentId}/bulk_actions/actions/{bulkReq.json()["sys"]["id"]}')
 		status = statusReq.json()['sys']['status']
-		print('waiting on bulk publish... status', status)
+		print(f'waiting on bulk {action}... status', status)
 		if status == 'succeeded':
 			break
+
+def conditionalBulkPublish(bulkPayload, action='publish'):
+	"""
+	publish entries in bulk if there are any, including noPublish & webhook safety
+	"""
+
+	if noPublish or len(bulkPayload) == 0: return
+
+	(webhookPreviousActive, webhookUrl) = setWebhookActive(vercelWebhookId, False)
+
+	bulkAction(bulkPayload, action)
 
 	if webhookPreviousActive:
 		setWebhookActive(vercelWebhookId, True) # reenable
