@@ -1,16 +1,16 @@
 <script>
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
-	import { canWebShare, share } from 'logic/webshare.js';
 	import { isOnline, kioskMode } from 'logic/stores';
-	import SvelteMarkdown from 'svelte-markdown';
 	import {
-		interestsSlugs,
 		addInterest,
-		removeInterest,
 		initSupabaseClient,
+		interestsSlugs,
+		removeInterest,
 	} from 'logic/supabase.js';
+	import { canWebShare, share } from 'logic/webshare.js';
 	import { onMount } from 'svelte';
+	import SvelteMarkdown from 'svelte-markdown';
 
 	/** @type {import('./$types').PageData} */
 	export let data;
@@ -34,7 +34,7 @@
 	<h1 style="text-transform: uppercase;">
 		{club.name}
 		<div class="tags" style="text-transform: uppercase;">
-			{#each club.tags as tag}
+			{#each club.tags || [] as tag}
 				<div title={tag.toUpperCase()}>{tag}</div>
 			{/each}
 		</div>
@@ -67,7 +67,7 @@
 				lightFont
 			/>
 		{/if}
-		{#if canWebShare() && !$kioskMode}
+		{#if $canWebShare && !$kioskMode}
 			<LinkButton
 				label="Share"
 				icon="share"
@@ -79,13 +79,15 @@
 			<LinkButton label="Website" icon="language" href={club.clubWebsite} lightFont />
 		{/if}
 	</div>
-	<div class="clubDescription">
-		<SvelteMarkdown source={club.description} options={{ mangle: false }} />
-	</div>
-	<p><strong>Where:</strong> {club.meetingLocation}</p>
-	<p><strong>When:</strong> {club.meetingWhen}</p>
-	<p><strong>Grades:</strong> {club.grades}</p>
-	{#if !$kioskMode}
+	{#if club.description}
+		<div class="clubDescription">
+			<SvelteMarkdown source={club.description} options={{ mangle: false }} />
+		</div>
+	{/if}
+	{#if club.meetingLocation}<p><strong>Where:</strong> {club.meetingLocation}</p>{/if}
+	{#if club.meetingWhen}<p><strong>When:</strong> {club.meetingWhen}</p>{/if}
+	{#if club.grades}<p><strong>Grades:</strong> {club.grades}</p>{/if}
+	{#if !$kioskMode && club.listingWebsite}
 		<p><a href={club.listingWebsite}>View on 4histops.org</a></p>
 	{/if}
 </Layout>

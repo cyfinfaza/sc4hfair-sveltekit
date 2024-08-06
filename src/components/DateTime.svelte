@@ -15,6 +15,7 @@
 		nextWeek: "EEEE 'at' t",
 		sameElse: "MMMM d 'at' t", // more than 1 week away
 	};
+	/** @param {DateTime} myDateTime */
 	function getCalendarFormat(myDateTime) {
 		// https://stackoverflow.com/a/53715763/9985371
 		var diff = myDateTime.diff(DateTime.local().startOf('day'), 'days').as('days');
@@ -38,14 +39,21 @@
 	export let fromNow = false; // use relative durations like "1 minute ago", periodically refreshes
 	export let withTitle = false; // show original formatted date on hover
 
-	let dateO, timeString, durationString, relative;
+	/** @type {DateTime} */
+	let dateObj,
+		/** @type {string | null} */
+		timeString,
+		/** @type {string} */
+		durationString,
+		/** @type {boolean} */
+		relative;
 	$: {
-		dateO = DateTime.fromISO(date);
+		dateObj = DateTime.fromISO(date);
 		relative = calendar || fromNow;
 
 		const updateTimeString = () => {
-			if (calendar) timeString = getCalendarFormat(dateO);
-			else if (fromNow) timeString = dateO.toRelative();
+			if (calendar) timeString = getCalendarFormat(dateObj);
+			else if (fromNow) timeString = dateObj.toRelative();
 		};
 		if (relative) {
 			updateTimeString();
@@ -54,17 +62,19 @@
 
 		if (duration) {
 			let d = DateTime.fromISO(duration);
-			d = dateO.diff(d, ['years', 'months', 'days', 'hours', 'minutes']);
-			if (d.valueOf() < 0) d = d.negate();
-			d = Duration.fromObject(
-				Object.fromEntries(Object.entries(d.toObject()).filter(([, val]) => val !== 0))
-			); // remove 0s so they don't show up in the final string
-			durationString = d.toHuman({ floor: true });
+			if (d.isValid === true) {
+				let diffObj = dateObj.diff(d, ['years', 'months', 'days', 'hours', 'minutes']);
+				if (d.valueOf() < 0) diffObj = diffObj.negate();
+				let durationObj = Duration.fromObject(
+					Object.fromEntries(Object.entries(diffObj.toObject()).filter(([, val]) => val !== 0))
+				); // remove 0s so they don't show up in the final string
+				durationString = durationObj.toHuman();
+			}
 		}
 	}
 </script>
 
-<time datetime={dateO} title={withTitle ? dateO.toFormat(format) : null}>
+<time datetime={dateObj?.toISO()} title={withTitle ? dateObj?.toFormat(format) : null}>
 	{#if relative}
 		{#key $updateStore}
 			{timeString}
@@ -72,6 +82,6 @@
 	{:else if duration}
 		{durationString}
 	{:else}
-		{dateO.toFormat(format)}
+		{dateObj.toFormat(format)}
 	{/if}
 </time>

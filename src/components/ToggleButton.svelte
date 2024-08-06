@@ -2,12 +2,12 @@
 	export let value = false;
 </script>
 
-<button class="theButton" class:on={value} on:click={() => (value = !value)}>
+<button class:on={value} on:click={() => (value = !value)}>
 	<slot />
 </button>
 
 <style>
-	.theButton {
+	button {
 		transition: background-color 120ms ease;
 	}
 	.on {

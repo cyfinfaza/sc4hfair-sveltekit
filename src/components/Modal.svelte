@@ -1,13 +1,16 @@
 <script>
-	import LinkButton from './LinkButton.svelte';
 	import { createEventDispatcher, onMount, tick } from 'svelte';
+	import LinkButton from './LinkButton.svelte';
+
 	const dispatch = createEventDispatcher();
 
 	export let show = false;
 	export let danger = false; // when you're deleting something
 	export let confirmation = true; // false only shows the close button
-	export let closeText = null;
-	export let confirmText = null;
+	/** @type {string | undefined} */
+	export let closeText = undefined;
+	/** @type {string | undefined} */
+	export let confirmText = undefined;
 
 	/** @type {HTMLDialogElement} */
 	let dialog;

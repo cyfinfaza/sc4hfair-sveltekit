@@ -1,11 +1,14 @@
 <script>
-	import { createEventDispatcher } from 'svelte';
 	import { menuOpen } from 'logic/stores';
+	import { createEventDispatcher } from 'svelte';
 
 	import 'styles/button.css';
 
+	/** @type {string | undefined} */
 	export let label = undefined; // text displayed on button
+	/** @type {string | undefined} */
 	export let href = undefined; // navigates to a url, use on:click for custom js
+	/** @type {string | undefined} */
 	export let icon = undefined; // material icon name, use slot="iconElement" for a custom element
 	export let header = false; // large header button (for main pages)
 	export let headerSmall = false; // normal button size with header color
@@ -17,28 +20,32 @@
 	export let active = false; // green background
 	export let danger = false; // red background
 	export let external = false; // open link in new tab
-	export let props = {}; // additional props for the button element
+	/** @type {Record<string, any>} */
+	export let props = {}; // additional props for the element
 
 	const dispatch = createEventDispatcher();
-	function onClick(e) {
+
+	let elementType = href ? 'a' : 'button';
+	if (elementType === 'a') {
+		props.href = href;
+		props.target = external ? '_blank' : null;
+	}
+	if (elementType === 'button') props.type = 'button';
+	if (disabled) props.disabled = true;
+</script>
+
+<svelte:element
+	this={elementType}
+	role="button"
+	tabindex="0"
+	on:click={(e) => {
 		if (disabled) {
 			e.preventDefault();
 		} else {
 			if ((header || headerSmall) && !noCloseHeader) $menuOpen = false;
 			dispatch('click');
 		}
-	}
-
-	let elementType = href ? 'a' : 'button';
-</script>
-
-<svelte:element
-	this={elementType}
-	type="button"
-	role="button"
-	tabindex="0"
-	{href}
-	on:click={onClick}
+	}}
 	class="container button"
 	class:alert
 	class:header
@@ -46,8 +53,6 @@
 	class:acrylic
 	class:active
 	class:danger
-	disabled={disabled || null}
-	target={external ? '_blank' : null}
 	{...props}
 >
 	{#if icon}

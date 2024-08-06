@@ -1,25 +1,22 @@
 <script>
 	import Layout from 'components/Layout.svelte';
-	import LinkButton from 'components/LinkButton.svelte';
 	import { menuOpen } from 'logic/stores.js';
 
 	let clickCount = 0;
+	const onClick = () => {
+		if (++clickCount == 5) {
+			clickCount = 0;
+			menuOpen.set(true);
+		}
+	};
 </script>
 
 <Layout fullWidth fixedHeightContent>
 	<div class="container">
-		<img src="/app-example.png" alt="An image of an iPhone running the 4-H Fair App" />
+		<img src="/app-example.png" alt="A phone running the 4-H Fair App" />
 		<div class="getTheApp">
-			<h1
-				on:click={() => {
-					if (++clickCount == 5) {
-						clickCount = 0;
-						$menuOpen = true;
-					}
-				}}
-			>
-				Get the 4-H Fair App on your phone
-			</h1>
+			<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+			<h1 on:click={onClick} on:keydown={onClick}>Get the 4-H Fair App on your phone</h1>
 			<svg
 				width="200px"
 				viewBox="80 80 580 580"
@@ -375,8 +372,8 @@
 				<rect x="120" y="560" width="60" height="60" />
 			</svg>
 			<p>
-				Scan the QR code above, or visit <a href="https://sc4hfair.app" disabled
-					>https://sc4hfair.app</a
+				Scan the QR code above, or visit <span style="text-decoration: underline;"
+					>https://sc4hfair.app</span
 				> in your phone's browser.
 			</p>
 		</div>
@@ -393,10 +390,10 @@
 		gap: 4em;
 		padding: 2em;
 		box-sizing: border-box;
+		user-select: none;
 		img {
 			height: 30em;
 		}
-		user-select: none;
 	}
 	.getTheApp {
 		display: flex;

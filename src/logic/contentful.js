@@ -1,3 +1,8 @@
+/**
+ * @template {Record<string, any>} T
+ * @param {string} query
+ * @returns {Promise<T>}
+ */
 export async function queryContentful(query) {
 	const res = await fetch(
 		'https://graphql.contentful.com/content/v1/spaces/e34g9w63217k/?query=' +
@@ -15,19 +20,34 @@ export async function queryContentful(query) {
 	return (await res.json()).data;
 }
 
+/**
+ * @typedef {object} Club
+ * @property {string} slug
+ * @property {string} name
+ * @property {string | null} tent
+ * @property {string | null} description
+ * @property {string | null} meetingLocation
+ * @property {string | null} meetingWhen
+ * @property {string | null} grades
+ * @property {string | null} clubWebsite
+ * @property {string | null} listingWebsite
+ * @property {string[] | null} tags
+ */
+
+/** @type {Club[]} */
 let clubs = [];
 const clubQuery = `{
 	clubCollection(order: name_ASC) {
 		items {
 			slug
 			name
-			meetingLocation
-			clubWebsite
-			description
-			grades
-			meetingWhen
-			listingWebsite
 			tent
+			description
+			meetingLocation
+			meetingWhen
+			grades
+			clubWebsite
+			listingWebsite
 			tags
 		}
 	}
@@ -39,6 +59,28 @@ export async function getClubs() {
 	return clubs;
 }
 
+export const sponsorTiers = /** @type {const} */ ([
+	'clover',
+	'sky',
+	'gold',
+	'silver',
+	'bronze',
+	'copper',
+	'automobile',
+	'custom',
+	'friends-family',
+]);
+
+/**
+ * @typedef {object} Sponsor
+ * @property {string} heading
+ * @property {{ url: string } | null} image
+ * @property {string | null} description
+ * @property {string | null} link
+ * @property {(typeof sponsorTiers)[number]} tier
+ */
+
+/** @type {Sponsor[]} */
 let sponsors = [];
 const sponsorQuery = `{
 	sponsorSpotCollection {

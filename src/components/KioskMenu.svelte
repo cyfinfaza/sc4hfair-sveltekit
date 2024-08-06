@@ -1,7 +1,7 @@
 <script>
+	import { browser } from '$app/environment';
+	import { navigating, page } from '$app/stores';
 	import Logo from 'assets/logo.svg?component';
-	import LinkButton from 'components/LinkButton.svelte';
-	import { page, navigating } from '$app/stores';
 	import LoadingRing from 'components/LoadingRing.svelte';
 
 	const links = [
@@ -52,7 +52,7 @@
 		<div
 			style="position: fixed; top:0.5em; left:0.5em; display: flex; align-items: center; justify-content: center; width: 2em; height 2em;"
 		>
-			<LoadingRing loading={$navigating} />
+			<LoadingRing loading={browser && $navigating !== null} />
 		</div>
 		<a
 			href="/"

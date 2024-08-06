@@ -1,10 +1,14 @@
 <script>
 	import LinkButton from 'components/LinkButton.svelte';
-	import { notificationStatus, subscribe, unsubscribe } from 'logic/webpush.js';
 	import { isOnline } from 'logic/stores.js';
+	import { notificationStatus, subscribe, unsubscribe } from 'logic/webpush.js';
 
 	// initial state
-	/** overrides button text, used while an operation (like fetch) is happening */
+	/**
+	 * overrides button text, used while an operation (like fetch) is happening
+	 *
+	 * @type {string | null}
+	 */
 	let loading = 'Loading notification status…';
 
 	$: if ($notificationStatus.ready !== false) loading = null;
@@ -42,8 +46,8 @@
 					registered: data.registered,
 					message: data.message,
 				}));
-			} catch (e) {
-				notificationStatus.update((oldStatus) => ({ ...oldStatus, message: e.message })); // we failed, revert with message
+			} catch (/** @type{any}*/ e) {
+				notificationStatus.update((oldStatus) => ({ ...oldStatus, message: e?.message })); // we failed, revert with message
 			}
 			loading = null;
 		}}

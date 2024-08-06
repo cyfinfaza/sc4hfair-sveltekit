@@ -1,12 +1,13 @@
 <script>
+	import { browser } from '$app/environment';
+	import { navigating } from '$app/stores';
 	// import FourH from 'assets/4h.svg?component';
 	import Logo from 'assets/logo.svg?component';
 	import LinkButton from 'components/LinkButton.svelte';
 	import LoadingRing from 'components/LoadingRing.svelte';
 	import SponsorSpot from 'components/SponsorSpot.svelte';
 	import ThemeSwitcher from 'components/ThemeSwitcher.svelte';
-	import { menuOpen, isOnline } from 'logic/stores';
-	import { navigating } from '$app/stores';
+	import { isOnline, menuOpen } from 'logic/stores';
 	import 'styles/button.css';
 
 	export let offsetContent = true;
@@ -40,7 +41,7 @@
 				{#if !$isOnline}
 					<span class="material-icons" aria-hidden="true">cloud_off</span>
 				{/if}
-				<LoadingRing loading={$navigating} />
+				<LoadingRing loading={browser && $navigating !== null} />
 				<button type="button" class="menuButton button" on:click={() => ($menuOpen = !$menuOpen)}>
 					<div class="menuIconContainer">
 						<i class="material-icons" aria-hidden="true" class:inactive={$menuOpen}>menu</i>

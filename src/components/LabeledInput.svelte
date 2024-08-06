@@ -4,6 +4,7 @@
 	export let type = 'text'; // input type
 	export let form; // form writeable
 
+	/** @type {import('svelte/action').Action<HTMLInputElement>} */
 	function typeAction(node) {
 		node.type = type;
 	}

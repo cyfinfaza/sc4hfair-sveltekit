@@ -1,9 +1,9 @@
 <script>
-	import SvelteMarkdown from 'svelte-markdown';
 	import LinkButton from 'components/LinkButton.svelte';
 	import { isOnline, kioskMode } from 'logic/stores.js';
 	import { interestsSlugs, removeInterest } from 'logic/supabase.js';
 	import { onMount, tick } from 'svelte';
+	import SvelteMarkdown from 'svelte-markdown';
 
 	export let club;
 
@@ -14,7 +14,6 @@
 		await tick();
 		if (autoTarget) {
 			div.scrollIntoView();
-			window.div = div;
 		}
 	});
 </script>
@@ -30,7 +29,7 @@
 	</h2>
 	<div class="description">
 		<SvelteMarkdown
-			renderers={{ image: null }}
+			renderers={{ image: undefined }}
 			source={club.description}
 			options={{ mangle: false }}
 		/>

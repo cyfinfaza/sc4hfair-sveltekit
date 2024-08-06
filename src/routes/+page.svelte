@@ -1,6 +1,5 @@
 <script>
 	import InstallInstructions from 'components/InstallInstructions.svelte';
-	import KioskPitch from 'components/KioskPitch.svelte';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import Post from 'components/Post.svelte';
@@ -24,6 +23,7 @@
 	}
 }`;
 
+	/** @type {{ title: string; contentText: string; sys: { publishedAt: string } }[]} */
 	let posts = [];
 	onMount(async () => {
 		posts = (await queryContentful(query)).postCollection?.items;
@@ -32,13 +32,6 @@
 	let showSetupBox = false;
 	onMount(() => {
 		if (localStorage.getItem('installBox') !== '1') showSetupBox = true;
-		if (
-			(($kioskMode && !new URL(window.location).searchParams.get('kiosk') === 'disable') ||
-				new URL(window.location).searchParams.get('kiosk') === 'enable') &&
-			!new URL(window.location).searchParams.get('km_announcements')
-		) {
-			goto('/map');
-		}
 	});
 </script>
 
@@ -95,11 +88,9 @@
 		</div>
 	{/if}
 	<h2 class="center">Latest Updates</h2>
-	<div clas="columnCentered">
-		{#each posts as post, i}
-			<Post data={post} index={i} />
-		{/each}
-	</div>
+	{#each posts as post, i}
+		<Post data={post} index={i} />
+	{/each}
 </Layout>
 
 <style lang="scss">

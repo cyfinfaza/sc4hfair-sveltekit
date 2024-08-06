@@ -1,11 +1,21 @@
+/// <reference lib="dom" />
+
 import { SCAVENGER_HUNT_CODE } from 'logic/constants';
 import { checkIsStandalone } from 'logic/platform';
 
-export function pvtUpdate({ href = window.location.href, referrer = undefined }) {
+/**
+ * @param {object} obj
+ * @param {string | undefined} obj.href
+ * @param {string | null | undefined} obj.referrer
+ */
+export function pvtUpdate(
+	{ href = undefined, referrer = undefined } = { href: undefined, referrer: undefined }
+) {
+	/** @type {RequestInit} */
 	let reqInit = {
 		method: 'POST',
 		body: JSON.stringify({
-			url: href,
+			url: href || globalThis.location.href,
 			meta: {
 				standalone: checkIsStandalone(),
 				[SCAVENGER_HUNT_CODE]: localStorage.getItem(SCAVENGER_HUNT_CODE) || undefined,
@@ -14,7 +24,9 @@ export function pvtUpdate({ href = window.location.href, referrer = undefined })
 			},
 		}),
 		credentials: 'include',
-		type: 'application/json',
+		headers: {
+			'content-type': 'application/json',
+		},
 	};
 	fetch('/api/pvt', reqInit).then((response) =>
 		response.text().then((status) => {

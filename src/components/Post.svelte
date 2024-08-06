@@ -1,13 +1,14 @@
 <script>
-	import SvelteMarkdown from 'svelte-markdown';
-	import DateTime from 'components/DateTime.svelte';
 	import ContentfulImage from 'components/ContentfulImage.svelte';
+	import DateTime from 'components/DateTime.svelte';
+	import SvelteMarkdown from 'svelte-markdown';
 
+	/** @type {{ title: string; contentText: string; sys: { publishedAt: string } }} */
 	export let data;
 	export let index = 0;
 </script>
 
-<div class="container" style:animation-delay={index * 0.1 + 's'}>
+<article style:animation-delay={index * 0.1 + 's'}>
 	<h3 class="title">{data.title}</h3>
 	<SvelteMarkdown
 		source={data.contentText}
@@ -15,10 +16,10 @@
 		options={{ mangle: false }}
 	/>
 	<DateTime date={data.sys.publishedAt} fromNow withTitle />
-</div>
+</article>
 
 <style lang="scss">
-	.container {
+	article {
 		width: 100%;
 		border-radius: 8px;
 		background-color: var(--light);

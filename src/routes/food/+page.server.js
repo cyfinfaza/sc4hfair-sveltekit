@@ -9,11 +9,20 @@ const query = `{
 	}
 }`;
 
+/**
+ * @typedef {object} FoodVendor
+ * @property {string} name
+ * @property {{ key: string; value: string; id: string }[]} items
+ */
+
 let loadedData = false,
+	/** @type {FoodVendor[]} */
 	foodVendors = [];
 
+/** @type {import('./$types').PageServerLoad} */
 export async function load() {
 	if (!loadedData) {
+		/** @type {{ foodVendorCollection: { items: FoodVendor[] } }} */
 		const resp = await queryContentful(query);
 
 		foodVendors = resp.foodVendorCollection?.items;

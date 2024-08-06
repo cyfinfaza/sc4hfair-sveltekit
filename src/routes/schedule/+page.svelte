@@ -1,23 +1,26 @@
 <script>
+	import { browser } from '$app/environment';
 	import Layout from 'components/Layout.svelte';
-	import tentSlugs from 'data/tentSlugs.json';
 	import ToggleButton from 'components/ToggleButton.svelte';
-	import EventBox from './EventBox.svelte';
+	import tentSlugs from 'data/tentSlugs.json';
 	import { eventIsFuture } from 'logic/scheduling.js';
 	import { exactSearch } from 'logic/search.js';
 	import { kioskMode } from 'logic/stores.js';
-	import { browser } from '$app/environment';
+	import EventBox from './EventBox.svelte';
 
+	/** @type {import('./$types').PageData} */
 	export let data;
 
 	let selectedTent = 'All';
 	let showingPast = false;
 	let searchQuery = '';
-	let starredEvents = (browser && JSON.parse(localStorage.getItem('starredEvents'))) || [];
+	/** @type {string[]} */
+	let starredEvents = (browser && JSON.parse(localStorage.getItem('starredEvents') || '[]')) || [];
 	let showingOnlyStarredEvents = false;
 
 	$: browser && window.localStorage.setItem('starredEvents', JSON.stringify(starredEvents));
 
+	/** @param {string} id */
 	function toggleStarredEvent(id) {
 		if (starredEvents.includes(id)) {
 			starredEvents = starredEvents.filter((event) => event !== id);
@@ -33,11 +36,11 @@
 			(element) =>
 				((selectedTent === 'All' || selectedTent === element.tent) &&
 					(eventIsFuture(element) || showingPast)) ||
-				(browser && window.location?.hash === '#' + element.id)
+				(browser && window.location?.hash === '#' + element.sys.id)
 		),
 		'title',
 		['tentName']
-	).filter((element) => !showingOnlyStarredEvents || starredEvents.includes(element.sys.id));
+	).filter((element) => !showingOnlyStarredEvents || starredEvents.includes(element.sys?.id));
 </script>
 
 <Layout title="Schedule">
@@ -45,9 +48,9 @@
 	<div class="filterOptions">
 		<p>Filter:</p>
 		<select bind:value={selectedTent} name="Tent">
-			{#each data.eventTentsList as tent}
-				<option value={tent} key={tent}>
-					{tentSlugs[tent] || tent}
+			{#each data.eventTentsList as tent (tent)}
+				<option value={tent}>
+					{(tent !== 'All' && tentSlugs[tent]) || tent}
 				</option>
 			{/each}
 		</select>

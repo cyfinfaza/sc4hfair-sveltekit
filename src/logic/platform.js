@@ -28,7 +28,7 @@ const standaloneModes = ['standalone', 'fullscreen', 'minimal-ui'];
 /** @returns {boolean} */
 export const checkIsStandalone = () =>
 	browser &&
-	(window.navigator.standalone ||
+	(('standalone' in window.navigator && !!window.navigator.standalone) ||
 		standaloneModes.some((mode) => window.matchMedia(`(display-mode: ${mode})`).matches));
 
 export const isStandalone = writable(checkIsStandalone());

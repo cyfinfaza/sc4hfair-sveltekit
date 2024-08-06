@@ -1,9 +1,9 @@
 <script>
+	import { browser } from '$app/environment';
 	import ClubBox from 'components/ClubBox.svelte';
 	import Layout from 'components/Layout.svelte';
 	import { exactSearch } from 'logic/search.js';
 	import { isOnline, kioskMode } from 'logic/stores.js';
-	import { browser } from '$app/environment';
 
 	export let data;
 

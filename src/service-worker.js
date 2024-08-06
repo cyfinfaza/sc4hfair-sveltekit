@@ -109,13 +109,16 @@ function cacheFirst(event, revalidateEtag = false) {
 				if (revalidateEtag) {
 					event.waitUntil(
 						(async () => {
-							const headRequest = await fetch(event.request.url, { method: 'HEAD' });
+							const headRequest = await fetch(event.request.url, {
+								method: 'HEAD',
+								cache: 'no-store',
+							});
 							const headEtag = headRequest.headers.get('etag');
 							console.log('REVALIDATE HEAD CHECK: ', cachedResponse.url, cacheEtag);
 							if (headEtag && cacheEtag !== headEtag) {
 								console.log('REVALIDATING: ', cachedResponse.url);
 								await cache.delete(event.request);
-								const newReq = await fetch(event.request);
+								const newReq = await fetch(event.request, { cache: 'no-store' });
 								if (newReq.ok) await cache.put(event.request, newReq.clone());
 								else console.log('REVALIDATE NOT OK: ', newReq);
 								wasRevalidated = true; // regrab the response from the cache
@@ -123,23 +126,30 @@ function cacheFirst(event, revalidateEtag = false) {
 						})()
 					);
 				}
-				return wasRevalidated ?
+				return (
+					(wasRevalidated ?
 						await cache.match(event.request, { ignoreSearch: true })
-					:	cachedResponse;
+					:	cachedResponse) ||
+					(await fetch(event.request.url, {
+						cache: 'no-store',
+					}))
+				);
 			} else {
 				console.log('CACHE MISS: ', event.request.url);
 				let resp;
 				try {
-					resp = await fetch(event.request);
+					resp = await fetch(event.request, { cache: 'no-store' });
 				} catch (e) {
 					console.log('FETCH ERROR: ', e);
-					// this is broken as sveltekit's routing doesn't trigger this
+					// this is broken as sveltekit's routing doesn't trigger this fallback
 					// we could hook into the router and force the navigation if we wanted
 					// (https://github.com/sveltejs/kit/issues/2570 for some reference)
 					// this page is only for when something goes really wrong
-					// as all real pages in the app should already have offline support
-					if (event.request.mode === 'navigate') return cache.match('/offline');
-					else return resp;
+					// as all real pages in the app should already have offline support and be cached
+					return (
+						(event.request.mode === 'navigate' ? await cache.match('/offline') : resp) ||
+						new Response('Error loading offline fallback', { status: 500 })
+					);
 				}
 				if (resp.ok) event.waitUntil(cache.put(event.request, resp.clone()));
 				else console.log('FETCH NOT OK: ', resp);
@@ -150,22 +160,24 @@ function cacheFirst(event, revalidateEtag = false) {
 }
 
 /** @param {FetchEvent} event */
-function networkFirst(event) {
+function networkFirst(event, noCache = false) {
 	event.respondWith(
 		(async function () {
 			const cache = await caches.open(CACHE_NAME);
 			console.log('NETWORKFIRST: ', event.request.url);
 			let resp;
 			try {
-				resp = await fetch(event.request);
+				resp = await fetch(event.request, { cache: noCache ? 'no-store' : undefined });
 			} catch (e) {
 				console.log('FETCH ERROR: ', e);
 				const cachedResponse = await caches.match(event.request, { ignoreSearch: true });
 				if (cachedResponse) {
 					return cachedResponse;
 				} else {
-					if (event.request.mode === 'navigate') return cache.match('/offline');
-					else return resp;
+					return (
+						(event.request.mode === 'navigate' ? await cache.match('/offline') : resp) ||
+						new Response('Error loading offline fallback', { status: 500 })
+					);
 				}
 			}
 			if (resp.ok) event.waitUntil(cache.put(event.request, resp.clone()));
@@ -176,7 +188,7 @@ function networkFirst(event) {
 
 // /** @param {FetchEvent} event */
 // function networkOnly(event) {
-// 	event.respondWith(async () => fetch(event.request));
+// 	event.respondWith(fetch(event.request, { cache: 'no-store' }));
 // }
 
 // don't cache during development
@@ -192,12 +204,10 @@ if (prerendered.length !== 0) {
 			(url.hostname === 'api.mapbox.com' && /\.(png|jpe?g|webp|pbf)\d*$/im.test(url.pathname))
 		) {
 			return; // let the browser do its default thing
-		} else if (
-			url.hostname === 'graphql.contentful.com' ||
-			url.hostname.endsWith('.supabase.co') ||
-			url.pathname === '/_app/version.json'
-		) {
+		} else if (url.hostname === 'graphql.contentful.com' || url.hostname.endsWith('.supabase.co')) {
 			networkFirst(event);
+		} else if (url.pathname === '/_app/version.json') {
+			networkFirst(event, true);
 		} else if (
 			url.pathname.startsWith('/_app/immutable/') || // assets are immutable (versioned in url)
 			// any other assets served as part of the app bundle, all need to be the same version
@@ -219,9 +229,23 @@ sw.addEventListener('push', (e) => {
 	e.waitUntil(
 		(async () => {
 			console.log('Push received', e);
-			const pushData = e.data.json();
+			/**
+			 * @type {{
+			 * 			type: 'notification';
+			 * 			id: string;
+			 * 			data: { title: string; body: string; options: NotificationOptions };
+			 * 	  }
+			 * 	| {
+			 * 			type: 'test';
+			 * 			id: string;
+			 * 	  }
+			 * 	| undefined}
+			 */
+			const pushData = e.data?.json();
 			console.log('Push data', pushData);
-			if (pushData.type === 'notification') {
+			if (!pushData) {
+				console.error('No push data', pushData);
+			} else if (pushData.type === 'notification') {
 				await sw.registration.showNotification(pushData.data.title, {
 					body: pushData.data.body,
 					...notificationOptions,
@@ -239,8 +263,7 @@ sw.addEventListener('push', (e) => {
 				}
 
 				await sw.registration.showNotification('Your notifications are working!', {
-					body: 'The latest fair news will arrive here.',
-					silent: true,
+					body: 'The latest fair news and alerts will arrive here.',
 					tag: 'push-test',
 					actions: [
 						{
@@ -277,31 +300,33 @@ sw.addEventListener('notificationclick', (event) => {
 	}
 });
 
-sw.addEventListener('pushsubscriptionchange', (event) => {
-	event.waitUntil(async () => {
-		/** @type {PushSubscription|null} */
-		let newSubscription = event.newSubscription,
-			/** @type {PushSubscription|null} */
-			oldSubscription = event.oldSubscription;
+// currently has no real browser support :/
+// https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerGlobalScope/pushsubscriptionchange_event#browser_compatibility
+// sw.addEventListener('pushsubscriptionchange', (event) => {
+// 	event.waitUntil(async () => {
+// 		/** @type {PushSubscription | null} */
+// 		let newSubscription = event.newSubscription,
+// 			/** @type {PushSubscription | null} */
+// 			oldSubscription = event.oldSubscription;
 
-		if (!newSubscription) {
-			// try resubscribing
-			newSubscription = await sw.registration.pushManager.subscribe({
-				userVisibleOnly: true,
-				applicationServerKey:
-					'BEVhADYtzjjK1odWzYgXNZmiO90ugEBch6S8taqPnCL3Fbdpc1NNPSsJa-HJDXM57FrvfJc7TBMqWuB51mdkT7k',
-				...oldSubscription?.options,
-			});
-		}
+// 		if (!newSubscription) {
+// 			// try resubscribing
+// 			newSubscription = await sw.registration.pushManager.subscribe({
+// 				userVisibleOnly: true,
+// 				applicationServerKey:
+// 					'BEVhADYtzjjK1odWzYgXNZmiO90ugEBch6S8taqPnCL3Fbdpc1NNPSsJa-HJDXM57FrvfJc7TBMqWuB51mdkT7k',
+// 				...oldSubscription?.options,
+// 			});
+// 		}
 
-		const res = await fetch(`${__WEBPUSH_API_PREFIX__}/api/webpush/resubscribe`, {
-			method: 'POST',
-			body: JSON.stringify({ subscription: newSubscription, oldSubscription }),
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			credentials: 'include',
-		});
-		console.log('resubscribe response', res);
-	});
-});
+// 		const res = await fetch(`${__WEBPUSH_API_PREFIX__}/api/webpush/resubscribe`, {
+// 			method: 'POST',
+// 			body: JSON.stringify({ subscription: newSubscription, oldSubscription }),
+// 			headers: {
+// 				'Content-Type': 'application/json',
+// 			},
+// 			credentials: 'include',
+// 		});
+// 		console.log('resubscribe response', res);
+// 	});
+// });
