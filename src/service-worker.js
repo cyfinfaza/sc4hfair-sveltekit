@@ -265,6 +265,7 @@ sw.addEventListener('push', (e) => {
 				await sw.registration.showNotification('Your notifications are working!', {
 					body: 'The latest fair news and alerts will arrive here.',
 					tag: 'push-test',
+					// @ts-expect-error something is wrong with the types here, but this is valid
 					actions: [
 						{
 							action: '/settings#notifications',

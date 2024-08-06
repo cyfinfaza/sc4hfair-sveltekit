@@ -57,6 +57,7 @@
 			dispatch('confirm', { cancel }); // when explicitly confirming
 		else dispatch('cancel', { cancel }); // for any other reason (click out, etc.)
 		if (!canceled) {
+			console.log('close');
 			show = false;
 			dispatch('close', dialog.returnValue); // always (for resetting content or handling a custom return), DONE LAST
 		}

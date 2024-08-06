@@ -37,10 +37,7 @@
 			delete props.target;
 		}
 	}
-	$: {
-		if (elementType === 'button') props.type = 'button';
-		else delete props.type;
-	}
+	$: if (elementType === 'button' && !props.type) props.type = 'button';
 	$: props.disabled = disabled ? true : undefined;
 </script>
 

@@ -58,6 +58,7 @@
 			"type": "image/png"
 		}
 	],
+	"description": "Bring the Somerset County 4-H Fair to your phone with news, schedule, map, club, and food information!",
 	"shortcuts": [
 		{
 			"name": "Map",
@@ -84,6 +85,22 @@
 					"purpose": "any"
 				}
 			]
+		}
+	],
+	"screenshots": [
+		{
+			"src": "/screenshot-latest.png",
+			"sizes": "1082x2402",
+			"type": "image/png",
+			"form_factor": "narrow",
+			"label": "Latest News"
+		},
+		{
+			"src": "/screenshot-map.png",
+			"sizes": "1082x2402",
+			"type": "image/png",
+			"form_factor": "narrow",
+			"label": "Fair Map"
 		}
 	]
 }

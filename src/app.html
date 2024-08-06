@@ -13,5 +13,32 @@
 	<script>document.body.classList.add(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'theme-dark' : 'theme-light'));</script>
 	<script>navigator?.serviceWorker?.getRegistration()?.then(reg => reg.update());</script>
 	<div>%sveltekit.body%</div>
+
+	<script>
+		(function() {
+			setTimeout(() => {
+				const stylesheets = document.querySelectorAll('link[rel="stylesheet"]');
+				const allLoaded = Array.from(stylesheets).every(link => link.sheet.cssRules !== null && link.sheet.cssRules.length > 0);
+				
+				if (!allLoaded) {
+					console.warn('One or more stylesheets failed to load, resetting service worker and caches...');
+
+					Promise.allSettled([
+						('serviceWorker' in navigator) && navigator.serviceWorker.getRegistrations().then(async (registrations) => {
+							for (const registration of registrations) {
+								await registration.unregister();
+							}
+						}),
+						caches.has('offline-cache-v2').then(async (hasCache) => {
+							if (hasCache) await caches.delete('offline-cache-v2');
+						})
+					]).finally(() => {
+						console.log('Service worker and caches reset, reloading page...');
+						window.location.reload();
+					});
+				}
+			}, 5000);
+		})();
+	</script>
 </body>
 </html>
