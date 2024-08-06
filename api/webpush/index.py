@@ -70,11 +70,14 @@ def index():
 		'$group': {
 			'_id': None,
 			'subscriptions': {'$sum': {
-				'$cond': [{'$ne': ['$valid', False]}, 1, 0]
+				'$cond': [{'$and': [{'$ne': ['$valid', False]}, {'$ne': ['$subscribed', False]}]}, 1, 0]
 			}},
 			'invalidSubscriptions': {'$sum': {
-				'$cond': [{'$eq': ['$valid', False]}, 1, 0]
+				'$cond': [{'$and': [{'$eq': ['$valid', False]}, {'$ne': ['$subscribed', False]}]}, 1, 0]
 			}},
+			'unsubscribed': {'$sum': {
+				'$cond': [{'$eq': ['$subscribed', False]}, 1, 0]
+			}}
 		},
 	}]).next()
 	return success_json(data={
@@ -100,7 +103,7 @@ def main():
 	print('sub_info', sub_info)
 	print('pvt id', 'track_id' in session and session['track_id'])
 
-	alreadyExists = subscriptionsCollection.count_documents({'subscription_info': sub_info, 'valid': {'$ne': False}}) > 0
+	alreadyExists = subscriptionsCollection.count_documents({'subscription_info': sub_info, 'valid': {'$ne': False}, 'subscribed': {'$ne': False}}, limit=1) > 0
 
 	if request.endpoint == 'subscribe':
 		test_id = str(uuid4())
@@ -114,18 +117,26 @@ def main():
 
 		# modify db if necessary
 		if not dry:
-			subscriptionsCollection.update_one({'subscription_info': sub_info}, {'$set': {
-				'created': datetime.now(tz=UTC),
-				'subscription_info': sub_info,
-				'user_agent': str(request.user_agent),
-				'track_id': 'track_id' in session and session['track_id'] or None,
-				'valid': None # we just got it, it should be fine
-			}}, upsert=True)
+			sub = subscriptionsCollection.find_one_and_update(
+				{'subscription_info': sub_info},
+				{'$set': {
+					'created': datetime.now(tz=UTC),
+					'subscription_info': sub_info,
+					'user_agent': str(request.user_agent),
+					'track_id': 'track_id' in session and session['track_id'] or None,
+					'valid': None, # we just got it, it should be fine
+					'registered': True # just subscribed
+				}},
+				projection={'subscriptionId': {'$toString': '$_id'}},
+				upsert=True,
+				return_document=pymongo.ReturnDocument.AFTER
+			)
 
 		return success_json(data={
 			'already_exists': alreadyExists,
 			'registered': alreadyExists if dry else True, # if the subscription is in the db
-			'test_id': None if dry else test_id
+			'test_id': None if dry else test_id,
+			'subscription_id': sub['subscriptionId'] if not dry else None
 		})
 
 	elif request.endpoint == 'unsubscribe':
@@ -134,10 +145,18 @@ def main():
 				'already_exists': False,
 			}, message='Subscription does not exist')
 
-		subscriptionsCollection.delete_one({'subscription_info': sub_info})
+		sub = subscriptionsCollection.find_one_and_update(
+			{'subscription_info': sub_info},
+			{'$set': {
+				'registered': False,
+			}},
+			projection={'subscriptionId': {'$toString': '$_id'}},
+			upsert=False
+		)
 
 		return success_json(data={
 			'registered': False,
+			'subscription_id': sub['subscriptionId']
 		})
 
 	elif request.endpoint == 'resubscribe':
@@ -170,11 +189,13 @@ def main():
 			else:
 				result = 'newCreated'
 
-		# if we only have an old subscription, just delete the entry
+		# if we only have an old subscription
 		elif oldSubscription and 'endpoint' in oldSubscription:
-			op = subscriptionsCollection.delete_one(query)
-			if op.deleted_count > 0:
-				result = 'oldDeleted'
+			op = subscriptionsCollection.update_one(query, {'$set': {
+				'valid': False,
+			}})
+			if op.modified_count > 0:
+				result = 'oldUpdated'
 
 		return success_json(data={
 			'result': result,

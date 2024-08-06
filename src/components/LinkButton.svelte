@@ -28,12 +28,20 @@
 	const dispatch = createEventDispatcher();
 
 	let elementType = href ? 'a' : 'button';
-	if (elementType === 'a') {
-		props.href = href;
-		props.target = external ? '_blank' : null;
+	$: {
+		if (elementType === 'a') {
+			props.href = href;
+			props.target = external ? '_blank' : null;
+		} else {
+			delete props.href;
+			delete props.target;
+		}
 	}
-	if (elementType === 'button') props.type = 'button';
-	if (disabled) props.disabled = true;
+	$: {
+		if (elementType === 'button') props.type = 'button';
+		else delete props.type;
+	}
+	$: props.disabled = disabled ? true : undefined;
 </script>
 
 <svelte:element

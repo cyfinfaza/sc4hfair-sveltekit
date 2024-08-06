@@ -17,6 +17,7 @@
 
 	/** @type {Modal} */
 	let subscribeModal;
+	/** @type {() => Promise<void>} */
 	let toggleNotificationEnabledClick;
 
 	const loadScheduledNotifications = async () => {
@@ -60,11 +61,17 @@
 		else $subscribedEvents = [];
 	}
 
+	/**
+	 * @param {string} eventId
+	 * @param {boolean} subscribed
+	 */
 	const setEventSubscription = async (eventId, subscribed) => {
 		if ($notificationStatus.registered === false) {
 			subscribeModal.showModal();
 			return;
 		}
+		const event = data.events.find((event) => event.sys.id === eventId);
+		if ($subscribedEvents === undefined || event === undefined) return;
 
 		let oldSubscribedEvents = $subscribedEvents;
 		let method, body;
@@ -74,8 +81,7 @@
 			body = {
 				eventId,
 				when: new Date(
-					new Date(data.events.find((event) => event.sys.id === eventId).time) -
-						MINUTES_BEFORE_NOTIFICATION * 60e3
+					new Date(event.time).getTime() - MINUTES_BEFORE_NOTIFICATION * 60e3
 				).toISOString(),
 			};
 		} else {
@@ -114,7 +120,9 @@
 		),
 		'title',
 		['tentName']
-	).filter((element) => !showingOnlySubscribedEvents || $subscribedEvents.includes(element.sys.id));
+	).filter(
+		(element) => !showingOnlySubscribedEvents || $subscribedEvents?.includes(element.sys.id)
+	);
 </script>
 
 <Layout title="Schedule">
