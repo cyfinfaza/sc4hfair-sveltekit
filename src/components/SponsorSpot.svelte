@@ -1,28 +1,34 @@
 <script>
 	import FourH from 'assets/4h.svg?component';
 	import LinkButton from 'components/LinkButton.svelte';
-	import { getContext } from 'svelte/internal';
 	import { isOnline } from 'logic/stores.js';
+	import { getContext } from 'svelte';
+
 	export let listMode = false;
-	export let sponsor;
+	/** @type {import('logic/contentful').Sponsor | undefined} */
+	export let sponsor = undefined;
+
+	/** @type {import('logic/contentful').Sponsor[] | undefined} */
 	let sponsors = getContext('sponsors');
 
 	const DEFAULT_SPONSOR_DESCRIPTION = 'The 4‑H fair is made possible by our sponsors.';
 
 	$: {
 		if (!sponsor) {
-			let chosenTier = Math.random();
+			let random = Math.random(),
+				/** @type {string[]} */
+				chosenTier;
 
 			// because not all tiers are used this year, split into the mainer ones
-			if (chosenTier < 0.25)
+			if (random < 0.25)
 				chosenTier = ['clover', 'sky']; // 25% but from one
-			else if (chosenTier < 0.8)
+			else if (random < 0.8)
 				chosenTier = ['gold', 'silver', 'bronze']; // 55% the rest
 			else chosenTier = ['copper', 'custom', 'automobile', 'friends-family']; // 20% but from many
 
-			let filteredSponsors = sponsors.filter((ad) => chosenTier.includes(ad.tier));
+			let filteredSponsors = sponsors?.filter((ad) => chosenTier.includes(ad.tier));
 
-			sponsor = filteredSponsors[Math.floor(Math.random() * filteredSponsors.length)];
+			sponsor = filteredSponsors?.[Math.floor(Math.random() * filteredSponsors.length)];
 		}
 	}
 </script>
@@ -50,7 +56,7 @@
 				{sponsor.heading}
 			</h2>
 			{#if sponsor.description}
-				<p>{sponsor.description.description}</p>
+				<p>{sponsor.description}</p>
 			{:else if !listMode}
 				<p>{DEFAULT_SPONSOR_DESCRIPTION}</p>
 			{/if}

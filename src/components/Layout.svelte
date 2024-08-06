@@ -1,9 +1,9 @@
 <script>
 	import Header from 'components/Header.svelte';
-	import { menuOpen } from 'logic/stores';
-
+	import { kioskMenuSize, kioskMode, menuOpen } from 'logic/stores';
+	import { quintIn, quintOut } from 'svelte/easing';
 	import { fly } from 'svelte/transition';
-	import { quintOut, quintIn } from 'svelte/easing';
+	import KioskMenu from './KioskMenu.svelte';
 
 	export let title = '';
 	export let description = 'The Somerset County 4‑H Fair App';
@@ -11,17 +11,29 @@
 	export let noHeaderPadding = false;
 	export let fixedHeightContent = false;
 	export let fullWidth = false;
-	export let forceTheme = null;
+	/** @type {string | undefined} */
+	export let forceTheme = undefined;
 
 	const SITE_NAME = 'Somerset County 4‑H Fair';
 	const AUTHOR = 'Somerset County 4‑H';
 	const animationDuration = 150;
+
+	/** @type {string} */
+	let kioskSizeString;
+	/** @type {string} */
+	let contentSizeString;
+	$: {
+		kioskSizeString = $kioskMenuSize + '%';
+		contentSizeString = 100 - $kioskMenuSize + '%';
+	}
 </script>
 
 <svelte:window
 	on:keydown={(e) => {
 		if (e.key === 'm' && (e.ctrlKey || e.metaKey))
-			document.querySelector('#menuArea :is(input, button, a)').focus();
+			/** @type {HTMLElement} */ (
+				document.querySelector('#menuArea :is(input, button, a)')
+			)?.focus();
 	}}
 />
 
@@ -49,12 +61,23 @@
 <noscript>JavaScript is required to use this app.</noscript>
 {#key title}
 	<div
-		in:fly|global={{ duration: animationDuration, delay: animationDuration, y: 50, quintOut }}
-		out:fly|global={{ duration: animationDuration, y: -50, quintIn }}
+		in:fly|global={{
+			duration: animationDuration,
+			delay: animationDuration,
+			y: 50,
+			easing: quintOut,
+		}}
+		out:fly|global={{
+			duration: animationDuration,
+			y: -50,
+			easing: quintIn,
+		}}
 		class={['content', forceTheme ? 'global-theme-' + forceTheme : null].filter(Boolean).join(' ')}
 		id="content"
 		class:noPadding
 		class:fixedHeightContent
+		class:kioskMode={$kioskMode}
+		style:width={$kioskMode ? contentSizeString : undefined}
 		on:focusin={() => ($menuOpen = false)}
 	>
 		<div class:fullWidth>
@@ -62,8 +85,11 @@
 		</div>
 	</div>
 {/key}
+{#if $kioskMode}
+	<div class="kioskBar" style:width={$kioskMode ? kioskSizeString : undefined}><KioskMenu /></div>
+{/if}
 
-<style>
+<style lang="scss">
 	.content {
 		padding: 8px;
 		width: 100%;
@@ -76,7 +102,7 @@
 	}
 
 	.content.noPadding {
-		padding: 0;
+		padding: 0 !important;
 	}
 	.content.fixedHeightContent {
 		/* height: 100vh; */
@@ -84,6 +110,28 @@
 
 		position: absolute;
 		inset: 0;
+	}
+
+	.kioskBar {
+		position: fixed;
+		height: 100%;
+		width: 30%;
+		box-sizing: border-box;
+		background: var(--bg);
+	}
+
+	.content.kioskMode {
+		position: absolute;
+		right: 0;
+		width: 70%;
+		box-sizing: border-box;
+		padding: 1em;
+		&.fixedHeightContent {
+			right: 0;
+			top: 0;
+			bottom: 0;
+			left: unset;
+		}
 	}
 
 	.content > div.fullWidth {

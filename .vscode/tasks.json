@@ -1,0 +1,20 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "tsc: error check project",
+			"type": "shell",
+			"command": "tsc",
+			"args": ["-p", ".", "--noEmit"],
+			"problemMatcher": ["$tsc"],
+			"isBackground": false,
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"revealProblems": "always"
+			}
+		}
+	]
+}

@@ -117,6 +117,7 @@ for clubListing in ['https://4histops.org/clubs', 'https://4histops.org/4-h-prep
 					'meetingLocation': '',
 					'meetingWhen': '',
 					'grades': '',
+					'clubWebsite': None
 				}
 
 				for field in block.find_all('p'):
@@ -131,6 +132,8 @@ for clubListing in ['https://4histops.org/clubs', 'https://4histops.org/4-h-prep
 						short = re.search(r'^(K|\d{1,2})\s?-\s?(\d{1,2})$', value) # formats things like "K - 12" or "1 -3"
 						if short is not None: value = short.group(1) + '-' + short.group(2)
 						data['grades'] = value
+					elif key == 'links':
+						data['clubWebsite'] = value
 					elif key == 'description':
 						pass # broken 4h website thing
 					elif 'not accepting new members' not in text.lower():

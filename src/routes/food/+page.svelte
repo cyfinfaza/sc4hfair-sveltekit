@@ -1,7 +1,7 @@
 <script>
+	import { goto } from '$app/navigation';
 	import Layout from 'components/Layout.svelte';
 	import { exactSearch } from 'logic/search.js';
-	import { goto } from '$app/navigation';
 
 	export let data;
 

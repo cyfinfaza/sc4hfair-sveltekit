@@ -2,14 +2,18 @@
 	import { version } from '$app/environment';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
+	import { BRANCH } from 'logic/constants';
 	import { isOnline } from 'logic/stores.js';
-	import { session, initSupabaseClient } from 'logic/supabase.js';
+	import { initSupabaseClient, session } from 'logic/supabase.js';
 	import { onMount } from 'svelte';
 
 	let errorText = '',
 		formSubmitted = false,
+		/** @type {string} */
 		name,
+		/** @type {string} */
 		email,
+		/** @type {string} */
 		comment;
 
 	onMount(initSupabaseClient);
@@ -35,7 +39,7 @@
 		formData.append('entry.1901667750', name);
 		formData.append('entry.614631811', email);
 		formData.append('entry.1550740052', comment);
-		formData.append('entry.118251261', `${version}/${__BRANCH__}`);
+		formData.append('entry.118251261', `${version}/${BRANCH}`);
 		formData.append('entry.87818926', navigator.userAgent);
 
 		fetch(

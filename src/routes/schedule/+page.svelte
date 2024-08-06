@@ -1,17 +1,16 @@
 <script>
+	import { browser } from '$app/environment';
 	import Layout from 'components/Layout.svelte';
-	import tentSlugs from 'data/tentSlugs.json';
+	import Modal from 'components/Modal.svelte';
+	import NotificationEnableButton from 'components/NotificationEnableButton.svelte';
 	import ToggleButton from 'components/ToggleButton.svelte';
-	import EventBox from './EventBox.svelte';
+	import tentSlugs from 'data/tentSlugs.json';
 	import { eventIsFuture, MINUTES_BEFORE_NOTIFICATION } from 'logic/scheduling.js';
 	import { exactSearch } from 'logic/search.js';
 	import { kioskMode } from 'logic/stores.js';
-	import { browser } from '$app/environment';
-	import { getSubscription, notificationStatus } from 'logic/webpush';
-	import { setContext } from 'svelte';
-	import { subscribedEvents } from './stores';
-	import NotificationEnableButton from 'components/NotificationEnableButton.svelte';
-	import Modal from 'components/Modal.svelte';
+	import { getSubscription, notificationStatus } from 'logic/webpush.js';
+	import EventBox from './EventBox.svelte';
+	import { subscribedEvents } from './stores.js';
 
 	/** @type {import('./$types').PageData} */
 	export let data;
@@ -31,7 +30,14 @@
 			return;
 		}
 
-		/** @type {{ type: 'success' | 'error', message: string?, subscriptionId: string, eventIds: string[] }} */
+		/**
+		 * @type {{
+		 * 	type: 'success' | 'error';
+		 * 	message: string?;
+		 * 	subscriptionId: string;
+		 * 	eventIds: string[];
+		 * }}
+		 */
 		const data = await res.json();
 		if (data.type === 'error') {
 			console.error('error loading scheduled notifications:', data);
@@ -104,7 +110,7 @@
 			(element) =>
 				((selectedTent === 'All' || selectedTent === element.tent) &&
 					(eventIsFuture(element) || showingPast)) ||
-				(browser && window.location?.hash === '#' + element.id)
+				(browser && window.location?.hash === '#' + element.sys.id)
 		),
 		'title',
 		['tentName']
@@ -116,9 +122,9 @@
 	<div class="filterOptions">
 		<p>Filter:</p>
 		<select bind:value={selectedTent} name="Tent">
-			{#each data.eventTentsList as tent}
-				<option value={tent} key={tent}>
-					{tentSlugs[tent] || tent}
+			{#each data.eventTentsList as tent (tent)}
+				<option value={tent}>
+					{(tent !== 'All' && tentSlugs[tent]) || tent}
 				</option>
 			{/each}
 		</select>

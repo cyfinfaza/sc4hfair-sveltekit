@@ -4,7 +4,8 @@
 
 	const { atIndex, hintsUsed, addHintUsed, clues, startScanning } = getContext('sh');
 
-	export let index = undefined;
+	/** @type {number} */
+	export let index;
 	export let winner = false;
 	if (winner) index = clues.length;
 </script>

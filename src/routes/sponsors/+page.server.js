@@ -1,20 +1,8 @@
-import { getSponsors } from 'logic/contentful.js';
-
-const tiers = [
-	'clover',
-	'sky',
-	'gold',
-	'silver',
-	'bronze',
-	'copper',
-	'automobile',
-	'custom',
-	'friends-family',
-];
+import { getSponsors, sponsorTiers } from 'logic/contentful.js';
 
 export async function load() {
 	let sponsors = await getSponsors();
-	let sorted = tiers
+	let sorted = sponsorTiers
 		.map((tier) => ({
 			tier:
 				tier === 'friends-family' ? 'Friends & Family' : (

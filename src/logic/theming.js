@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 
 const isBrowser = typeof window !== 'undefined';
 
-export const themes = [
+export const themes = /** @type {const} */ ([
 	{
 		id: 'theme-light',
 		name: 'Light theme',
@@ -13,11 +13,14 @@ export const themes = [
 		name: 'Dark theme',
 		icon: 'dark_mode',
 	},
-];
+]);
 
+/** @typedef {(typeof themes)[number]['id']} ThemeId */
+
+/** @type {import('svelte/store').Writable<ThemeId>} */
 export const theme = writable(
 	(isBrowser &&
-		(window.localStorage.getItem('theme') ||
+		/** @type {ThemeId} */ (window.localStorage.getItem('theme') ||
 			(window.matchMedia('(prefers-color-scheme: dark)').matches && 'theme-dark'))) ||
 		'theme-light'
 );

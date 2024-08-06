@@ -1,22 +1,22 @@
 <script>
 	import { browser, version } from '$app/environment';
-	import { afterNavigate, beforeNavigate, replaceState } from '$app/navigation';
+	import { afterNavigate, replaceState } from '$app/navigation';
 	import { updated } from '$app/stores';
-	import { onMount, setContext } from 'svelte';
+	import KioskPitch from 'components/KioskPitch.svelte';
 	import Modal from 'components/Modal.svelte';
 	import { pvtUpdate } from 'logic/pvt.js';
 	import { kioskMode } from 'logic/stores.js';
+	import { canWebShare } from 'logic/webshare.js';
+	import { onMount, setContext } from 'svelte';
 
+	import 'styles/fonts.css';
 	import 'styles/global.css';
 	import 'styles/material-icons.css';
-	import 'styles/fonts.css';
-	import KioskPitch from 'components/KioskPitch.svelte';
-	import { canWebShare } from 'logic/webshare.js';
 
 	export let data;
 	setContext('sponsors', data?.sponsors || []);
 
-	/** @type {ServiceWorkerRegistration|undefined} */
+	/** @type {ServiceWorkerRegistration | undefined} */
 	let swRegistration;
 	// const skipWaiting = () => swRegistration?.waiting?.postMessage({ type: 'SKIP_WAITING' }); // ask for the new sw to take over & reload us
 
@@ -87,6 +87,7 @@
 		};
 	});
 
+	/** @type {() => void | undefined} */
 	let pushPoprxUpdate;
 	afterNavigate(({ to }) => {
 		const href = to?.url.href;
@@ -98,7 +99,7 @@
 
 		const referrer = to?.url.searchParams.get('referrer');
 
-		if (kioskSwitch || referrer) replaceState(to.url.pathname, null);
+		if (to && (kioskSwitch || referrer)) replaceState(to.url.pathname, {});
 
 		if (typeof pushPoprxUpdate === 'function') pushPoprxUpdate();
 
@@ -110,17 +111,18 @@
 	});
 
 	onMount(() => {
+		/** @param {string} addr */
 		function start_poprx(addr) {
 			let txid = window.localStorage.getItem('poprx-txid');
 			if (!txid) {
-				txid = Math.floor(Math.random() * 900000) + 100000;
+				txid = (Math.floor(Math.random() * 900000) + 100000).toString();
 				window.localStorage.setItem('poprx-txid', txid);
 			}
 			const client = new WebSocket(addr);
-			client.onmessage = function (event) {
-				const data = JSON.parse(event.data);
-				// console.log('poprx:', data);
-			};
+			// client.onmessage = function (event) {
+			// 	const data = JSON.parse(event.data);
+			// 	console.log('poprx:', data);
+			// };
 			client.onopen = function () {
 				client.send(
 					JSON.stringify({
@@ -165,7 +167,7 @@
 	// 	}
 	// });
 
-	$: $canWebShare = browser && navigator.share && !$kioskMode;
+	$: $canWebShare = browser && 'share' in navigator && !$kioskMode;
 
 	/** @type {Modal} */
 	let externalLinkModal;
@@ -175,19 +177,32 @@
 	on:error={(e) => {
 		e.preventDefault();
 		console.error(e, e.error);
+		if (parseInt(localStorage.getItem('lastError') || '') - Date.now() < 1000) {
+			// just crashed and reloaded, prevent reload loop
+		} else {
+			window.location.reload();
+		}
+		localStorage.setItem('lastError', Date.now().toString());
 	}}
 	on:unhandledrejection={(e) => {
 		e.preventDefault();
 		console.error(e);
+		if (parseInt(localStorage.getItem('lastError') || '') - Date.now() < 1000) {
+			// just crashed and reloaded, prevent reload loop
+		} else {
+			window.location.reload();
+		}
+		localStorage.setItem('lastError', Date.now().toString());
 	}}
 	on:click={(e) => {
-		const target = event.target.closest('a');
+		const target = e.target instanceof Element && e.target.closest('a');
 		if (!target) return;
-		const url = new URL(target.href, window.location.origin);
-		if (url.origin !== window.location.origin) {
-			e.preventDefault();
-			externalLinkModal.showModal();
-		}
+		console.log('hi');
+		// const url = new URL(target.href, window.location.origin);
+		// if (url.origin !== window.location.origin) {
+		// 	e.preventDefault();
+		// 	externalLinkModal.showModal();
+		// }
 	}}
 />
 

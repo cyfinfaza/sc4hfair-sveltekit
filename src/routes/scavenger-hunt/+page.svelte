@@ -9,7 +9,7 @@
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import Modal from 'components/Modal.svelte';
-	import { year, clues, falseCodes } from 'data/shClues.json';
+	import * as _clueData from 'data/shClues.json';
 	import { SCAVENGER_HUNT_CODE, SCAVENGER_HUNT_HINTS } from 'logic/constants';
 	import { pvtUpdate } from 'logic/pvt';
 	import { kioskMode } from 'logic/stores';
@@ -18,10 +18,18 @@
 	import { writable } from 'svelte/store';
 	import ClueBox from './ClueBox.svelte';
 
+	/** @typedef {{ code: string; clue: string; hint: string }} Clue */
+
+	const clues = /** @type {Clue[]} */ (_clueData.clues);
+	const falseCodes = /** @type {string[]} */ (_clueData.falseCodes);
+	const year = _clueData.year;
+
 	const currentYear = new Date().getFullYear();
 	const enabled = clues.length && year === currentYear && !$kioskMode;
 
+	/** @param {string | null} code */
 	const getIndexFromCode = (code) => clues.findIndex((clue) => clue.code === code);
+	/** @param {string | null} code */
 	const getOffsetIndexFromCode = (code) => getIndexFromCode(code) + 1;
 
 	let atIndex = writable(0);
@@ -33,12 +41,14 @@
 	setContext('sh', {
 		atIndex,
 		hintsUsed,
-		addHintUsed: (code) => ($hintsUsed = [...$hintsUsed, code]),
+		addHintUsed: (/** @type {string} */ code) => ($hintsUsed = [...$hintsUsed, code]),
 		clues,
 		startScanning: () => (scanning = true),
 	});
 
+	/** @type {HTMLVideoElement} */
 	let videoElement,
+		/** @type {QrScanner} */
 		qrScanner,
 		compatible = false,
 		scanning = false,
@@ -51,11 +61,11 @@
 			let tmpIndex = getOffsetIndexFromCode(localStorage.getItem(SCAVENGER_HUNT_CODE));
 			if (tmpIndex) $atIndex = tmpIndex;
 
-			let hints = JSON.parse(localStorage.getItem(SCAVENGER_HUNT_HINTS));
+			let hints = JSON.parse(localStorage.getItem(SCAVENGER_HUNT_HINTS) || '[]');
 			if (hints && hints.length > 0) $hintsUsed = hints;
 
 			checkCode(new URLSearchParams(window.location.search).get('code'), true); // Code from a scanned URL bringing them here
-			replaceState(window.location.pathname, null);
+			replaceState(window.location.pathname, {});
 		}
 
 		try {
@@ -94,15 +104,17 @@
 	onMount(() => {
 		if (!browser || !enabled) return;
 		let removeCallback = () => {};
-		navigator.permissions.query({ name: 'camera' }).then((permissionStatus) => {
-			// let the library figure it out the first time
-			const handleChange = () => {
-				console.log(`camera permission state has changed to ${permissionStatus.state}`);
-				compatible = permissionStatus.state === 'granted';
-			};
-			permissionStatus.addEventListener('change', handleChange);
-			removeCallback = () => permissionStatus.removeEventListener('change', handleChange);
-		});
+		window.navigator.permissions
+			.query({ name: /** @type {any} */ ('camera') })
+			.then((permissionStatus) => {
+				// let the library figure it out the first time
+				const handleChange = () => {
+					console.log(`camera permission state has changed to ${permissionStatus.state}`);
+					compatible = permissionStatus.state === 'granted';
+				};
+				permissionStatus.addEventListener('change', handleChange);
+				removeCallback = () => permissionStatus.removeEventListener('change', handleChange);
+			});
 		return () => removeCallback();
 	});
 
@@ -121,10 +133,11 @@
 	/** @type {ReturnType<typeof setTimeout>} */
 	let scannerMessageTimeout;
 
+	/** @param {string | null} code */
 	function checkCode(code, fromUrl = false) {
 		let index = getIndexFromCode(code);
 		console.table({ fromUrl, $atIndex });
-		const clueIsInFalseList = falseCodes.includes(code);
+		const clueIsInFalseList = code && falseCodes.includes(code);
 		if (typeof code !== 'string' || !code) {
 			console.log('doing nothing, code is not a string');
 		} else if (index === -1) {
@@ -182,7 +195,7 @@
 			{#each clues as _, index}
 				<ClueBox {index} />
 			{/each}
-			<ClueBox winner />
+			<ClueBox index={clues.length} winner />
 		</div>
 
 		<p>

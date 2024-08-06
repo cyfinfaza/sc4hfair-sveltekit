@@ -1,9 +1,6 @@
 <script>
 	import { browser, dev, version } from '$app/environment';
 	import { goto } from '$app/navigation';
-	import { writable } from 'svelte/store';
-	import { isStandalone } from 'logic/platform.js';
-	import { isOnline, kioskMode } from 'logic/stores.js';
 	import InstallInstructions from 'components/InstallInstructions.svelte';
 	import KioskPitch from 'components/KioskPitch.svelte';
 	import LabeledInput from 'components/LabeledInput.svelte';
@@ -11,24 +8,46 @@
 	import LinkButton from 'components/LinkButton.svelte';
 	import Modal from 'components/Modal.svelte';
 	import NoOffline from 'components/NoOffline.svelte';
-	import SignInButtons from 'components/SignInButtons.svelte';
-	import { onMount } from 'svelte';
-	import { session, initSupabaseClient, logout, interestsSlugs } from 'logic/supabase.js';
-	import { getSubscription, subscribe, unsubscribe } from 'logic/webpush';
 	import NotificationEnableButton from 'components/NotificationEnableButton.svelte';
+	import SignInButtons from 'components/SignInButtons.svelte';
+	import { BRANCH, BUILD_LOCATION, BUILD_TIME } from 'logic/constants';
+	import { isStandalone } from 'logic/platform.js';
+	import { isOnline, kioskMenuSize, kioskMode } from 'logic/stores.js';
+	import { initSupabaseClient, interestsSlugs, logout, session } from 'logic/supabase.js';
+	import { getSubscription, subscribe, unsubscribe } from 'logic/webpush';
+	import { onMount } from 'svelte';
+	import { writable } from 'svelte/store';
 
-	function isInfoFormDisabled(a, b) {
-		if (!a || !b) return true;
+	/**
+	 * @typedef {Partial<{
+	 * 	fullName: string;
+	 * 	preferredEmail: string;
+	 * 	phone: string;
+	 * 	graduation: string;
+	 * }> &
+	 * 	import('@supabase/supabase-js').UserMetadata} Form
+	 */
+
+	/**
+	 * @param {Form} form
+	 * @param {Form} cloudForm
+	 */
+	function isInfoFormDisabled(form, cloudForm) {
+		if (!form || !cloudForm) return true;
 		// only check certain properties
-		return ['fullName', 'preferredEmail', 'phone', 'graduation'].every((key) => a[key] === b[key]);
-		// return JSON.stringify(a) === JSON.stringify(b)
+		return /** @type {const} */ (['fullName', 'preferredEmail', 'phone', 'graduation']).every(
+			(key) => form[key] === cloudForm[key]
+		);
 	}
+
+	/** @type {import('svelte/store').Writable<Form>} */
 	const form = writable({
 		fullName: '',
 		preferredEmail: '',
 		phone: '',
 		graduation: '',
 	});
+	/** @type {Form} */
 	let cloudForm;
 	// $: console.log($form, cloudForm);
 	// $: console.log($session);
@@ -39,7 +58,22 @@
 	let confirmReset = ''; // modal for confirmation
 
 	let showingAdditionalBuildInfo = dev,
-		showDebugModal = false;
+		showDebugModal = false,
+		showKioskSizeAdjuster = false;
+
+	function toggleFullscreen() {
+		if (!document.fullscreenElement && !(/** @type {any} */ (document).webkitFullscreenElement)) {
+			if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+			else {
+				/** @type {any} */ (document.documentElement).webkitRequestFullscreen();
+			}
+		} else if (document.exitFullscreen) {
+			if (document.fullscreenElement) document.exitFullscreen();
+			else {
+				/** @type {any} */ (document).webkitExitFullscreen();
+			}
+		}
+	}
 
 	onMount(async () => {
 		client = await initSupabaseClient();
@@ -143,7 +177,7 @@
 						break;
 					case 'interests':
 						localStorage.removeItem('cim_intent');
-						if (client) {
+						if (client && $session) {
 							const { error } = await client
 								.from('interests')
 								.delete()
@@ -189,15 +223,9 @@
 			{version}
 		</code>
 		{#if showingAdditionalBuildInfo && browser}
-			<br />
-			<!-- svelte-ignore missing-declaration -->
-			<code>{__BRANCH__}</code>
-			<br />
-			<!-- svelte-ignore missing-declaration -->
-			<code>{__BUILD_TIME__}</code>
-			<br />
-			<!-- svelte-ignore missing-declaration -->
-			<code>{__BUILD_LOCATION__}</code>
+			<br /><code>{BRANCH}</code>
+			<br /><code>{BUILD_TIME}</code>
+			<br /><code>{BUILD_LOCATION}</code>
 			<div class="horizPanel2">
 				<LinkButton icon="engineering" label="Debug" on:click={() => (showDebugModal = true)} />
 				<LinkButton
@@ -223,7 +251,8 @@
 					icon="cleaning_services"
 					label="Remove localStorage item"
 					on:click={() => {
-						localStorage.removeItem(prompt('Key:'));
+						let key = prompt('Key:');
+						if (key) localStorage.removeItem(key);
 					}}
 				/>
 				<LinkButton
@@ -237,6 +266,23 @@
 						});
 					}}
 				/>
+				<LinkButton
+					icon="fullscreen"
+					label="Toggle FS"
+					on:click={() => {
+						toggleFullscreen();
+					}}
+				/>
+				{#if $kioskMode}
+					<LinkButton icon="logout" label="Exit Kiosk" on:click={() => ($kioskMode = false)} />
+					<LinkButton
+						icon="expand_content"
+						label="Kiosk Menu Size"
+						on:click={() => (showKioskSizeAdjuster = true)}
+					/>
+				{:else}
+					<LinkButton icon="tv" label="Enter Kiosk" on:click={() => ($kioskMode = true)} />
+				{/if}
 			</div>
 			<hr />
 			<div class="horizPanel2">
@@ -277,41 +323,53 @@
 			</div>
 		{/if}
 	</div>
-
-	<Modal bind:show={showDebugModal} confirmation={false}>
-		{#if showDebugModal && typeof navigator !== 'undefined'}
-			{#key showDebugModal}
-				<table>
-					<tr>
-						<td>UA</td>
-						<td>{navigator.userAgent}</td>
-					</tr>
-					<tr>
-						<td>SW</td>
-						<td>
-							{#await navigator.serviceWorker?.getRegistration()}
-								...
-							{:then reg}
-								active: {reg.active?.state}<br />
-								waiting: {reg.waiting?.state}<br />
-								installing: {reg.installing?.state}<br />
-							{:catch error}
-								{error.message}
-							{/await}
-						</td>
-					</tr>
-					<tr>
-						<td>Notif</td>
-						<td>
-							permission: {Notification.permission}<br />
-						</td>
-					</tr>
-					<tr>
-						<td>Origin</td>
-						<td>{location?.origin}</td>
-					</tr>
-				</table>
-			{/key}
-		{/if}
-	</Modal>
 </Layout>
+
+<Modal bind:show={showDebugModal} confirmation={false}>
+	{#if showDebugModal && typeof navigator !== 'undefined'}
+		{#key showDebugModal}
+			<table>
+				<tr>
+					<td>UA</td>
+					<td>{navigator.userAgent}</td>
+				</tr>
+				<tr>
+					<td>SW</td>
+					<td>
+						{#await navigator.serviceWorker?.getRegistration()}
+							...
+						{:then reg}
+							active: {reg?.active?.state}<br />
+							waiting: {reg?.waiting?.state}<br />
+							installing: {reg?.installing?.state}<br />
+						{:catch error}
+							{error.message}
+						{/await}
+					</td>
+				</tr>
+				<tr>
+					<td>Notif</td>
+					<td>
+						permission: {Notification.permission}<br />
+					</td>
+				</tr>
+				<tr>
+					<td>Origin</td>
+					<td>{location?.origin}</td>
+				</tr>
+			</table>
+		{/key}
+	{/if}
+</Modal>
+
+<Modal bind:show={showKioskSizeAdjuster} confirmation={false}>
+	<h2>Adjust Kiosk Menu Size</h2>
+	<input
+		type="range"
+		min="10"
+		max="90"
+		style="width: 80%; display: block;"
+		bind:value={$kioskMenuSize}
+	/>
+	<p>{$kioskMenuSize}</p>
+</Modal>

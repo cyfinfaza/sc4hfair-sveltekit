@@ -18,3 +18,10 @@ if (browser) {
 
 export const kioskMode = writable(browser && localStorage.getItem('kiosk') === '1');
 kioskMode.subscribe((state) => browser && localStorage.setItem('kiosk', state ? '1' : '0'));
+
+export const kioskMenuSize = writable(
+	(browser && Number(localStorage.getItem('kioskMenuSize'))) || 30
+);
+kioskMenuSize.subscribe(
+	(state) => browser && localStorage.setItem('kioskMenuSize', state.toString())
+);

@@ -7,17 +7,18 @@
 	import SignInButtons from 'components/SignInButtons.svelte';
 	import { isOnline, kioskMode } from 'logic/stores.js';
 	import {
-		interestsSlugs,
-		session,
-		initSupabaseClient,
-		logout,
 		addInterest,
+		initSupabaseClient,
+		interestsSlugs,
+		logout,
 		removeInterest,
+		session,
 	} from 'logic/supabase.js';
 	import { onMount } from 'svelte';
 
 	export let data;
 
+	/** @type {typeof data.clubs} */
 	let results = [];
 	$: if ($interestsSlugs)
 		results = data.clubs.filter((club) => $interestsSlugs.indexOf(club.slug) > -1);

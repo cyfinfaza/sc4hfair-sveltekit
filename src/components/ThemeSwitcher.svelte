@@ -1,10 +1,15 @@
 <script>
-	import { theme, themes } from 'logic/theming';
 	import LinkButton from 'components/LinkButton.svelte';
+	import { theme, themes } from 'logic/theming';
 
 	export let header = false;
 
-	let nextThemeID, currentTheme, themeIcon;
+	/** @type {import('logic/theming').ThemeId} */
+	let nextThemeID,
+		/** @type {import('logic/theming').themes[number]} */
+		currentTheme,
+		/** @type {HTMLSpanElement} */
+		themeIcon;
 	$: {
 		currentTheme =
 			themes.filter((item, index) => {

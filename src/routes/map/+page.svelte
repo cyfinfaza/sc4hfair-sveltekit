@@ -1,16 +1,16 @@
 <script>
-	import mapboxgl from 'mapbox-gl';
-	import 'mapbox-gl/dist/mapbox-gl.css';
-	import polylabel from 'polylabel';
-	import { onMount, tick } from 'svelte';
 	import { goto } from '$app/navigation';
-
 	import DateTime from 'components/DateTime.svelte';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import Tabs from 'components/Tabs.svelte';
 	import { eventIsFuture } from 'logic/scheduling.js';
+	import mapboxgl from 'mapbox-gl';
+	import 'mapbox-gl/dist/mapbox-gl.css';
+	import polylabel from 'polylabel';
+	import { onMount, tick } from 'svelte';
 
+	/** @type {import('./$types').PageData} */
 	export let data;
 
 	// the source/layer that contains our features
@@ -38,8 +38,8 @@
 		trackUserLocationRecenter = false;
 
 	// feature popup info
-	let /** @type {mapboxgl.MapboxGeoJSONFeature} */ selectedFeature = null,
-		/** @type {mapboxgl.MapboxGeoJSONFeature} */ previouslySelectedFeature = null,
+	let /** @type {mapboxgl.GeoJSONFeature | null} */ selectedFeature = null,
+		/** @type {mapboxgl.GeoJSONFeature | null} */ previouslySelectedFeature = null,
 		filteredEventData = null,
 		filteredClubData = null;
 
@@ -47,7 +47,7 @@
 
 	$: try {
 		if (isMapLoaded) {
-			if (previouslySelectedFeature) {
+			if (previouslySelectedFeature && previouslySelectedFeature.id) {
 				map.setFeatureState(
 					{
 						source: previouslySelectedFeature.source,
@@ -59,7 +59,7 @@
 					}
 				);
 			}
-			if (selectedFeature) {
+			if (selectedFeature && selectedFeature.id) {
 				map.setFeatureState(
 					{
 						source: selectedFeature.source,
@@ -72,7 +72,7 @@
 				);
 				previouslySelectedFeature = selectedFeature;
 
-				let slug = selectedFeature?.properties.slug;
+				let slug = selectedFeature?.properties?.slug;
 				console.log(data);
 				filteredEventData = data.eventsByTent[slug]?.filter((event) => eventIsFuture(event));
 				filteredClubData = data.clubsByTent[slug];
@@ -85,6 +85,7 @@
 		if (confirm('Unhandled error while selecting feature, reload?')) location?.reload();
 	}
 
+	/** @param {string} slug */
 	async function selectFeature(slug) {
 		let zoom = map.getZoom();
 		map.setZoom(13);
@@ -95,24 +96,31 @@
 		});
 		map.setZoom(zoom);
 		if (query.length !== 0) {
-			console.log(query);
 			// assuming that the biggest id is actually the one shown because otherwise i have no idea how to get the correct one
-			let element = query.reduce((a, b) => (a.id > b.id ? a : b));
+			let element = query.reduce((a, b) => (Number(a.id) > Number(b.id) ? a : b));
 			console.log(element, query);
 
-			map.flyTo({
-				center:
-					typeof element.geometry.coordinates[0] === 'number' ?
-						element.geometry.coordinates
-					:	polylabel(element.geometry.coordinates), // use the center of the feature
-				zoom: 18.5,
-				speed: 2.7, // this is done once on page load so make it go fast
-			});
+			if ('coordinates' in element.geometry) {
+				console.log(element, element.geometry, element.geometry.type, element.geometry.coordinates);
+				console.log(JSON.stringify(element.geometry.coordinates));
+				map.flyTo({
+					center: /** @type {[number, number]} */ (
+						typeof element.geometry.coordinates[0] === 'number' ?
+							element.geometry.coordinates
+						:	polylabel(
+								/** @type {import('geojson').Polygon} */ (element.geometry).coordinates,
+								0.0001
+							)
+					), // use the center of the feature
+					zoom: 18.5,
+					speed: 2.7, // this is done once on page load so make it go fast
+				});
+			}
 			map.once('moveend', () => {
 				selectedFeature = {
+					...element,
 					source,
 					sourceLayer,
-					...element,
 				};
 			});
 		} else {
@@ -143,12 +151,14 @@
 		});
 
 		map.on('click', [sourceLayerId, 'Labels'], (e) => {
-			const feature = e.features[0];
+			const feature = e.features?.[0] || null;
 			console.log(selectedFeature, feature);
 			selectedFeature = feature;
 		});
 
+		// @ts-expect-error
 		window.map = map;
+		// @ts-expect-error
 		window.selectFeature = selectFeature;
 
 		geolocate = new mapboxgl.GeolocateControl({
@@ -178,6 +188,8 @@
 
 		return () => map.remove();
 	});
+
+	// todo: handle map not loading when offline and show an error page
 </script>
 
 <Layout title="Map" noPadding noHeaderPadding fixedHeightContent fullWidth forceTheme="dark">
@@ -239,9 +251,9 @@
 	>
 		<div>
 			<h2>
-				{selectedFeature?.properties.name || selectedFeature?.properties.slug || '-'}
+				{selectedFeature?.properties?.name || selectedFeature?.properties?.slug || '-'}
 				<div>
-					{#if selectedFeature?.properties.slug === 'food'}
+					{#if selectedFeature?.properties?.slug === 'food'}
 						<LinkButton label="Menu" icon="fastfood" on:click={() => goto('/food')} acrylic />
 					{/if}
 					<LinkButton
@@ -265,8 +277,8 @@
 					{#if key === 'events'}
 						{#if filteredEventData?.length}
 							<ul>
-								{#each filteredEventData as event}
-									<li key={event.id}>
+								{#each filteredEventData as event (event.id)}
+									<li>
 										<a href={'/schedule#' + event.id}>{event.title}</a>
 										<small>(<DateTime date={event.time} calendar />)</small>
 									</li>
@@ -278,8 +290,8 @@
 					{:else if key === 'clubs'}
 						{#if filteredClubData?.length}
 							<ul>
-								{#each filteredClubData as club}
-									<li key={club.slug}>
+								{#each filteredClubData as club (club.slug)}
+									<li>
 										<a href={'/club/' + club.slug}>{club.name}</a>
 									</li>
 								{/each}
@@ -319,7 +331,7 @@
 	}
 
 	.tentInfo {
-		position: fixed;
+		position: absolute;
 		bottom: 0;
 		width: 100%;
 		// padding: 8px;

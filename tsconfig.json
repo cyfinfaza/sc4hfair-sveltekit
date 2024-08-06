@@ -3,7 +3,7 @@
 	"compilerOptions": {
 		"outDir": "", // idk it makes it work
 		"allowJs": true,
-		"checkJs": false,
+		"checkJs": true,
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,

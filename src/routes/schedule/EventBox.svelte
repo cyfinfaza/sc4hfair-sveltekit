@@ -1,13 +1,14 @@
 <script>
+	import { browser } from '$app/environment';
 	import DateTime from 'components/DateTime.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import tentSlugs from 'data/tentSlugs.json';
 	import { eventIsFuture } from 'logic/scheduling.js';
-	import { share, canWebShare } from 'logic/webshare.js';
-	import { browser } from '$app/environment';
-	import { onMount } from 'svelte';
 	import { kioskMode } from 'logic/stores';
+	import { canWebShare, share } from 'logic/webshare.js';
+	import { onMount } from 'svelte';
 
+	/** @type {import('./$types').PageData['events'][number]} */
 	export let event;
 	export let index = 0;
 	export let subscribed = false;
@@ -47,9 +48,9 @@
 >
 	<div class="top">
 		<h2>{event.title}</h2>
-		{#if event.description}
-			<p>{event.description.description}</p>
-		{/if}
+		<!-- {#if event.description}
+			<p>{event.description}</p>
+		{/if} -->
 	</div>
 	<div class="bottom">
 		<div class="timeData">
@@ -67,7 +68,7 @@
 			{/if}
 		</div>
 		<div class="buttonPanel">
-			{#if event.tent && event.tent !== '---'}
+			{#if event.tent}
 				<LinkButton
 					label={(event.near ? 'Near ' : '') + (tentSlugs[event.tent] || event.tent)}
 					disabled={!tentSlugs[event.tent]}
@@ -152,9 +153,10 @@
 			word-wrap: break-word;
 			hyphens: auto;
 		}
-		p {
-			margin-bottom: 4px;
-		}
+		// for unused description
+		// p {
+		// 	margin-bottom: 4px;
+		// }
 	}
 
 	.bottom {

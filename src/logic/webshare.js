@@ -1,9 +1,11 @@
-import { browser } from '$app/environment';
-import { get, writable } from 'svelte/store';
-import { kioskMode } from './stores';
+import { writable } from 'svelte/store';
 
 export const canWebShare = writable(false);
 
+/**
+ * @param {string} title
+ * @param {string} url
+ */
 export function share(title, url) {
 	if (navigator.share) {
 		navigator.share({ title, url }).catch(() => console.error('Share failed'));
