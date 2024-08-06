@@ -22,16 +22,26 @@
 	export let external = false; // open link in new tab
 	/** @type {Record<string, any>} */
 	export let props = {}; // additional props for the element
+	let className = '';
+	export { className as class }; // additional classes for the button element
 
 	const dispatch = createEventDispatcher();
 
 	let elementType = href ? 'a' : 'button';
-	if (elementType === 'a') {
-		props.href = href;
-		props.target = external ? '_blank' : null;
+	$: {
+		if (elementType === 'a') {
+			props.href = href;
+			props.target = external ? '_blank' : null;
+		} else {
+			delete props.href;
+			delete props.target;
+		}
 	}
-	if (elementType === 'button') props.type = 'button';
-	if (disabled) props.disabled = true;
+	$: {
+		if (elementType === 'button') props.type = 'button';
+		else delete props.type;
+	}
+	$: props.disabled = disabled ? true : undefined;
 </script>
 
 <svelte:element
@@ -46,7 +56,7 @@
 			dispatch('click');
 		}
 	}}
-	class="container button"
+	class={`container button ${className || ''}`}
 	class:alert
 	class:header
 	class:headerSmall

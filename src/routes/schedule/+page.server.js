@@ -33,6 +33,7 @@ let events = [],
 	/** @type {('All' | keyof typeof tentSlugs)[]} */
 	eventTentsList = [];
 
+/** @satisfies {import('./$types').PageServerLoad} */
 export async function load() {
 	if (events.length === 0) {
 		/** @type {{ scheduledEventCollection: { items: Event[] } }} */

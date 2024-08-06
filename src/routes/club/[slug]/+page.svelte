@@ -67,7 +67,7 @@
 				lightFont
 			/>
 		{/if}
-		{#if $canWebShare && !$kioskMode}
+		{#if $canWebShare}
 			<LinkButton
 				label="Share"
 				icon="share"

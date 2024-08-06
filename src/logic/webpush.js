@@ -194,10 +194,12 @@ export async function checkNotificationStatus() {
 			Notification.permission == 'granted' ?
 				(await subscribe(true)).registered // dry check, will not send a test notification
 			:	false,
+		// todo: if user denies permission, invalidate old subscription
 	};
 }
 
 export async function updateNotificationStatus() {
+	if (!browser) return; // no notifications on server
 	try {
 		notificationStatus.set(await checkNotificationStatus());
 	} catch (/** @type {any} */ e) {
@@ -210,6 +212,8 @@ isOnline.subscribe(async (online) => {
 	if (online) updateNotificationStatus();
 });
 // ios requires standalone to use notifications
+let notFirstTime = false;
 isStandalone.subscribe(async () => {
-	updateNotificationStatus();
+	if (notFirstTime) updateNotificationStatus();
+	notFirstTime = true;
 });
