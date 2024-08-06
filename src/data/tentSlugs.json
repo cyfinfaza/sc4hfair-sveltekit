@@ -11,16 +11,20 @@
 	"alpacas": "Alpacas",
 	"show": "4-H Show Tent",
 	"show-mini": "Show Tent",
-	"robotics": "Robotics",
+	"robotics": "Model Airplanes/Robotics",
 	"herpetology": "Herpetology",
 	"garden-bees": "Bees, Bugs, & Gardens",
 	"poultry": "Poultry",
-	"board-of-ag": "Board of Agriculture (Master Gardeners)",
+	"board-of-ag": "Board of Agriculture/Master Gardeners",
 	"small-animals": "Small Animals",
 	"prep": "4-H Prep",
 	"arts-sciences": "Arts & Sciences",
 	"info": "Information",
 	"clover-theater-cafe": "Clover Theater Caf\u00e9",
+	"sensory-friendly": "Sensory Friendly",
+	"agriculture-open-division": "Agriculture Open Division",
+	"herdsman": "Herdsman",
+	"archery": "Archery",
 
 	"gallery": "Gallery",
 	"somerset-county-government": "Somerset County Government",
@@ -28,6 +32,7 @@
 	"park-commission": "Park Commission",
 	"sheriff-k9-demos": "Sheriff K9 Demos",
 	"commercial": "Commercial Tent",
+	"somerset-county-bridge-division": "Somerset County Bridge Division",
 
 	"community-orgs": "Community Organizations",
 	"touch-a-truck": "Touch-A-Truck",
@@ -35,6 +40,11 @@
 	"bridge": "Main Bridge",
 	"fire-safety": "Fire Safety",
 	"first-aid": "First Aid",
+	"helps-van": "HELPS Van",
+	"ohh-van": "OHH Van",
+	"emergency-responders": "Hazmat/OEM",
+	"car-seat": "Car Seat Install & Inspection",
+	"drop-off": "Exhibitor & Vendor Drop Off",
 
 	"food": "Food Tent",
 	"food-central": "Food Central",
@@ -45,6 +55,8 @@
 
 	"parking-general": "General Parking",
 	"parking-handicapped": "Handicapped Parking",
+	"shuttle-bus-drop": "Shuttle Bus Drop",
+
 	"restrooms-inside": "Restrooms",
 	"restrooms-porta-potty": "Restrooms",
 	"wash-rack-1": "Wash Rack",
@@ -57,5 +69,6 @@
 	"rc-cars-track": "RC Cars Track",
 
 	"ted-blum-center": "4-H Center",
-	"park-commission-headquarters": "Park Commission Headquarters"
+	"park-commission-headquarters": "Park Commission Headquarters",
+	"rvcc-shuttle": "RVCC Shuttle"
 }
