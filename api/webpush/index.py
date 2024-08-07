@@ -89,6 +89,8 @@ def index():
 	]).next()
 	return success_json(data=res)
 
+subscriptionIdProjection = {'_id': False, 'subscriptionId': {'$toString': '$_id'}}
+
 # add (or check if dry) subscription
 @app.route('/api/webpush/subscribe', methods=['POST'], endpoint='subscribe')
 # remove subscription
@@ -103,11 +105,18 @@ def main():
 	sub_info = data.get('subscription')
 	if request.endpoint != 'resubscribe':
 		if sub_info is None: return error_json('No subscription info')
+	
+	oldSubscription = data.get('oldSubscription')
 
 	print('sub_info', sub_info)
 	print('pvt id', 'track_id' in session and session['track_id'])
 
-	alreadyExists = subscriptionsCollection.count_documents({'subscription_info': sub_info, 'valid': {'$ne': False}, 'subscribed': {'$ne': False}}, limit=1) > 0
+	existing = subscriptionsCollection.find_one(
+		{'subscription_info': sub_info, 'valid': {'$ne': False}, 'subscribed': {'$ne': False}},
+		projection=subscriptionIdProjection
+	)
+	alreadyExists = existing is not None
+	subscriptionId = existing['subscriptionId'] if existing else None
 
 	if request.endpoint == 'subscribe':
 		test_id = str(uuid4())
@@ -119,55 +128,82 @@ def main():
 		if (not dry) and (not test_webpush(sub_info, test_id)):
 			return error_json(message='Test failed')
 
+		result = 'noChange'
+
 		# modify db if necessary
 		if not dry:
-			sub = subscriptionsCollection.find_one_and_update(
-				{'subscription_info': sub_info},
-				{'$set': {
-					'created': datetime.now(tz=UTC),
-					'subscription_info': sub_info,
-					'user_agent': str(request.user_agent),
-					'track_id': 'track_id' in session and session['track_id'] or None,
-					'valid': None, # we just got it, it should be fine
-					'registered': True # just subscribed
-				}},
-				projection={'subscriptionId': {'$toString': '$_id'}},
-				upsert=True,
-				return_document=pymongo.ReturnDocument.AFTER
-			)
+			update = {'$set': {
+				'created': datetime.now(tz=UTC),
+				'subscription_info': sub_info,
+				'user_agent': str(request.user_agent),
+				'track_id': 'track_id' in session and session['track_id'] or None,
+				'valid': None, # we just got it, it should be fine
+				'registered': True # just subscribed
+			}}
+
+			oldExisting = subscriptionsCollection.find_one(
+				{'subscription_info': {'$exists': True, '$ne': None, '$eq': oldSubscription}},
+				projection={'_id': True, 'subscriptionId': {'$toString': '$_id'}}
+			) if oldSubscription is not None else None
+
+			# overwrite old subscription with new (will update if old is same as new)
+			if oldExisting:
+				sub = subscriptionsCollection.find_one_and_update(
+					{'_id': oldExisting['_id']},
+					update,
+					projection=subscriptionIdProjection,
+					upsert=False,
+					return_document=pymongo.ReturnDocument.AFTER
+				)
+				subscriptionId = sub['subscriptionId']
+				result = 'oldExistingUpdated'
+
+			# create new subscription
+			else:
+				sub = subscriptionsCollection.find_one_and_update(
+					{'subscription_info': sub_info},
+					update,
+					projection=subscriptionIdProjection,
+					upsert=True,
+					return_document=pymongo.ReturnDocument.AFTER
+				)
+				subscriptionId = sub['subscriptionId']
+				result = 'oldUpdated' if alreadyExists else 'newCreated'
 
 		return success_json(data={
-			'already_exists': alreadyExists,
+			'alreadyExists': alreadyExists,
 			'registered': alreadyExists if dry else True, # if the subscription is in the db
-			'test_id': None if dry else test_id,
-			'subscription_id': sub['subscriptionId'] if not dry else None
+			'testId': None if dry else test_id,
+			'subscriptionId': subscriptionId,
+			'result': result
 		})
 
 	elif request.endpoint == 'unsubscribe':
 		if not alreadyExists:
 			return error_json(data={
-				'already_exists': False,
+				'alreadyExists': False,
 			}, message='Subscription does not exist')
 
-		sub = subscriptionsCollection.find_one_and_update(
+		sub = subscriptionsCollection.update_one(
 			{'subscription_info': sub_info},
 			{'$set': {
 				'registered': False,
 			}},
-			projection={'subscriptionId': {'$toString': '$_id'}},
 			upsert=False
 		)
 
 		return success_json(data={
 			'registered': False,
-			'subscription_id': sub['subscriptionId']
+			'subscriptionId': subscriptionId
 		})
 
 	elif request.endpoint == 'resubscribe':
 		result = 'noChange'
 
-		oldSubscription = data.get('oldSubscription')
-		print('oldSubscription', oldSubscription)
+		if oldSubscription is None:
+			return error_json('No old subscription info')
+
+		subscriptionId = None
 
 		query = {'subscription_info': {
 			'$exists': True,
@@ -181,17 +217,24 @@ def main():
 
 		# try updating the old entry if we can, otherwise create a new entry
 		if sub_info and not alreadyExists: # newSubscription
-			op = subscriptionsCollection.update_one(query, {'$set': {
-				'created': datetime.now(tz=UTC),
-				'subscription_info': sub_info,
-				'user_agent': str(request.user_agent),
-				'track_id': 'track_id' in session and session['track_id'] or None,
-				'valid': None
-			}}, upsert=True)
-			if op.upserted_id is None:
+			sub = subscriptionsCollection.find_one_and_update(
+				query,
+				{'$set': {
+					'created': datetime.now(tz=UTC),
+					'subscription_info': sub_info,
+					'user_agent': str(request.user_agent),
+					'track_id': 'track_id' in session and session['track_id'] or None,
+					'valid': None
+				}},
+				projection={'_id': False, 'subscriptionId': {'$toString': '$_id'}},
+				upsert=True,
+				return_document=pymongo.ReturnDocument.AFTER
+			)
+			if sub.upserted_id is None:
 				result = 'oldUpdated'
 			else:
 				result = 'newCreated'
+			subscriptionId = sub['subscriptionId']
 
 		# if we only have an old subscription
 		elif oldSubscription and 'endpoint' in oldSubscription:
@@ -203,7 +246,8 @@ def main():
 
 		return success_json(data={
 			'result': result,
-			'already_exists': alreadyExists,
+			'alreadyExists': alreadyExists,
+			'subscriptionId': sub['subscriptionId'] if not alreadyExists else None
 		})
 
 def check_subscription_info():

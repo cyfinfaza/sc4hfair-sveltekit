@@ -10,10 +10,12 @@
 	import { kioskMode } from 'logic/stores.js';
 	import { getSubscription, notificationStatus } from 'logic/webpush.js';
 	import EventBox from './EventBox.svelte';
-	import { subscribedEvents } from './stores.js';
 
 	/** @type {import('./$types').PageData} */
 	export let data;
+
+	/** @type {string[]} */
+	let subscribedEvents = [];
 
 	/** @type {Modal} */
 	let subscribeModal;
@@ -21,13 +23,14 @@
 	let toggleNotificationEnabledClick;
 
 	const loadScheduledNotifications = async () => {
+		const sub = await getSubscription();
 		const res = await fetch(
-			`/api/webpush/scheduledNotifications?subscription=${encodeURIComponent(JSON.stringify(await getSubscription()))}`
+			`/api/webpush/scheduledNotifications?subscription=${encodeURIComponent(JSON.stringify(sub))}`
 		);
 
 		if (!res.ok) {
 			console.error('failed to load scheduled notifications:', res);
-			$subscribedEvents = [];
+			subscribedEvents = [];
 			return;
 		}
 
@@ -42,24 +45,45 @@
 		const data = await res.json();
 		if (data.type === 'error') {
 			console.error('error loading scheduled notifications:', data);
-			$subscribedEvents = [];
+			subscribedEvents = [];
 			return;
 		}
+
+		subscribedEvents = data.eventIds;
 
 		let currentSubscriptionId = localStorage.getItem('subscriptionId');
 		if (currentSubscriptionId && currentSubscriptionId !== data.subscriptionId) {
 			console.warn('subscription id changed', currentSubscriptionId, data.subscriptionId);
-			// todo: migrate old data, do this in webpush.js
+			// this should never happen as subscription id persists changing sub_info
 		}
+		notificationStatus.update((oldStatus) => ({
+			...oldStatus,
+			subscriptionId: data.subscriptionId, // populate this in
+		}));
 		localStorage.setItem('subscriptionId', data.subscriptionId);
-		$subscribedEvents = data.eventIds;
+
+		if (pendingEventSubscription) {
+			setEventSubscription(...pendingEventSubscription);
+			pendingEventSubscription = null;
+		}
 	};
 
+	/** @type {boolean | undefined} */
+	let lastRegistered = undefined;
 	$: {
-		// $notificationStatus also will retrigger on online
-		if (browser && $notificationStatus.registered) loadScheduledNotifications();
-		else $subscribedEvents = [];
+		// only update on registration change
+		if ($notificationStatus.registered !== lastRegistered) {
+			// $notificationStatus also will retrigger on online
+			if (browser && $notificationStatus.registered) {
+				loadScheduledNotifications();
+				subscribeModal?.close();
+			} else subscribedEvents = [];
+			lastRegistered = $notificationStatus.registered;
+		}
 	}
+
+	/** @type {[string, boolean]?} */
+	let pendingEventSubscription = null;
 
 	/**
 	 * @param {string} eventId
@@ -67,16 +91,17 @@
 	 */
 	const setEventSubscription = async (eventId, subscribed) => {
 		if ($notificationStatus.registered === false) {
+			pendingEventSubscription = [eventId, subscribed];
 			subscribeModal.showModal();
 			return;
 		}
 		const event = data.events.find((event) => event.sys.id === eventId);
-		if ($subscribedEvents === undefined || event === undefined) return;
+		if (subscribedEvents === undefined || event === undefined) return;
 
-		let oldSubscribedEvents = $subscribedEvents;
+		let oldSubscribedEvents = [...subscribedEvents];
 		let method, body;
 		if (subscribed) {
-			$subscribedEvents = [...$subscribedEvents, eventId];
+			subscribedEvents = [...subscribedEvents, eventId];
 			method = 'POST';
 			body = {
 				eventId,
@@ -85,11 +110,11 @@
 				).toISOString(),
 			};
 		} else {
-			$subscribedEvents = $subscribedEvents.filter((id) => id !== eventId);
+			subscribedEvents = subscribedEvents.filter((id) => id !== eventId);
 			method = 'DELETE';
 			body = { eventId };
 		}
-		console.log('subscribedEvents', $subscribedEvents);
+		console.log('subscribedEvents', subscribedEvents);
 		const res = await fetch('/api/webpush/scheduledNotifications', {
 			method,
 			headers: { 'Content-Type': 'application/json' },
@@ -97,10 +122,10 @@
 		});
 		if (!res.ok) {
 			console.error('error setting event subscription:', res);
-			$subscribedEvents = oldSubscribedEvents;
+			subscribedEvents = oldSubscribedEvents;
 		} else if ((await res.json()).type === 'error') {
 			console.error('failed to set event subscription:', res);
-			$subscribedEvents = oldSubscribedEvents;
+			subscribedEvents = oldSubscribedEvents;
 		}
 	};
 
@@ -120,9 +145,7 @@
 		),
 		'title',
 		['tentName']
-	).filter(
-		(element) => !showingOnlySubscribedEvents || $subscribedEvents?.includes(element.sys.id)
-	);
+	).filter((element) => !showingOnlySubscribedEvents || subscribedEvents?.includes(element.sys.id));
 </script>
 
 <Layout title="Schedule">
@@ -156,7 +179,7 @@
 			<EventBox
 				{event}
 				index={i}
-				subscribed={$subscribedEvents !== undefined && $subscribedEvents.includes(event.sys.id)}
+				subscribed={subscribedEvents.includes(event.sys.id)}
 				{setEventSubscription}
 			/>
 		{/each}

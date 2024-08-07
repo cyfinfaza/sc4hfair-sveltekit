@@ -14,7 +14,7 @@
 	import { isStandalone } from 'logic/platform.js';
 	import { isOnline, kioskMenuSize, kioskMode } from 'logic/stores.js';
 	import { initSupabaseClient, interestsSlugs, logout, session } from 'logic/supabase.js';
-	import { getSubscription, subscribe, unsubscribe } from 'logic/webpush';
+	import { getSubscription, notificationStatus, subscribe, unsubscribe } from 'logic/webpush';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 
@@ -351,6 +351,7 @@
 					<td>Notif</td>
 					<td>
 						permission: {Notification.permission}<br />
+						subscriptionId: {$notificationStatus.subscriptionId}<br />
 					</td>
 				</tr>
 				<tr>

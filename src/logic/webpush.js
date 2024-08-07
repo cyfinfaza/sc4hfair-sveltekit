@@ -25,6 +25,7 @@ export async function getSubscription() {
 			throw new Error('Notification permission not granted');
 		}
 	}
+	/** @type {ServiceWorkerRegistration} */
 	const registration = await Promise.race([
 		navigator.serviceWorker.ready,
 		new Promise((_, reject) =>
@@ -46,9 +47,10 @@ export async function getSubscription() {
  * @type {object}
  * @property {'success' | 'error'} type
  * @property {string} [message]
- * @property {boolean} [already_exists] - If the subscription was previously registered
- * @property {boolean} [registered] - If the subscripion is registered after any actions complete
- * @property {string} [test_id] - Uuid id sent back to the client to test webpush
+ * @property {boolean} [alreadyExists] - if the subscription was previously registered
+ * @property {boolean} [registered] - if the subscripion is registered after any actions complete
+ * @property {string} [testId] - uuid id sent back to the client to test webpush
+ * @property {string | null} subscriptionId - mongo id, persisted across sub_info changes
  */
 
 /** THIS WILL ASK USER FOR A SUBSCRIPTION */
@@ -56,6 +58,9 @@ export async function subscribe(dry = false) {
 	// get subscription
 	const subscription = await getSubscription();
 	if (!subscription) throw new Error('Service worker subscription not found');
+
+	/** @type {PushSubscriptionJSON | null} */
+	const oldSubscription = JSON.parse(localStorage.getItem('oldSubscription') || 'null');
 
 	/** @type {Promise<string> | undefined} */
 	let testId = undefined,
@@ -82,7 +87,7 @@ export async function subscribe(dry = false) {
 	// send subscription to server
 	const sub = await fetch(`${WEBPUSH_API_PREFIX}/api/webpush/subscribe${dry ? '?dry' : ''}`, {
 		method: 'POST',
-		body: JSON.stringify({ subscription }),
+		body: JSON.stringify({ subscription, oldSubscription: oldSubscription ?? undefined }),
 		headers: {
 			'Content-Type': 'application/json',
 		},
@@ -107,8 +112,6 @@ export async function subscribe(dry = false) {
 		// broadcast.close(); // allow channel to be garbage collected
 		if (handleSwMessage) navigator.serviceWorker.removeEventListener('message', handleSwMessage);
 
-		// future: reply to server if matched and then have server add to db
-
 		if (!receivedId)
 			if (getPlatform().startsWith('ios'))
 				return {
@@ -117,8 +120,12 @@ export async function subscribe(dry = false) {
 						"If you didn't receive a test notification, try turning notifications off and back on again (iOS issues)",
 				};
 			else return { ...(await unsubscribe()), message: 'Test push not received within 20s' };
-		if (receivedId !== data.test_id)
+		if (receivedId !== data.testId)
 			return { ...(await unsubscribe()), message: "Test push didn't match" };
+
+		// new subscription should be saved, api handled migration if there was any
+		localStorage.setItem('oldSubscription', JSON.stringify(subscription));
+		localStorage.setItem('subscriptionId', data.subscriptionId ?? '');
 	}
 
 	return data;
@@ -128,6 +135,9 @@ export async function unsubscribe() {
 	// get subscription
 	const subscription = await getSubscription();
 	if (!subscription) throw new Error('No subscription');
+
+	// save this subscription
+	localStorage.setItem('oldSubscription', JSON.stringify(subscription));
 
 	// send subscription to server
 	const sub = await fetch(`${WEBPUSH_API_PREFIX}/api/webpush/unsubscribe`, {
@@ -142,6 +152,7 @@ export async function unsubscribe() {
 	const data = await sub.json();
 	console.log(data);
 	if (!sub.ok || data.type !== 'success') throw data;
+	localStorage.setItem('subscriptionId', data.subscriptionId ?? '');
 	return data;
 }
 
@@ -159,6 +170,7 @@ export const notificationStatus = writable({
  * @property {boolean} available if the client can subscribe
  * @property {boolean} [registered] true if user is already registered
  * @property {string} [message] reasoning
+ * @property {string | null} [subscriptionId] - mongo id, persisted across sub_info changes
  */
 
 /**
@@ -194,7 +206,7 @@ export async function checkNotificationStatus() {
 			Notification.permission == 'granted' ?
 				(await subscribe(true)).registered // dry check, will not send a test notification
 			:	false,
-		// todo: if user denies permission, invalidate old subscription
+		subscriptionId: localStorage.getItem('subscriptionId') ?? undefined,
 	};
 }
 

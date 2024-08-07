@@ -30,6 +30,7 @@
 				available: oldStatus.available,
 				registered: data.registered,
 				message: data.message,
+				subscriptionId: data.subscriptionId,
 			}));
 		} catch (/** @type {any} */ e) {
 			notificationStatus.update((oldStatus) => ({ ...oldStatus, message: e?.message })); // we failed, revert with message
