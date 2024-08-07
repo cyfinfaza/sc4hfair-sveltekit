@@ -17,13 +17,14 @@
 			title
 			contentText
 			sys {
+				id
 				publishedAt
 			}
 		}
 	}
 }`;
 
-	/** @type {{ title: string; contentText: string; sys: { publishedAt: string } }[]} */
+	/** @type {import('components/Post.svelte').Post[]} */
 	let posts = [];
 	onMount(async () => {
 		posts = (await queryContentful(query)).postCollection?.items;

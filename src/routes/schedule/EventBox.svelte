@@ -6,7 +6,7 @@
 	import { eventIsFuture } from 'logic/scheduling.js';
 	import { kioskMode } from 'logic/stores';
 	import { canWebShare, share } from 'logic/webshare.js';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 
 	/** @type {import('./$types').PageData['events'][number]} */
 	export let event;
@@ -37,12 +37,19 @@
 	else timeLabel = timeLabels.now;
 
 	let targeted = false;
-	onMount(() => {
+	/** @type {HTMLDivElement} */
+	let div;
+	onMount(async () => {
 		targeted = browser && window.location?.hash === '#' + event.sys.id;
+		await tick();
+		if (browser && window.location?.hash === '#' + event.sys.id) {
+			div.scrollIntoView({ behavior: 'instant' });
+		}
 	});
 </script>
 
 <div
+	bind:this={div}
 	class="container"
 	class:targeted
 	id={event.sys.id}

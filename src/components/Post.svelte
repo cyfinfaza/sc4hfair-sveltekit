@@ -1,14 +1,29 @@
-<script>
-	import ContentfulImage from 'components/ContentfulImage.svelte';
-	import DateTime from 'components/DateTime.svelte';
-	import SvelteMarkdown from 'svelte-markdown';
-
-	/** @type {{ title: string; contentText: string; sys: { publishedAt: string } }} */
-	export let data;
-	export let index = 0;
+<script context="module">
+	/** @typedef {{ title: string; contentText: string; sys: { id: string; publishedAt: string } }} Post */
 </script>
 
-<article style:animation-delay={index * 0.1 + 's'}>
+<script>
+	import { browser } from '$app/environment';
+	import ContentfulImage from 'components/ContentfulImage.svelte';
+	import DateTime from 'components/DateTime.svelte';
+	import { onMount, tick } from 'svelte';
+	import SvelteMarkdown from 'svelte-markdown';
+
+	/** @type {Post} */
+	export let data;
+	export let index = 0;
+
+	/** @type {HTMLElement} */
+	let article;
+	onMount(async () => {
+		await tick();
+		if (browser && window.location?.hash === '#' + data.sys?.id) {
+			article.scrollIntoView({ behavior: 'instant' });
+		}
+	});
+</script>
+
+<article bind:this={article} style:animation-delay={index * 0.1 + 's'} id={data.sys?.id}>
 	<h3 class="title">{data.title}</h3>
 	<SvelteMarkdown
 		source={data.contentText}
@@ -27,6 +42,7 @@
 		margin-bottom: 16px;
 		box-sizing: border-box;
 		animation: zoomin 0.5s backwards ease;
+		scroll-margin-top: 16px;
 
 		& :global(img) {
 			width: 100%;
