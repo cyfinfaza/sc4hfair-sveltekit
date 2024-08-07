@@ -66,18 +66,19 @@ def error_json(message=None, data=None, status=400):
 # show number of subscriptions
 @app.route('/api/webpush', methods=['GET'])
 def index():
+	since = datetime.now().replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
 	res = subscriptionsCollection.aggregate([
 		{
 			'$group': {
 				'_id': None,
 				'subscriptions': {'$sum': {
-					'$cond': [{'$and': [{'$ne': ['$valid', False]}, {'$ne': ['$subscribed', False]}]}, 1, 0]
+					'$cond': [{'$and': [{'$ne': ['$valid', False]}, {'$ne': ['$registered', False]}]}, 1, 0]
 				}},
 				'invalidSubscriptions': {'$sum': {
-					'$cond': [{'$and': [{'$eq': ['$valid', False]}, {'$ne': ['$subscribed', False]}]}, 1, 0]
+					'$cond': [{'$and': [{'$eq': ['$valid', False]}, {'$ne': ['$registered', False]}, {'$gt': ['$created', since]}]}, 1, 0]
 				}},
 				'unsubscribed': {'$sum': {
-					'$cond': [{'$eq': ['$subscribed', False]}, 1, 0]
+					'$cond': [{'$eq': ['$registered', False]}, 1, 0]
 				}}
 			},
 		},
