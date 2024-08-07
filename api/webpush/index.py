@@ -78,7 +78,7 @@ def index():
 					'$cond': [{'$and': [{'$eq': ['$valid', False]}, {'$ne': ['$registered', False]}, {'$gt': ['$created', since]}]}, 1, 0]
 				}},
 				'unsubscribed': {'$sum': {
-					'$cond': [{'$eq': ['$registered', False]}, 1, 0]
+					'$cond': [{'$and': [{'$eq': ['$registered', False]}, {'$gt': ['$created', since]}]}, 1, 0]
 				}}
 			},
 		},
