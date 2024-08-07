@@ -66,24 +66,28 @@ def error_json(message=None, data=None, status=400):
 # show number of subscriptions
 @app.route('/api/webpush', methods=['GET'])
 def index():
-	res = subscriptionsCollection.aggregate([{
-		'$group': {
-			'_id': None,
-			'subscriptions': {'$sum': {
-				'$cond': [{'$and': [{'$ne': ['$valid', False]}, {'$ne': ['$subscribed', False]}]}, 1, 0]
-			}},
-			'invalidSubscriptions': {'$sum': {
-				'$cond': [{'$and': [{'$eq': ['$valid', False]}, {'$ne': ['$subscribed', False]}]}, 1, 0]
-			}},
-			'unsubscribed': {'$sum': {
-				'$cond': [{'$eq': ['$subscribed', False]}, 1, 0]
-			}}
+	res = subscriptionsCollection.aggregate([
+		{
+			'$group': {
+				'_id': None,
+				'subscriptions': {'$sum': {
+					'$cond': [{'$and': [{'$ne': ['$valid', False]}, {'$ne': ['$subscribed', False]}]}, 1, 0]
+				}},
+				'invalidSubscriptions': {'$sum': {
+					'$cond': [{'$and': [{'$eq': ['$valid', False]}, {'$ne': ['$subscribed', False]}]}, 1, 0]
+				}},
+				'unsubscribed': {'$sum': {
+					'$cond': [{'$eq': ['$subscribed', False]}, 1, 0]
+				}}
+			},
 		},
-	}]).next()
-	return success_json(data={
-		'subscriptions': res['subscriptions'],
-		'invalidSubscriptions': res['invalidSubscriptions'],
-	})
+		{
+			'$project': {
+				'_id': False
+			}
+		}
+	]).next()
+	return success_json(data=res)
 
 # add (or check if dry) subscription
 @app.route('/api/webpush/subscribe', methods=['POST'], endpoint='subscribe')
