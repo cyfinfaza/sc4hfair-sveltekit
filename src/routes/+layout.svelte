@@ -149,7 +149,9 @@
 		document.addEventListener('visibilitychange', () => {
 			if (
 				document.visibilityState === 'visible' &&
-				(!client || client.readyState === 2 || client.readyState === 3)
+				(!client ||
+					client.readyState === WebSocket.CLOSING ||
+					client.readyState === WebSocket.CLOSED)
 			)
 				client = start_poprx('wss://fair-app-poprx.4hcomputers.club');
 			else client.close();

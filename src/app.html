@@ -11,7 +11,7 @@
 
 <body>
 	<script>document.body.classList.add(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'theme-dark' : 'theme-light'));</script>
-	<script>navigator?.serviceWorker?.getRegistration()?.then(reg => reg.update());</script>
+	<script>navigator?.serviceWorker?.ready?.then(reg => reg?.update());</script>
 	<div>%sveltekit.body%</div>
 
 	<script>
