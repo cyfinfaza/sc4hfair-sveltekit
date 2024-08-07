@@ -2,7 +2,7 @@
 
 Generate clues JSON file from the scavenger hunt Google Sheet:
 
-python3 ./tools/createScavengerHuntClues.py 1bZOR5OJGdfSsDHBrOQ8M8MLmdpF-C8HQhxqs43qVWMo ./src/data/shClues.json
+python3 ./createScavengerHuntClues.py 1bZOR5OJGdfSsDHBrOQ8M8MLmdpF-C8HQhxqs43qVWMo
 
 """
 
@@ -35,5 +35,5 @@ for row in rows:
 
 output = json.dumps({"year": datetime.now().year, "clues": clues, "falseCodes": falseCodes}, indent='\t')
 
-with open(sys.argv[2] if len(sys.argv) > 2 else input("Save output to: "), "w") as f:
+with open("../src/data/shClues.json", "w") as f:
 	f.write(output)

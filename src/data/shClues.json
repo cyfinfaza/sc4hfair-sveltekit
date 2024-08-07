@@ -1,5 +1,115 @@
 {
 	"year": 2024,
-	"clues": [],
-	"falseCodes": []
+	"clues": [
+		{
+			"code": "ka1ho9h0",
+			"clue": "This is a great place start to the fair, and full of friendly faces.",
+			"hint": "You can find loads of useful INFO here."
+		},
+		{
+			"code": "qjdjfjbd",
+			"clue": "Where the youngest 4-Hers prep for 4-H.",
+			"hint": "The clubs in this tent are aimed at grades K-3."
+		},
+		{
+			"code": "brjx21ms",
+			"clue": "Want to learn how this app was made? Come and stop by, we'd love to chat.",
+			"hint": "Check the app settings to see who made it. If you ever get stuck, we're here to help too!"
+		},
+		{
+			"code": "i38sbr6x",
+			"clue": "This tent is where plastic and metal come to compete.",
+			"hint": "And where LEGOs and machines clash. Wall-E anybody?"
+		},
+		{
+			"code": "6k9yggkf",
+			"clue": "Moo-ve on over to meet the gentle giants of the fair!",
+			"hint": "To make a cheeseburger, you'll need the help of these."
+		},
+		{
+			"code": "ro1khj99",
+			"clue": "Look for a tent racing past many checked flags.",
+			"hint": "These racers aren't in the cars, but controlling them from afar."
+		},
+		{
+			"code": "d35eb1af",
+			"clue": "This animal tent comes first in the alphabet.",
+			"hint": "Not a llama but an ___."
+		},
+		{
+			"code": "sip1mvmn",
+			"clue": "These furry and feathered friends are small but mighty cute!",
+			"hint": "They are common household pets but you still might find them in your backyard."
+		},
+		{
+			"code": "dtijjfy0",
+			"clue": "This tent is where you can find your feathered friends.",
+			"hint": "Cluck, cluck, cluck! There's also some animals that like to go swimming here."
+		},
+		{
+			"code": "f1vrzfhx",
+			"clue": "Take a break, enjoy a show, and refuel for more adventure.",
+			"hint": "This 4-H run food tent plays music while you enjoy your treats."
+		},
+		{
+			"code": "e0oalvvq",
+			"clue": "These clubs will sharpen your aim and test your skills!",
+			"hint": "Bullseye!"
+		},
+		{
+			"code": "5f9lnsp9",
+			"clue": "Slither on over to meet these fascinating creatures!",
+			"hint": "This tent is full of scales, fins, and tails."
+		},
+		{
+			"code": "qsnqda7b",
+			"clue": "Where could you go to figure out what's \"bugging\" your plants?",
+			"hint": "Learn the secrets of a green thumb from the experts!"
+		},
+		{
+			"code": "6i936v1s",
+			"clue": "Is it a \"kid\"? A baby ___? What? It's both!",
+			"hint": "Some have horns, but they all eat poison ivy."
+		},
+		{
+			"code": "zakfvnsm",
+			"clue": "Can you hear the tail-wagging excitement?",
+			"hint": "\"Man's best friend\" awaits."
+		},
+		{
+			"code": "zd1wjidv",
+			"clue": "Sometimes they don't like the shoes we buy them... they just kick them off!",
+			"hint": "Where would you look for the state animal?"
+		},
+		{
+			"code": "7xwm9rm9",
+			"clue": "Buzz on over to where nature's sweet nectar flows!",
+			"hint": "Pollinators are hard at work here."
+		},
+		{
+			"code": "l9rgq8li",
+			"clue": "I'm gonna chug, I'm gonna choo, I'll be stopping at a station near you.",
+			"hint": "The only problem is they aren't full scale..."
+		},
+		{
+			"code": "52twfi84",
+			"clue": "Baa-lieve it or not, these animals are also ruminants.",
+			"hint": "They're experts at cloud impressions, but their wool is real."
+		},
+		{
+			"code": "k9i8e6sd",
+			"clue": "If we're in a fairytale, this might be over a moat.",
+			"hint": "Look for the structure connecting two sides."
+		},
+		{
+			"code": "f1vytlmj",
+			"clue": "Some clubs get tied up in 4-H, this club gets Tangled!",
+			"hint": "When they're not performing on the stage, you can find them here."
+		}
+	],
+	"falseCodes": [
+		"dbqx6skg",
+		"0rxlk3z1",
+		"9n82glte"
+	]
 }

@@ -4,7 +4,6 @@
 	"model-trains": ["somerset-4h-trainmasters"],
 	"dairy-beef": ["branchburg-livestock", "new-centre-dairy", "new-center-dairy-prep"],
 	"sheep": ["sheepfold", "woolly-ones"],
-	"mechanical-sciences": ["broken-props-model-airplane", "somerset-sentinels-rocket-club"],
 	"rc-cars": ["radio-control-car-club"],
 	"horses": ["chaps-spurs"],
 	"dogs": ["k9-leaders-seeing-eye-club", "wags-whiskers", "woof"],
@@ -16,7 +15,9 @@
 		"4h-beacon-bots",
 		"programming-trolls",
 		"servos-4h-robotics-club",
-		"monster-mechanics"
+		"monster-mechanics",
+		"broken-props-model-airplane",
+		"somerset-sentinels-rocket-club"
 	],
 	"herpetology": ["sidewinders-club", "something-fishy-aquatic-science"],
 	"garden-bees": ["4h-beekeeping-club", "garden-and-bee-club"],
@@ -51,7 +52,6 @@
 		"dungeons-and-dragons",
 		"gingersnaps",
 		"junior-council",
-		"on-target-archery-club",
 		"people-pickmeups",
 		"photo-bombers",
 		"pins-needles",
@@ -65,7 +65,6 @@
 		"world-wide-writers-ink",
 		"camera-club",
 		"dollars-sense",
-		"hawkeye-archers",
 		"pokemon-club",
 		"yoga",
 		"crafter-masters",
@@ -75,5 +74,6 @@
 		"hip-hop-hoppers",
 		"outdoor-club"
 	],
-	"go-kart-track": ["4h-gokart-club"]
+	"go-kart-track": ["4h-gokart-club"],
+	"archery": ["on-target-archery-club", "hawkeye-archers"]
 }

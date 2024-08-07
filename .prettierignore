@@ -18,4 +18,5 @@ yarn.lock
 src/app.html
 
 src/data/mapbox-color-themes/*
-tools/*.json
+tools/clubData.json
+tools/*.geojson
