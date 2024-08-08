@@ -38,7 +38,7 @@
 		},
 		{
 			"code": "sip1mvmn",
-			"clue": "These furry and feathered friends are small but mighty cute!",
+			"clue": "These furry friends are small but mighty cute!",
 			"hint": "They are common household pets but you still might find them in your backyard."
 		},
 		{
@@ -109,7 +109,6 @@
 	],
 	"falseCodes": [
 		"dbqx6skg",
-		"0rxlk3z1",
-		"9n82glte"
+		"0rxlk3z1"
 	]
 }
