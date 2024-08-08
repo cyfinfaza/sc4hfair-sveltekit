@@ -11,12 +11,14 @@
 	import Modal from 'components/Modal.svelte';
 	import * as _clueData from 'data/shClues.json';
 	import { SCAVENGER_HUNT_CODE, SCAVENGER_HUNT_HINTS } from 'logic/constants';
+	import { getPlatform, isStandalone } from 'logic/platform';
 	import { pvtUpdate } from 'logic/pvt';
 	import { kioskMode, pushPoprxUpdate } from 'logic/stores';
 	import QrScanner from 'qr-scanner';
 	import { onMount, setContext, tick } from 'svelte';
 	import { writable } from 'svelte/store';
 	import ClueBox from './ClueBox.svelte';
+	import InstallInstructions from 'components/InstallInstructions.svelte';
 
 	/** @typedef {{ code: string; clue: string; hint: string }} Clue */
 
@@ -242,10 +244,31 @@
 				<LinkButton label="Close" icon="close" on:click={() => (scanning = false)} acrylic />
 				<div class="scannerMessage">
 					<p>{scannerMessage}</p>
-					<p>
-						The scavenger hunt recommends a QR scanner. Check that your browser is allowing the app
-						camera access to use the built-in one, or use an external scanner.
-					</p>
+					{#if getPlatform() === 'ios' && !$isStandalone}
+						<p>To use the QR scanner, you may need to install this as an app.</p>
+						<small>
+							Note: Your progress might be reset. If you have already completed multiple clues,
+							please see the 4-H Computers booth for assistance.
+						</small>
+						<InstallInstructions />
+					{:else}
+						<p>
+							The scavenger hunt recommends a QR scanner. Check that your browser is allowing the
+							app camera access to use the built-in one, or use an external scanner.
+						</p>
+					{/if}
+					<LinkButton
+						label="Retry permission"
+						icon="flip_camera_ios"
+						on:click={async () => {
+							try {
+								compatible = typeof navigator === 'object' && (await QrScanner.hasCamera());
+								window.location.reload();
+							} catch (_) {
+								compatible = false;
+							}
+						}}
+					/>
 					<p>Alternatively, you can manually enter the code:</p>
 					<LinkButton
 						label="Enter manually"
