@@ -25,3 +25,6 @@ export const kioskMenuSize = writable(
 kioskMenuSize.subscribe(
 	(state) => browser && localStorage.setItem('kioskMenuSize', state.toString())
 );
+
+/** @type {import('svelte/store').Writable<(() => void) | undefined>} */
+export const pushPoprxUpdate = writable(undefined);

@@ -5,7 +5,7 @@
 	import KioskPitch from 'components/KioskPitch.svelte';
 	import Modal from 'components/Modal.svelte';
 	import { pvtUpdate } from 'logic/pvt.js';
-	import { kioskMode } from 'logic/stores.js';
+	import { kioskMode, pushPoprxUpdate } from 'logic/stores.js';
 	import { canWebShare } from 'logic/webshare.js';
 	import { onMount, setContext } from 'svelte';
 
@@ -87,8 +87,6 @@
 		};
 	});
 
-	/** @type {() => void | undefined} */
-	let pushPoprxUpdate;
 	afterNavigate(({ to }) => {
 		const href = to?.url.href;
 		console.log('afterNavigate', href);
@@ -101,7 +99,7 @@
 
 		if (to && (kioskSwitch || referrer)) replaceState(to.url.pathname, {});
 
-		if (typeof pushPoprxUpdate === 'function') pushPoprxUpdate();
+		if (typeof $pushPoprxUpdate === 'function') $pushPoprxUpdate();
 
 		try {
 			pvtUpdate({ href, referrer });
@@ -130,7 +128,7 @@
 						data: { id: txid, agent: navigator.userAgent, path: window.location.pathname },
 					})
 				);
-				pushPoprxUpdate = () => {
+				$pushPoprxUpdate = () => {
 					try {
 						client.send(
 							JSON.stringify({

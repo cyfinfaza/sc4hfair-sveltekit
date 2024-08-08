@@ -12,7 +12,7 @@
 	import * as _clueData from 'data/shClues.json';
 	import { SCAVENGER_HUNT_CODE, SCAVENGER_HUNT_HINTS } from 'logic/constants';
 	import { pvtUpdate } from 'logic/pvt';
-	import { kioskMode } from 'logic/stores';
+	import { kioskMode, pushPoprxUpdate } from 'logic/stores';
 	import QrScanner from 'qr-scanner';
 	import { onMount, setContext, tick } from 'svelte';
 	import { writable } from 'svelte/store';
@@ -154,7 +154,10 @@
 			$atIndex = index + 1;
 			scanning = false;
 			scannerMessage = '';
-			tick().then(() => pvtUpdate());
+			tick().then(() => {
+				pvtUpdate();
+				$pushPoprxUpdate?.();
+			});
 		}
 		if (scannerMessageTimeout) clearTimeout(scannerMessageTimeout);
 		scannerMessageTimeout = setTimeout(() => (scannerMessage = ''), 10000);
