@@ -1,6 +1,7 @@
 <script>
 	import FourH from 'assets/4h.svg?component';
 	import LinkButton from 'components/LinkButton.svelte';
+	import { sponsorTierName } from 'logic/contentful';
 	import { isOnline } from 'logic/stores.js';
 	import { getContext } from 'svelte';
 
@@ -19,14 +20,15 @@
 				/** @type {string[]} */
 				chosenTier;
 
-			// because not all tiers are used this year, split into the mainer ones
-			if (random < 0.25)
-				chosenTier = ['clover', 'sky']; // 25% but from one
-			else if (random < 0.8)
-				chosenTier = ['gold', 'silver', 'bronze']; // 55% the rest
-			else chosenTier = ['copper', 'custom', 'automobile', 'friends-family']; // 20% but from many
+			// // because not all tiers are used this year, split into the mainer ones
+			// if (random < 0.25)
+			// 	chosenTier = ['clover', 'sky']; // 25% but from one
+			// else if (random < 0.8)
+			// 	chosenTier = ['gold', 'silver', 'bronze']; // 55% the rest
+			// else chosenTier = ['copper', 'custom', 'automobile', 'friends-family']; // 20% but from many
+			// let filteredSponsors = sponsors?.filter((ad) => chosenTier.includes(ad.tier));
 
-			let filteredSponsors = sponsors?.filter((ad) => chosenTier.includes(ad.tier));
+			let filteredSponsors = sponsors; // 2024: no point in doing weighting
 
 			sponsor = filteredSponsors?.[Math.floor(Math.random() * filteredSponsors.length)];
 		}
@@ -48,9 +50,7 @@
 			<h2>
 				{#if !listMode}
 					<span class="disclosure">
-						{sponsor.tier ?
-							(sponsor.tier === 'friends-family' ? 'FRIENDS & FAMILY' : sponsor.tier) + ' '
-						:	''}FAIR SPONSOR
+						{sponsor.tier ? sponsorTierName(sponsor.tier) + ' ' : ''}FAIR SPONSOR
 					</span>
 				{/if}
 				{sponsor.heading}

@@ -69,7 +69,16 @@ export const sponsorTiers = /** @type {const} */ ([
 	'automobile',
 	'custom',
 	'friends-family',
+	'business-card',
+	'inkind',
 ]);
+
+/** @param {(typeof sponsorTiers)[number]} tier */
+export const sponsorTierName = (tier) =>
+	tier === 'friends-family' ? 'Friends & Family'
+	: tier === 'business-card' ? 'Business Card'
+	: tier === 'inkind' ? 'In-Kind Donation'
+	: tier.substring(0, 1).toUpperCase() + tier.substring(1);
 
 /**
  * @typedef {object} Sponsor

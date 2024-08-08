@@ -18,7 +18,7 @@ with open('schedule.csv') as csvfile:
 	reader = csv.DictReader(csvfile)
 
 	for event in reader:
-		if not event['title']: continue # skip header rows
+		if not event['title'] or event['title'] == '-' or not event['rawTime']: continue # skip header rows or unentered rows
 
 		entry = {
 			"metadata": {
@@ -34,7 +34,7 @@ with open('schedule.csv') as csvfile:
 			},
 			"fields": {
 				"near": {
-					"en-US": True if event['near'] == 'true' else False
+					"en-US": True if event['near'].lower() == 'true' else False
 				},
 			}
 		}
@@ -53,7 +53,7 @@ with open('schedule.csv') as csvfile:
 		}
 		print(tempEvents[id])
 
-		# print(id, entry)
+		print(id, entry)
 
 publishPayload = []
 # handles updating or creating an event
@@ -68,24 +68,25 @@ def doEvent(id):
 		# update
 		headers['X-Contentful-Version'] = str(event['version'])
 
-	newData = contentful.session.put(f'https://api.contentful.com/spaces/{contentful.spaceId}/environments/{contentful.environmentId}/entries/{id}', json=event['entry'], headers=headers)
+	if not contentful.noPublish:
+		newData = contentful.session.put(f'https://api.contentful.com/spaces/{contentful.spaceId}/environments/{contentful.environmentId}/entries/{id}', json=event['entry'], headers=headers)
 
-	if newData.status_code != 200 and newData.status_code != 201:
-		print('error')
-		print(entry)
-		print(newData.status_code, newData.headers)
-		print(newData.text)
-		print('---')
-		return
+		if newData.status_code != 200 and newData.status_code != 201:
+			print('error')
+			print(entry)
+			print(newData.status_code, newData.headers)
+			print(newData.text)
+			print('---')
+			return
 
-	publishPayload.append({
-		'sys': {
-			'id': id,
-			'type': 'Link',
-			'linkType': 'Entry',
-			'version': newData.json()['sys']['version'],
-		}
-	})
+		publishPayload.append({
+			'sys': {
+				'id': id,
+				'type': 'Link',
+				'linkType': 'Entry',
+				'version': newData.json()['sys']['version'],
+			}
+		})
 
 # get list of all previous entries
 # the update api requires the version number of the entry to be updated
@@ -106,8 +107,9 @@ for entry in entries['items']:
 		headers = {
 			'X-Contentful-Version': str(version),
 		}
-		contentful.session.delete(f'https://api.contentful.com/spaces/{contentful.spaceId}/environments/{contentful.environmentId}/entries/{id}/published', headers=headers)
-		contentful.session.put(f'https://api.contentful.com/spaces/{contentful.spaceId}/environments/{contentful.environmentId}/entries/{id}/archived', headers=headers)
+		if not contentful.noPublish:
+			contentful.session.delete(f'https://api.contentful.com/spaces/{contentful.spaceId}/environments/{contentful.environmentId}/entries/{id}/published', headers=headers)
+			contentful.session.put(f'https://api.contentful.com/spaces/{contentful.spaceId}/environments/{contentful.environmentId}/entries/{id}/archived', headers=headers)
 
 # create the rest that we aren't modifying
 for id in tempEvents:

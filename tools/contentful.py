@@ -73,6 +73,9 @@ def bulkAction(bulkPayload, action):
 		print(f'waiting on bulk {action}... status', status)
 		if status == 'succeeded':
 			break
+		elif status == 'failed':
+			print(statusReq.json()['error'])
+			break
 
 def conditionalBulkPublish(bulkPayload, action='publish'):
 	"""
