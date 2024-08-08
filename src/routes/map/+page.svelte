@@ -165,6 +165,9 @@
 			positionOptions: {
 				enableHighAccuracy: true,
 			},
+			fitBoundsOptions: {
+				zoom: 19,
+			},
 			trackUserLocation: true,
 			showUserHeading: true,
 		});

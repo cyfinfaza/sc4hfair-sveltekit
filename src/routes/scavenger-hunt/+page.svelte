@@ -183,9 +183,7 @@
 			<h1>{year} Scavenger Hunt</h1>
 			<p>
 				Welcome to the 4‑H Fair Scavenger Hunt! Each clue will lead you to a <strong>QR code</strong
-				>, which when scanned will unlock the next clue. The last clue will lead you to your prize:
-				a $1
-				<a href="/map?locate=food">fair food</a> voucher and maybe something else…
+				>, which when scanned will unlock the next clue. The last clue will lead you to your prize!
 			</p>
 			<p style="margin-bottom: 0;">If you're stuck on a clue, try:</p>
 			<div style="display: flex; justify-content: center;">

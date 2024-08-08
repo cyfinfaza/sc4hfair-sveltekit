@@ -13,6 +13,9 @@
 
 	$: if ($notificationStatus.ready !== false) loading = null;
 
+	let active;
+	$: active = $notificationStatus?.available && $notificationStatus?.registered;
+
 	export const onClick = async () => {
 		if (loading !== null || !$notificationStatus?.available) return;
 		try {
@@ -48,12 +51,11 @@
 					'Notifications enabled (tap to disable)'
 				:	'Notifications disabled (tap to enable)'
 			:	'Notifications unavailable')}
-		icon={$notificationStatus?.available && $notificationStatus?.registered ?
-			'notifications'
-		:	'notifications_off'}
+		icon={active ? 'notifications' : 'notifications_off'}
 		disabled={loading !== null || !$notificationStatus?.available || !$isOnline}
-		active={$notificationStatus?.available && $notificationStatus?.registered}
+		{active}
 		on:click={onClick}
+		props={{ style: active ? null : 'background: var(--yellow); color: var(--yellow-text);' }}
 	/>
 	{#if $notificationStatus?.message}
 		<p style="color: red; font-size: 0.9rem;">

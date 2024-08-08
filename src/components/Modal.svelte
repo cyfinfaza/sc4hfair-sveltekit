@@ -100,7 +100,7 @@
 	dialog::backdrop,
 	// pollyfill
 	dialog :global(+ .backdrop) {
-		background-color: rgba(0, 0, 0, 0.4);
+		background-color: rgba(0, 0, 0, 0.5);
 		// fixme: show animation only when dialog isn't already open
 		// animation: fade 250ms ease;
 	}
