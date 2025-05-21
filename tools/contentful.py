@@ -3,6 +3,7 @@ from os import environ
 import requests
 import sys
 from time import sleep
+from datetime import datetime
 from uuid import uuid4
 
 dotenv.load_dotenv()
@@ -11,10 +12,10 @@ spaceId = 'e34g9w63217k'
 environmentId = 'master'
 cmaToken = environ.get('CONTENTFUL_CMA_TOKEN')
 
-# update this when starting to import data for a new year
-# also ensure tag has been created with name "year: XXXX" and id "XXXX" in the contentful web interface
-lastYearTagId = '2023'
-yearTagId = '2024'
+# newYear.py will ensure tag has been created with name "year: XXXX" and id "XXXX" in the contentful web interface
+currentYear = datetime.now().year
+lastYearTagId = str(currentYear - 1)
+yearTagId = str(currentYear)
 
 session = requests.Session()
 session.headers.update({
