@@ -32,8 +32,10 @@ const config = {
 	plugins: [sveltekit(), svg()],
 	server: {
 		proxy: {
-			'/api/webpush': 'http://127.0.0.1:6002/',
-			'/api/pvt': 'http://127.0.0.1:5006/',
+			'/api': {
+				target: 'http://127.0.0.1:6002/',
+				changeOrigin: false,
+			},
 		},
 	},
 	build: {

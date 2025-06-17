@@ -1,12 +1,10 @@
 {
+	"$schema": "https://openapi.vercel.sh/vercel.json",
 	"github": {
 		"silent": true
 	},
 	"cleanUrls": true,
 	"trailingSlash": false,
-	"rewrites": [
-		{ "source": "/api/webpush/(.*)", "destination": "/api/webpush" },
-		{ "source": "/api/pvt/(.*)", "destination": "/api/pvt" }
-	],
+	"rewrites": [{ "source": "/api/(.*)", "destination": "/api/index" }],
 	"redirects": [{ "source": "/sw.js", "destination": "/service-worker.js" }]
 }

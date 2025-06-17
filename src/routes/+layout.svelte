@@ -154,7 +154,6 @@
 				client = start_poprx('wss://fair-app-poprx.4hcomputers.club');
 			else client.close();
 		});
-		// start_poprx('ws://localhost:6002');
 	});
 
 	// force reload on navigation if app can be updated,
