@@ -124,7 +124,8 @@ def google_auth_callback():
 		{
 			'$set': {
 				'email': email, # could theoretically change
-				'last_login': datetime.now(UTC)
+				'last_login': datetime.now(UTC),
+				# 'role': 'dev',
 			},
 			'$setOnInsert': {
 				'provider': 'google',

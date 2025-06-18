@@ -35,8 +35,6 @@ export async function refresh(sess) {
 		}
 	} else {
 		interestsSlugs.set([]);
-		// todo:
-		// await removeCachedData();
 	}
 }
 

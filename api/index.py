@@ -1,6 +1,8 @@
 from flask import Flask, Blueprint
 from flask_cors import CORS
-import dotenv
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -11,8 +13,6 @@ app.config.update(
 	SECRET_KEY='--------' # DO NOT CHANGE THIS UNLESS YOU WANT ALL REGISTERED SESSIONS TO BREAK
 )
 CORS(app, origins=['*'], supports_credentials=True)
-
-dotenv.load_dotenv()
 
 bp = Blueprint('api', __name__, url_prefix='/api')
 

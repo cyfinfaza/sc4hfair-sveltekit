@@ -2,9 +2,9 @@ from flask import g, request, Response
 from bson import json_util, ObjectId
 import jwt
 from os import environ
-import pymongo
+from pymongo import MongoClient
 
-mongo = pymongo.MongoClient(environ.get('MONGODB_SECRET'))
+mongo = MongoClient(environ.get('MONGODB_SECRET'))
 
 def json_response(status, message=None, data=None):
 	d = {}
