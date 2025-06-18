@@ -1,7 +1,7 @@
 <script>
 	import LinkButton from 'components/LinkButton.svelte';
 	import { isOnline, kioskMode } from 'logic/stores.js';
-	import { interestsSlugs, removeInterest } from 'logic/supabase.js';
+	import { interestsSlugs, removeInterest } from 'logic/interests.js';
 	import { onMount, tick } from 'svelte';
 	import SvelteMarkdown from 'svelte-markdown';
 

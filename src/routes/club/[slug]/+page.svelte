@@ -2,12 +2,7 @@
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import { isOnline, kioskMode } from 'logic/stores';
-	import {
-		addInterest,
-		initSupabaseClient,
-		interestsSlugs,
-		removeInterest,
-	} from 'logic/supabase.js';
+	import { addInterest, initInterests, interestsSlugs, removeInterest } from 'logic/interests.js';
 	import { canWebShare, share } from 'logic/webshare.js';
 	import { onMount } from 'svelte';
 	import SvelteMarkdown from 'svelte-markdown';
@@ -16,9 +11,7 @@
 	export let data;
 	const club = data.club;
 
-	onMount(async () => {
-		await initSupabaseClient();
-	});
+	onMount(initInterests);
 </script>
 
 <Layout title={club.name}>

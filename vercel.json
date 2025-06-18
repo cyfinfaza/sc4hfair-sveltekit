@@ -5,6 +5,6 @@
 	},
 	"cleanUrls": true,
 	"trailingSlash": false,
-	"rewrites": [{ "source": "/api/(.*)", "destination": "/api/index" }],
+	"rewrites": [{ "source": "/api/:path*", "destination": "/api/index" }],
 	"redirects": [{ "source": "/sw.js", "destination": "/service-worker.js" }]
 }

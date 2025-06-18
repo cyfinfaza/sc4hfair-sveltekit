@@ -198,13 +198,13 @@ if (prerendered.length !== 0) {
 		if (
 			event.request.method !== 'GET' ||
 			url.pathname.endsWith('.js.map') ||
+			// todo: make api selector more fine grained, can anything be cached?
 			(sw.location.hostname === url.hostname && url.pathname.startsWith('/api/')) || // webpush
-			(url.hostname.endsWith('.supabase.co') && url.pathname.startsWith('/auth/')) || // supabase auth
 			// don't double cache tiles as mapbox has it's own cache for them, todo: use content-type header for any images (https://docs.mapbox.com/api/maps/raster-tiles/)
 			(url.hostname === 'api.mapbox.com' && /\.(png|jpe?g|webp|pbf)\d*$/im.test(url.pathname))
 		) {
 			return; // let the browser do its default thing
-		} else if (url.hostname === 'graphql.contentful.com' || url.hostname.endsWith('.supabase.co')) {
+		} else if (url.hostname === 'graphql.contentful.com') {
 			networkFirst(event);
 		} else if (url.pathname === '/_app/version.json') {
 			networkFirst(event, true);

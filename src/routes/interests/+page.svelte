@@ -5,15 +5,9 @@
 	import LinkButton from 'components/LinkButton.svelte';
 	import NoOffline from 'components/NoOffline.svelte';
 	import SignInButtons from 'components/SignInButtons.svelte';
+	import { logout, session } from 'logic/auth.js';
+	import { addInterest, initInterests, interestsSlugs, removeInterest } from 'logic/interests.js';
 	import { isOnline, kioskMode } from 'logic/stores.js';
-	import {
-		addInterest,
-		initSupabaseClient,
-		interestsSlugs,
-		logout,
-		removeInterest,
-		session,
-	} from 'logic/supabase.js';
 	import { onMount } from 'svelte';
 
 	export let data;
@@ -27,7 +21,7 @@
 	$: if ($session) reqLoginMessage = false;
 
 	onMount(async () => {
-		await initSupabaseClient();
+		initInterests();
 
 		var searcher = new URLSearchParams(window.location.search);
 		const [add, remove] = [searcher.get('add'), searcher.get('remove')];
@@ -50,7 +44,7 @@
 		{:else}
 			<p>
 				{#if $session}
-					Signed in as <strong>{$session.user.email}</strong>
+					Signed in as <strong>{$session.email}</strong>
 				{:else}
 					You are not signed in.
 				{/if}

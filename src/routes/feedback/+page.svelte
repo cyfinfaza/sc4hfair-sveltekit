@@ -2,9 +2,9 @@
 	import { version } from '$app/environment';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
+	import { session, getProfile } from 'logic/auth.js';
 	import { BRANCH } from 'logic/constants';
 	import { isOnline } from 'logic/stores.js';
-	import { initSupabaseClient, session } from 'logic/supabase.js';
 	import { onMount } from 'svelte';
 
 	let errorText = '',
@@ -16,14 +16,16 @@
 		/** @type {string} */
 		comment;
 
-	onMount(initSupabaseClient);
 	let formPrefilled = false;
-	$: if (!formPrefilled && $session?.user?.user_metadata) {
-		formPrefilled = true;
-		if (!name) name = $session.user.user_metadata.fullName;
-		if (!email)
-			email = $session.user.user_metadata.preferredEmail || $session.user.user_metadata.email;
+	async function prefillForm() {
+		if (!formPrefilled) {
+			formPrefilled = true;
+			const profile = await getProfile();
+			if (!name) name = profile?.name;
+			if (!email) email = profile?.preferredEmail || $session?.email;
+		}
 	}
+	$: if (!formPrefilled && $session) prefillForm();
 
 	function submit() {
 		if (!comment) {

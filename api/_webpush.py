@@ -7,7 +7,7 @@ from pymongo import ReturnDocument
 from pywebpush import webpush, WebPushException
 from uuid import uuid4
 
-from util import mongo, success_json, error_json
+from ._util import mongo, success_json, error_json
 
 bp = Blueprint('webpush', __name__, url_prefix='/webpush')
 

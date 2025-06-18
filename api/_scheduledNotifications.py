@@ -1,12 +1,12 @@
 from datetime import datetime
 import dateutil.parser
 from dateutil.tz import UTC
-from flask import Blueprint, request, session
+from flask import Blueprint, g, request
 from functools import wraps
 import json
 from pymongo import ReturnDocument
 
-from util import mongo, success_json, error_json
+from ._util import mongo, success_json, error_json
 
 bp = Blueprint('scheduledNotifications', __name__, url_prefix='/webpush/scheduledNotifications')
 
@@ -14,40 +14,39 @@ db = mongo.webpush
 scheduledNotificationsCollection = db.scheduledNotifications
 subscriptionsCollection = db.subscriptions
 
-def check_subscription_info():
+def sub_info_required(f):
 	'''
 	Retrieves subscription info from query for GET or json body for anything else and passes it on
 	'''
-	def decorator(f):
-		@wraps(f)
-		def wrapper(*args, **kwargs):
-			sub_info = None
+	def wrapper(*args, **kwargs):
+		sub_info = None
 
-			if request.method == 'GET':
-				if 'subscription' in request.args:
-					try:
-						sub_info = json.loads(request.args.get('subscription'))
-					except json.decoder.JSONDecodeError:
-						return error_json('Invalid subscription')
-			else:
-				sub_info = (request.get_json() or {}).get('subscription')
+		if request.method == 'GET':
+			if 'subscription' in request.args:
+				try:
+					sub_info = json.loads(request.args.get('subscription'))
+				except json.decoder.JSONDecodeError:
+					return error_json('Invalid subscription')
+		else:
+			sub_info = (request.get_json() or {}).get('subscription')
 
-			if sub_info is None: return error_json('No subscription info')
-			request.environ['sub_info'] = sub_info
+		if sub_info is None: return error_json('No subscription info')
+		g.sub_info = sub_info
 
-			return f(*args, **kwargs)
-		return wrapper
-	return decorator
+		return f(*args, **kwargs)
+
+	wrapper.__name__ = f.__name__
+	return wrapper
 
 @bp.route('/', methods=['GET'])
-@check_subscription_info()
+@sub_info_required
 def get_all_scheduled_notifications():
 	pipeline = [
 		# match the subscription by sub_info
 		{
 			'$match': {
 				'subscription_info': {
-					'$eq': request.environ['sub_info']
+					'$eq': g.sub_info
 				}
 			}
 		},
@@ -84,7 +83,7 @@ def get_all_scheduled_notifications():
 	return success_json(data=result[0])
 
 @bp.route('/', methods=['POST'])
-@check_subscription_info()
+@sub_info_required
 def create_scheduled_notification():
 	data = request.get_json() or {}
 
@@ -93,8 +92,7 @@ def create_scheduled_notification():
 
 	if when < now: return error_json('Notification time must be in the future')
 
-	sub_info = request.environ['sub_info']
-	subscription = subscriptionsCollection.find_one({'subscription_info': sub_info}, projection={'_id': True})
+	subscription = subscriptionsCollection.find_one({'subscription_info': g.sub_info}, projection={'_id': True})
 	if not subscription: return error_json('Subscription not found')
 
 	notification = {
@@ -114,12 +112,11 @@ def create_scheduled_notification():
 	return success_json(data={'notification': result})
 
 @bp.route('/', methods=['DELETE'])
-@check_subscription_info()
+@sub_info_required
 def delete_scheduled_notification():
 	data = request.get_json() or {}
 
-	sub_info = request.environ['sub_info']
-	subscription = subscriptionsCollection.find_one({'subscription_info': sub_info}, projection={'_id': True})
+	subscription = subscriptionsCollection.find_one({'subscription_info': g.sub_info}, projection={'_id': True})
 	if not subscription: return error_json('Subscription not found')
 
 	delete_result = scheduledNotificationsCollection.delete_one({

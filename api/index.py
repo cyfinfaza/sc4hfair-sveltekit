@@ -1,4 +1,3 @@
-# fmt: off
 from flask import Flask, Blueprint
 from flask_cors import CORS
 import dotenv
@@ -17,10 +16,14 @@ dotenv.load_dotenv()
 
 bp = Blueprint('api', __name__, url_prefix='/api')
 
-import pvt, scheduledNotifications, webpush
-bp.register_blueprint(pvt.bp)
-bp.register_blueprint(scheduledNotifications.bp)
-bp.register_blueprint(webpush.bp)
+# for vercel to not create extra functions, every python file must start with an underscore
+from . import _auth, _interests, _profile, _pvt, _scheduledNotifications, _webpush
+bp.register_blueprint(_auth.bp)
+bp.register_blueprint(_interests.bp)
+bp.register_blueprint(_profile.bp)
+bp.register_blueprint(_pvt.bp)
+bp.register_blueprint(_scheduledNotifications.bp)
+bp.register_blueprint(_webpush.bp)
 
 app.register_blueprint(bp)
 

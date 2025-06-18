@@ -4,7 +4,7 @@ from flask import Blueprint, request, session, Response
 from uuid import uuid4
 import json
 
-from util import mongo
+from ._util import mongo
 
 bp = Blueprint('pvt', __name__, url_prefix='/pvt')
 

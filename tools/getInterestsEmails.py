@@ -4,6 +4,8 @@ from getpass import getpass
 from os import environ
 import requests
 
+# todo: migrate to mongo
+
 load_dotenv()
 SUPABASE_PG_PASSWORD = environ.get('SUPABASE_PG_PASSWORD') or getpass(
 	"Enter Supabase Postgres password: ")
