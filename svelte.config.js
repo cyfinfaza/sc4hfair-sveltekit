@@ -1,5 +1,5 @@
 import adapter from '@sveltejs/adapter-static';
-import sveltePreprocess from 'svelte-preprocess';
+import { sveltePreprocess } from 'svelte-preprocess';
 import { versionKey } from './vite.config.js';
 
 /** @type {import('@sveltejs/kit').Config} */

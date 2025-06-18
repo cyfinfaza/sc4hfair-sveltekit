@@ -10,22 +10,22 @@
 	import NoOffline from 'components/NoOffline.svelte';
 	import NotificationEnableButton from 'components/NotificationEnableButton.svelte';
 	import SignInButtons from 'components/SignInButtons.svelte';
+	import { session, logout } from 'logic/auth.js';
 	import { BRANCH, BUILD_LOCATION, BUILD_TIME } from 'logic/constants';
+	import { interestsSlugs } from 'logic/interests';
 	import { isStandalone } from 'logic/platform.js';
 	import { isOnline, kioskMenuSize, kioskMode } from 'logic/stores.js';
-	import { initSupabaseClient, interestsSlugs, logout, session } from 'logic/supabase.js';
 	import { getSubscription, notificationStatus, subscribe, unsubscribe } from 'logic/webpush';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 
 	/**
 	 * @typedef {Partial<{
-	 * 	fullName: string;
-	 * 	preferredEmail: string;
+	 * 	name: string;
+	 * 	preferred_email: string;
 	 * 	phone: string;
 	 * 	graduation: string;
-	 * }> &
-	 * 	import('@supabase/supabase-js').UserMetadata} Form
+	 * }>} Form
 	 */
 
 	/**
@@ -35,25 +35,21 @@
 	function isInfoFormDisabled(form, cloudForm) {
 		if (!form || !cloudForm) return true;
 		// only check certain properties
-		return /** @type {const} */ (['fullName', 'preferredEmail', 'phone', 'graduation']).every(
+		console.log('isInfoFormDisabled', form, cloudForm);
+		return /** @type {const} */ (['name', 'preferred_email', 'phone', 'graduation']).every(
 			(key) => form[key] === cloudForm[key]
 		);
 	}
 
 	/** @type {import('svelte/store').Writable<Form>} */
 	const form = writable({
-		fullName: '',
-		preferredEmail: '',
+		name: '',
+		preferred_email: '',
 		phone: '',
 		graduation: '',
 	});
 	/** @type {Form} */
 	let cloudForm;
-	// $: console.log($form, cloudForm);
-	// $: console.log($session);
-
-	/** @type {import('@supabase/supabase-js').SupabaseClient} */
-	let client;
 
 	let confirmReset = ''; // modal for confirmation
 
@@ -75,19 +71,20 @@
 		}
 	}
 
-	onMount(async () => {
-		client = await initSupabaseClient();
-	});
-
-	$: {
-		(function (s) {
-			if (client && s) {
-				cloudForm = s.user?.user_metadata || {};
-				console.log('new cloud user metadata', cloudForm);
-				$form = { ...cloudForm };
-			}
-		})($session);
+	/** @param {import('logic/auth.js').Session | null} session */
+	async function init(session) {
+		if (session) {
+			const { profile } = await (
+				await fetch('/api/profile', {
+					credentials: 'include',
+				})
+			).json();
+			cloudForm = profile;
+			console.log('new cloudForm', cloudForm);
+			$form = { ...cloudForm };
+		}
 	}
+	$: init($session);
 </script>
 
 <Layout title="Settings">
@@ -97,7 +94,7 @@
 	{:else}
 		<h1>Account</h1>
 		{#if $session}
-			<p>You are signed in as <strong>{$session?.user?.email}</strong></p>
+			<p>You are signed in as <strong>{$session?.email}</strong></p>
 			<p>
 				<LinkButton label="Sign out" icon="logout" on:click={() => logout()} />
 			</p>
@@ -106,8 +103,8 @@
 			</h2>
 			<table style="width: 100%; margin: 1rem 0;">
 				<tbody>
-					<LabeledInput {form} name="fullName" label="Full name" />
-					<LabeledInput {form} name="preferredEmail" label="Preferred email" type="email" />
+					<LabeledInput {form} name="name" label="Full name" />
+					<LabeledInput {form} name="preferred_email" label="Preferred email" type="email" />
 					<LabeledInput {form} name="phone" label="Phone number" type="tel" />
 					<LabeledInput
 						{form}
@@ -123,9 +120,20 @@
 			<LinkButton
 				label="Save"
 				icon="save"
-				on:click={() => {
-					client.auth.updateUser({ data: $form });
-					cloudForm = { ...$form };
+				on:click={async () => {
+					const res = await fetch('/api/profile', {
+						method: 'PATCH',
+						headers: { 'Content-Type': 'application/json' },
+						credentials: 'include',
+						body: JSON.stringify($form),
+					});
+					if (res.ok) {
+						const { profile } = await res.json();
+						cloudForm = profile;
+					} else {
+						const error = await res.json();
+						alert(error.message || 'Failed to save profile');
+					}
 				}}
 				disabled={isInfoFormDisabled($form, cloudForm) || !$isOnline}
 				alert={!isInfoFormDisabled($form, cloudForm)}
@@ -177,14 +185,19 @@
 						break;
 					case 'interests':
 						localStorage.removeItem('cim_intent');
-						if (client && $session) {
-							const { error } = await client
-								.from('interests')
-								.delete()
-								.match({ owner: $session.user.id });
-							if (error) alert(error.message);
-							else interestsSlugs.set([]);
+
+						const res = await fetch('/api/interests', {
+							method: 'DELETE',
+							credentials: 'include',
+						});
+
+						if (res.ok) {
+							console.log('Cleared interests');
+							interestsSlugs.set([]);
+						} else {
+							alert('Failed to clear interests');
 						}
+
 						goto('/interests');
 						break;
 				}

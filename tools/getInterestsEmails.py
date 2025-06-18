@@ -1,118 +1,133 @@
-import psycopg2
+from contentful import currentYear
 from dotenv import load_dotenv
-from getpass import getpass
 from os import environ
+from pymongo import MongoClient
 import requests
+import tempfile
+import webbrowser
+
+INCLUDE_DEVS = True
 
 load_dotenv()
-SUPABASE_PG_PASSWORD = environ.get('SUPABASE_PG_PASSWORD') or getpass(
-	"Enter Supabase Postgres password: ")
 
-EXCLUDE_EMAILS = ["24cdingwall@gmail.com", "ccreativecnd@gmail.com", "cyfinfaza@gmail.com"]
+mongo = MongoClient(environ.get('MONGODB_SECRET'))
+db = mongo.interests
+interests = db.interests
 
 def query_contentful(query):
-    url = 'https://graphql.contentful.com/content/v1/spaces/e34g9w63217k/'
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + 'TRlCo1BlTmpwyKIOHJ08X2lYAaNNlceF415KMmKkMFk'
-    }
+	url = 'https://graphql.contentful.com/content/v1/spaces/e34g9w63217k/'
+	headers = {
+		'Content-Type': 'application/json',
+		'Authorization': 'Bearer ' + 'TRlCo1BlTmpwyKIOHJ08X2lYAaNNlceF415KMmKkMFk'
+	}
 
-    response = requests.get(url, params={'query': query}, headers=headers)
+	response = requests.get(url, params={'query': query}, headers=headers)
 
-    if not response.ok:
-        raise Exception(response.text)
+	if not response.ok: raise Exception(response.text)
 
-    return response.json()['data']
+	return response.json()['data']
 
-club_query = '''
-{
+club_query = '''{
 	clubCollection(order: name_ASC) {
 		items {
 			slug
 			name
 		}
 	}
-}
-'''
+}'''
+clubs = query_contentful(club_query)['clubCollection']['items']
+slugToName = {club['slug']: club['name'] for club in clubs}
 
-def getInterestsEmails():
-	conn = psycopg2.connect(database="postgres",
-							host="db.gahyqgeshbvyajzukktr.supabase.co",
-							user="postgres",
-							password=SUPABASE_PG_PASSWORD,
-							port="5432")
+data = interests.aggregate([
+	{
+		# Stage 1: Filter interests by year.
+		'$match': {
+			'year': currentYear 
+		}
+	},
+	{
+		# Stage 2: Perform a left outer join to the users collection.
+		'$lookup': {
+			'from': 'users',
+			'localField': 'user_id',
+			'foreignField': '_id',
+			'as': 'userDetails'
+		}
+	},
+	{
+		# Stage 3: Deconstruct the userDetails array to process each joined document.
+		'$unwind': '$userDetails'
+	},
+	{
+		# Stage 4: Filter out documents where the user's role is 'dev'.
+		'$match': {} if INCLUDE_DEVS else {
+			'userDetails.role': { '$ne': 'dev' }
+		}
+	},
+	{
+		# Stage 5: Group the remaining documents by interest slug.
+		'$group': {
+			'_id': '$slug',
+			'users': {
+				# Push the relevant user details into a 'users' array.
+				'$push': {
+					'email': '$userDetails.email',
+					'name': '$userDetails.name'
+				}
+			}
+		}
+	},
+	{
+		# Stage 6: Sort the results alphabetically by the interest slug (_id).
+		'$sort': { '_id': 1 } # 1 for ascending order
+	},
+	{
+		# Stage 7: Reshape the output documents for final presentation.
+		'$project': {
+			'_id': 1,
+			'users': 1
+		}
+	}
+])
 
-	cursor = conn.cursor()
-	cursor.execute(
-		"select interests.interest_slug, auth.users.email, auth.users.raw_user_meta_data from interests inner join auth.users on auth.users.id=interests.owner")
-	interestsData = cursor.fetchall()
+topMessage = "As a part of the interest list feature in the 4-H Fair App, we collect the name and email of every person who adds a club to their interest list so that we can report this data to club leaders. Below is a list of names/emails who expressed interest in each club. If a club is not listed, this means that no fair app users added that club to their interest list. Club leaders should consider adding emails from this list to their club's mailing list. You can copy and paste each section directly into an email recipients box."
 
-	#filter out all interests with excluded emails
-	interestsData = list(filter(lambda interest: interest[1] not in EXCLUDE_EMAILS, interestsData))
+markdownOutput = f'# 4-H Fair App Interest List Emails Report\n{topMessage}'
+htmlOutput = f"""<html>
+<head>
+	<title>4-H Fair App Interest List Emails Report</title>
+	<style>
+		body {{
+			font-family: sans-serif;
+		}}
+		h2 {{
+			break-after: avoid;
+		}}
+	</style>
+</head>
+<body>
+<h1>4-H Fair App Interest List Emails Report</h1>
+<p>{topMessage}</p>
+"""
 
-	interestEmailsForEachClub = {}
-	for interest in interestsData:
-		[clubSlug, email, metadata] = interest
-		if clubSlug not in interestEmailsForEachClub:
-			interestEmailsForEachClub[clubSlug] = []
-		fullName = metadata['full_name']
-		interestEmailsForEachClub[clubSlug].append({
-			'email': email,
-			'fullName': fullName
-		})
+for club in data:
+	name = slugToName[club['_id']]
+	markdownOutput += f"\n\n## {name}"
+	htmlOutput += f"<h2>{name}</h2><ul>"
 
-	clubs = query_contentful(club_query)['clubCollection']['items']
+	for user in club['users']:
+		markdownOutput += f"\n- {user['name']} <[{user['email']}]({user['email']})>"
+		htmlOutput += f"<li>{user['name']} &lt;<a href='mailto:{user['email']}'>{user['email']}</a>&gt;</li>"
 
-	interestEmails = []
-	for clubSlug in interestEmailsForEachClub.keys():
-		clubName = list(filter(lambda club: club['slug'] == clubSlug, clubs))[
-			0]['name']
-		interestEmails.append({
-			'clubName': clubName,
-			'people': interestEmailsForEachClub[clubSlug]
-		})
+	htmlOutput += '</ul>'
 
-	return interestEmails
+htmlOutput += '</body></html>'
 
+print(markdownOutput)
 
-if __name__ == "__main__":
-	interestEmails = getInterestsEmails()
-	topMessage = "As a part of the interest list feature in the 4-H Fair App, we collect the username and email of every person who adds a club to their interest list so that we can report this data to club leaders. Below is a list of usernames/emails who expressed interest in each club. If a club is not listed, this means that no fair app users added that club to their interest list. Club leaders should consider adding emails from this list to their club's mailing list."
-	markdownOutput = f'# 4-H Fair App Interest List Emails Report  \n{topMessage}  \n'
-	htmlOutput = f"""<html>
-	<head>
-		<title>4-H Fair App Interest List Emails Report</title>
-		<style>
-			body {{
-				font-family: sans-serif;
-			}}
-			h2 {{
-				break-after: avoid;
-			}}
-		</style>
-	</head>
-	<body>
-	<h1>4-H Fair App Interest List Emails Report</h1>
-	<p>{topMessage}</p>
-	"""
-	for entry in interestEmails:
-		markdownOutput += f"## {entry['clubName']}  \n"
-		htmlOutput += f"<h2>{entry['clubName']}</h2><ul>"
-		for person in entry['people']:
-			markdownOutput += f"- {person['fullName']} <[{person['email']}]({person['email']})>\n"
-			htmlOutput += f"<li>{person['fullName']} &lt;<a href='mailto:{person['email']}'>{person['email']}</a>&gt;</li>"
-		markdownOutput += '  \n'
-		htmlOutput += '</ul>'
-		emailsSemicolonSeparated = '; '.join(
-			map(lambda person: person['email'], entry['people']))
-		if len(entry['people']) > 1:
-			markdownOutput += f"Quick copy paste: {emailsSemicolonSeparated}  \n"
-			htmlOutput += f"<p>Quick copy paste: {emailsSemicolonSeparated}</p>"
-	htmlOutput += '</body></html>'
-	print(markdownOutput)
-	import tempfile
-	import webbrowser
-	with tempfile.NamedTemporaryFile(suffix='.html', delete=False) as f:
-		url = 'file://' + f.name
-		f.write(htmlOutput.encode('utf-8'))
-	webbrowser.open(url)
+with tempfile.NamedTemporaryFile(suffix='.html', delete=False) as f:
+	url = 'file://' + f.name
+	f.write(htmlOutput.encode('utf-8'))
+webbrowser.open(url)
+
+mongo.close()

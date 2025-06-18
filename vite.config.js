@@ -7,11 +7,20 @@ const pexec = promisify(exec);
 import { hostname } from 'os';
 
 async function getInfo(env, cmd, length = false) {
-	let value = process.env[env] || (await pexec(cmd)).stdout.trim();
+	let value = process.env[env];
+	if (!value) {
+		try {
+			value = (await pexec(cmd)).stdout.trim();
+		} catch (e) {
+			console.warn(`Failed to get ${env}`, e);
+			value = 'unknown';
+		}
+	}
 	if (length) value = value.substring(0, length);
 	return value;
 }
 
+// todo: move to a better place as this reruns multiple times per build
 const commit = await getInfo('VITE_VERCEL_GIT_COMMIT_SHA', 'git rev-parse --short HEAD', 7);
 const buildTime = new Date();
 export const versionKey = commit + '-' + buildTime.getTime().toString(36); // will be picked by sveltekit
@@ -32,8 +41,10 @@ const config = {
 	plugins: [sveltekit(), svg()],
 	server: {
 		proxy: {
-			'/api/webpush': 'http://127.0.0.1:6002/',
-			'/api/pvt': 'http://127.0.0.1:5006/',
+			'/api': {
+				target: 'http://127.0.0.1:6002/',
+				changeOrigin: false,
+			},
 		},
 	},
 	build: {
