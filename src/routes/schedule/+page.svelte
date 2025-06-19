@@ -127,13 +127,12 @@
 			data.events.filter(
 				(element) =>
 					((selectedTent === 'All' || selectedTent === element.tent) &&
-						(eventIsFuture(element) || showingPast)) ||
-					(browser && window.location?.hash === '#' + element.sys.id)
+						(showingPast || eventIsFuture(element)) &&
+						(!showingOnlySubscribedEvents || subscribedEvents?.includes(element.sys.id))) ||
+					(browser && window.location?.hash === '#' + element.sys.id) // always show targeted
 			),
 			'title',
 			['tentName']
-		).filter(
-			(element) => !showingOnlySubscribedEvents || subscribedEvents?.includes(element.sys.id)
 		)
 	);
 </script>

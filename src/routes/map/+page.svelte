@@ -9,7 +9,7 @@
 	import mapboxgl from 'mapbox-gl';
 	import 'mapbox-gl/dist/mapbox-gl.css';
 	import polylabel from 'polylabel';
-	import { onMount, tick } from 'svelte';
+	import { onMount, tick, untrack } from 'svelte';
 
 	let { data } = $props();
 
@@ -38,8 +38,8 @@
 		trackUserLocationRecenter = $state(false);
 
 	// feature popup info
-	let selectedFeature: mapboxgl.GeoJSONFeature | null = $state(null),
-		previouslySelectedFeature: mapboxgl.GeoJSONFeature | null = $state(null),
+	let selectedFeature: mapboxgl.GeoJSONFeature | null = $state.raw(null),
+		previouslySelectedFeature: mapboxgl.GeoJSONFeature | null = $state.raw(null),
 		filteredEventData: (typeof data.eventsByTent)[string] | null = $state(null),
 		filteredClubData: (typeof data.clubsByTent)[string] | null = $state(null);
 
@@ -48,16 +48,13 @@
 	$effect(() => {
 		try {
 			if (isMapLoaded) {
-				if (
-					previouslySelectedFeature &&
-					previouslySelectedFeature.id &&
-					previouslySelectedFeature.source
-				) {
+				let prev = untrack(() => previouslySelectedFeature);
+				if (prev && prev.id && prev.source) {
 					map.setFeatureState(
 						{
-							id: previouslySelectedFeature.id,
-							source: previouslySelectedFeature.source,
-							sourceLayer: previouslySelectedFeature.sourceLayer,
+							id: prev.id,
+							source: prev.source,
+							sourceLayer: prev.sourceLayer,
 						},
 						{
 							click: false,
@@ -107,6 +104,13 @@
 
 			if ('coordinates' in element.geometry) {
 				console.log(element, element.geometry, element.geometry.type, element.geometry.coordinates);
+				map.once('moveend', () => {
+					selectedFeature = {
+						...element,
+						source,
+						sourceLayer,
+					};
+				});
 				map.flyTo({
 					center: (typeof element.geometry.coordinates[0] === 'number' ?
 						element.geometry.coordinates
@@ -115,13 +119,6 @@
 					speed: 2.7, // this is done once on page load so make it go fast
 				});
 			}
-			map.once('moveend', () => {
-				selectedFeature = {
-					...element,
-					source,
-					sourceLayer,
-				};
-			});
 		} else {
 			console.warn('No feature found for slug:', slug);
 		}
