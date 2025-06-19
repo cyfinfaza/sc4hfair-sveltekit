@@ -1,9 +1,10 @@
 <script lang="ts">
-	import LinkButton from 'components/LinkButton.svelte';
-	import { isOnline, kioskMode } from 'logic/stores.svelte';
-	import { interestsSlugs, removeInterest } from 'logic/interests';
-	import { onMount, tick } from 'svelte';
 	import SvelteMarkdown from '@humanspeak/svelte-markdown';
+	import EmptyComponent from 'components/EmptyComponent.svelte';
+	import LinkButton from 'components/LinkButton.svelte';
+	import { interestsSlugs, removeInterest } from 'logic/interests';
+	import { isOnline, kioskMode } from 'logic/stores.svelte';
+	import { onMount, tick } from 'svelte';
 
 	let { club, autoTarget = false } = $props();
 
@@ -27,7 +28,7 @@
 		</div>
 	</h2>
 	<div class="description">
-		<SvelteMarkdown renderers={{ image: undefined }} source={club.description} />
+		<SvelteMarkdown renderers={{ image: EmptyComponent }} source={club.description} />
 	</div>
 	<div class="actionButtonsPanel">
 		{#if club.tent}

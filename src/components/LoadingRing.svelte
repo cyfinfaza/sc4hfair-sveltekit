@@ -6,8 +6,8 @@
 	viewBox="0 0 100 100"
 	fill="none"
 	xmlns="http://www.w3.org/2000/svg"
-	class="loadingRing"
 	class:loading
+	class="loadingRing"
 	onclick={() => location.reload()}
 	onkeydown={(e) => {
 		if (e.key === 'Enter') location.reload();
