@@ -1,8 +1,8 @@
-import { writable } from 'svelte/store';
+import { writable, type Writable } from 'svelte/store';
 
 const isBrowser = typeof window !== 'undefined';
 
-export const themes = /** @type {const} */ ([
+export const themes = [
 	{
 		id: 'theme-light',
 		name: 'Light theme',
@@ -13,14 +13,13 @@ export const themes = /** @type {const} */ ([
 		name: 'Dark theme',
 		icon: 'dark_mode',
 	},
-]);
+] as const;
 
-/** @typedef {(typeof themes)[number]['id']} ThemeId */
+type ThemeId = (typeof themes)[number]['id'];
 
-/** @type {import('svelte/store').Writable<ThemeId>} */
-export const theme = writable(
+export const theme: Writable<ThemeId> = writable(
 	(isBrowser &&
-		/** @type {ThemeId} */ (window.localStorage.getItem('theme') ||
+		((window.localStorage.getItem('theme') as ThemeId) ||
 			(window.matchMedia('(prefers-color-scheme: dark)').matches && 'theme-dark'))) ||
 		'theme-light'
 );

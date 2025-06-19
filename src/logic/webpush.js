@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import { WEBPUSH_API_PREFIX } from 'logic/constants';
-import { isOnline } from 'logic/stores.js';
+import { isOnline } from 'logic/stores.svelte';
 import { writable } from 'svelte/store';
 import { checkIsStandalone, getPlatform, isStandalone } from './platform';
 

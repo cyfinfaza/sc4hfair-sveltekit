@@ -1,15 +1,14 @@
-<script>
+<script lang="ts">
 	import LinkButton from 'components/LinkButton.svelte';
-	import { isOnline, kioskMode } from 'logic/stores.js';
-	import { interestsSlugs, removeInterest } from 'logic/interests.js';
+	import { isOnline, kioskMode } from 'logic/stores.svelte';
+	import { interestsSlugs, removeInterest } from 'logic/interests';
 	import { onMount, tick } from 'svelte';
-	import SvelteMarkdown from 'svelte-markdown';
+	import SvelteMarkdown from '@humanspeak/svelte-markdown';
 
-	export let club;
+	let { club, autoTarget = false } = $props();
 
-	export let autoTarget = false;
-	/** @type {HTMLDivElement} */
-	let div;
+	let div: HTMLDivElement;
+
 	onMount(async () => {
 		await tick();
 		if (autoTarget) {
@@ -18,7 +17,7 @@
 	});
 </script>
 
-<div class="clubEntry" id={club.slug} class:targeted={autoTarget} bind:this={div}>
+<div id={club.slug} bind:this={div} class:targeted={autoTarget} class="clubEntry">
 	<h2>
 		<span>{club.name}</span>
 		<div class="tags">
@@ -28,11 +27,7 @@
 		</div>
 	</h2>
 	<div class="description">
-		<SvelteMarkdown
-			renderers={{ image: undefined }}
-			source={club.description}
-			options={{ mangle: false }}
-		/>
+		<SvelteMarkdown renderers={{ image: undefined }} source={club.description} />
 	</div>
 	<div class="actionButtonsPanel">
 		{#if club.tent}
@@ -44,7 +39,7 @@
 					label="Remove"
 					disabled={!$isOnline}
 					icon="remove"
-					on:click={() => removeInterest(club.slug)}
+					onclick={() => removeInterest(club.slug)}
 					lightFont
 				/>
 			{:else}

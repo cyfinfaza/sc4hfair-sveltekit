@@ -1,4 +1,4 @@
-import { getSponsors, sponsorTiers, sponsorTierName } from 'logic/contentful.js';
+import { getSponsors, sponsorTiers, sponsorTierName } from 'logic/contentful';
 
 export async function load() {
 	let sponsors = await getSponsors();

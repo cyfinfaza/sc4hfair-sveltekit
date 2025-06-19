@@ -1,14 +1,12 @@
-<script>
+<script lang="ts">
 	import { goto } from '$app/navigation';
 	import Layout from 'components/Layout.svelte';
-	import { exactSearch } from 'logic/search.js';
+	import { exactSearch } from 'logic/search';
 
-	export let data;
+	let { data } = $props();
 
-	let searchQuery = '',
-		results = [];
-
-	$: results = exactSearch(searchQuery, data.foodVendors, 'name', ['name'], true);
+	let searchQuery = $state(''),
+		results = $derived(exactSearch(searchQuery, data.foodVendors, 'name', ['name'], true));
 </script>
 
 <Layout title="Food">
@@ -18,10 +16,10 @@
 	</div>
 	<div class="filterOptions">
 		<input type="text" placeholder="Search" bind:value={searchQuery} />
-		<button style:display={searchQuery ? null : 'none'} on:click={() => (searchQuery = '')}
+		<button style:display={searchQuery ? null : 'none'} onclick={() => (searchQuery = '')}
 			>Clear</button
 		>
-		<button on:click={() => goto('/map?locate=food')}>Locate Food Tent</button>
+		<button onclick={() => goto('/map?locate=food')}>Locate Food Tent</button>
 	</div>
 	<div class="columnCentered">
 		{#each results as vendor}

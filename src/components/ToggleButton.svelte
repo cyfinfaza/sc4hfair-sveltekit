@@ -1,9 +1,15 @@
-<script>
-	export let value = false;
+<script lang="ts">
+	let {
+		value = $bindable(false),
+		children,
+	}: {
+		value?: boolean;
+		children: import('svelte').Snippet;
+	} = $props();
 </script>
 
-<button class:on={value} on:click={() => (value = !value)}>
-	<slot />
+<button class:on={value} onclick={() => (value = !value)}>
+	{@render children()}
 </button>
 
 <style>

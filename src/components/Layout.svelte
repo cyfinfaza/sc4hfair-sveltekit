@@ -1,39 +1,44 @@
-<script>
+<script lang="ts">
 	import Header from 'components/Header.svelte';
-	import { kioskMenuSize, kioskMode, menuOpen } from 'logic/stores';
+	import KioskMenu from 'components/KioskMenu.svelte';
+	import { kioskMenuSize, kioskMode, menuOpen } from 'logic/stores.svelte';
 	import { quintIn, quintOut } from 'svelte/easing';
 	import { fly } from 'svelte/transition';
-	import KioskMenu from './KioskMenu.svelte';
 
-	export let title = '';
-	export let description = 'The Somerset County 4‑H Fair App';
-	export let noPadding = false;
-	export let noHeaderPadding = false;
-	export let fixedHeightContent = false;
-	export let fullWidth = false;
-	/** @type {string | undefined} */
-	export let forceTheme = undefined;
+	let {
+		title = '',
+		description = 'The Somerset County 4‑H Fair App',
+		noPadding = false,
+		noHeaderPadding = false,
+		fixedHeightContent = false,
+		fullWidth = false,
+		forceTheme = undefined,
+		children,
+	}: {
+		title?: string;
+		description?: string;
+		noPadding?: boolean;
+		noHeaderPadding?: boolean;
+		fixedHeightContent?: boolean;
+		fullWidth?: boolean;
+		forceTheme?: string | undefined;
+		children?: import('svelte').Snippet;
+	} = $props();
 
 	const SITE_NAME = 'Somerset County 4‑H Fair';
 	const AUTHOR = 'Somerset County 4‑H';
 	const animationDuration = 150;
 
-	/** @type {string} */
-	let kioskSizeString;
-	/** @type {string} */
-	let contentSizeString;
-	$: {
-		kioskSizeString = $kioskMenuSize + '%';
-		contentSizeString = 100 - $kioskMenuSize + '%';
-	}
+	let kioskSizeString = $derived($kioskMenuSize + '%');
+	let contentSizeString = $derived(100 - $kioskMenuSize + '%');
 </script>
 
 <svelte:window
-	on:keydown={(e) => {
-		if (e.key === 'm' && (e.ctrlKey || e.metaKey))
-			/** @type {HTMLElement} */ (
-				document.querySelector('#menuArea :is(input, button, a)')
-			)?.focus();
+	onkeydown={(e) => {
+		if (e.key === 'm' && (e.ctrlKey || e.metaKey)) {
+			$menuOpen = true;
+			(document.querySelector('#menuArea :is(input, button, a)') as HTMLElement)?.focus();
+		}
 	}}
 />
 
@@ -50,15 +55,17 @@
 	<meta name="theme-color" content="#009959" />
 </svelte:head>
 
-<a href="#content" class="skipToContentButton" tabindex="0" on:click={() => ($menuOpen = false)}>
+<a href="#content" class="skipToContentButton" tabindex="0" onclick={() => ($menuOpen = false)}>
 	Skip to content <br />
 	<span style="text-decoration: none; display: inline-block;">
 		Using keyboard navigation? Use <kbd>Ctrl</kbd>+<kbd>M</kbd> or <kbd>Cmd</kbd>+<kbd>M</kbd> to quickly
 		open the menu.
 	</span>
 </a>
+
 <Header offsetContent={!noHeaderPadding && !fixedHeightContent} />
 <noscript>JavaScript is required to use this app.</noscript>
+
 {#key title}
 	<div
 		in:fly|global={{
@@ -78,13 +85,14 @@
 		class:fixedHeightContent
 		class:kioskMode={$kioskMode}
 		style:width={$kioskMode ? contentSizeString : undefined}
-		on:focusin={() => ($menuOpen = false)}
+		onfocusin={() => ($menuOpen = false)}
 	>
 		<div class:fullWidth>
-			<slot />
+			{@render children?.()}
 		</div>
 	</div>
 {/key}
+
 {#if $kioskMode}
 	<div class="kioskBar" style:width={$kioskMode ? kioskSizeString : undefined}><KioskMenu /></div>
 {/if}

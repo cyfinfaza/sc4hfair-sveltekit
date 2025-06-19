@@ -1,15 +1,14 @@
-<script>
+<script lang="ts">
 	import InstallInstructions from 'components/InstallInstructions.svelte';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import Post from 'components/Post.svelte';
-	import { queryContentful } from 'logic/contentful.js';
-	import { isStandalone } from 'logic/platform.js';
-	import { kioskMode, menuOpen } from 'logic/stores.js';
-	import { notificationStatus } from 'logic/webpush.js';
+	import { queryContentful } from 'logic/contentful';
+	import { isStandalone } from 'logic/platform';
+	import { kioskMode, menuOpen } from 'logic/stores.svelte';
+	import { notificationStatus } from 'logic/webpush';
 	import { onMount } from 'svelte';
 	import NotificationEnableButton from 'components/NotificationEnableButton.svelte';
-	import { goto } from '$app/navigation';
 
 	const query = `{
 	postCollection(order:sys_firstPublishedAt_DESC) {
@@ -24,13 +23,12 @@
 	}
 }`;
 
-	/** @type {import('components/Post.svelte').Post[]} */
-	let posts = [];
+	let posts: import('logic/contentful').Post[] = $state([]);
 	onMount(async () => {
 		posts = (await queryContentful(query)).postCollection?.items;
 	});
 
-	let showSetupBox = false;
+	let showSetupBox = $state(false);
 	onMount(() => {
 		if (localStorage.getItem('installBox') !== '1') showSetupBox = true;
 	});
@@ -74,7 +72,7 @@
 						icon="close"
 						label="Dismiss"
 						acrylic
-						on:click={() => {
+						onclick={() => {
 							showSetupBox = false;
 							localStorage.setItem('installBox', '1');
 						}}
@@ -85,7 +83,7 @@
 		<div class="horizPanel">
 			<LinkButton label="Schedule" icon="event_note" href="/schedule" />
 			<LinkButton label="Map" icon="map" href="/map" />
-			<LinkButton label="More" icon="add" on:click={() => ($menuOpen = true)} />
+			<LinkButton label="More" icon="add" onclick={() => ($menuOpen = true)} />
 		</div>
 	{/if}
 	<h2 class="center">Latest Updates</h2>

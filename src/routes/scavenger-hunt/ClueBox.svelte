@@ -1,18 +1,21 @@
-<script>
+<script lang="ts">
 	import LinkButton from 'components/LinkButton.svelte';
 	import { getContext } from 'svelte';
-	const { atIndex, hintsUsed, addHintUsed, clues, startScanning } = getContext('sh');
+	import type { Context } from './+page.svelte';
+	const { atIndex, hintsUsed, addHintUsed, clues, startScanning, destination } =
+		getContext<Context>('sh');
 
-	/** @type {number} */
-	export let index;
-	export let winner = false;
+	let {
+		index = $bindable(),
+		winner = false,
+	}: {
+		index: number;
+		winner?: boolean;
+	} = $props();
 	if (winner) index = clues.length;
-
-	const destination = '4‑H Computers booth';
-	// const destination = 'info tent';
 </script>
 
-<div class="card" class:disabled={index > $atIndex} class:winner>
+<div class:disabled={index > $atIndex} class:winner class="card">
 	<h2 class="clueIndexLabel">
 		{#if winner}
 			<span class="material-icons">star</span>
@@ -40,11 +43,11 @@
 						{#if clues[index].hint && !$hintsUsed.includes(clues[index].code)}
 							<LinkButton
 								label="Hint"
-								on:click={() => addHintUsed(clues[index].code)}
+								onclick={() => addHintUsed(clues[index].code)}
 								icon="emoji_objects"
 							/>
 						{/if}
-						<LinkButton label="Scan" on:click={() => startScanning()} icon="qr_code_scanner" />
+						<LinkButton label="Scan" onclick={() => startScanning()} icon="qr_code_scanner" />
 					</div>
 				{/if}
 			{/if}

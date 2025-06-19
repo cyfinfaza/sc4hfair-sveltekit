@@ -1,13 +1,21 @@
-<script>
-	export let name; // internal id
-	export let label; // displayed text
-	export let type = 'text'; // input type
-	export let form; // form writeable
+<script lang="ts">
+	let {
+		name,
+		label,
+		type = 'text',
+		form,
+		...rest
+	}: {
+		name: string;
+		label: string;
+		type?: string;
+		form: import('svelte/store').Writable<Record<string, any>>;
+		[key: string]: any;
+	} = $props();
 
-	/** @type {import('svelte/action').Action<HTMLInputElement>} */
-	function typeAction(node) {
+	const typeAction: import('svelte/action').Action<HTMLInputElement> = (node) => {
 		node.type = type;
-	}
+	};
 </script>
 
 <tr>
@@ -15,6 +23,6 @@
 		<label for={name}>{label}</label>
 	</td>
 	<td>
-		<input use:typeAction {name} bind:value={$form[name]} {...$$restProps} />
+		<input use:typeAction {name} bind:value={$form[name]} {...rest} />
 	</td>
 </tr>

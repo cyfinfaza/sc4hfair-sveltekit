@@ -1,21 +1,24 @@
-<script>
+<script lang="ts">
 	import { browser } from '$app/environment';
 	import DateTime from 'components/DateTime.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import tentSlugs from 'data/tentSlugs.json';
-	import { eventIsFuture } from 'logic/scheduling.js';
-	import { kioskMode } from 'logic/stores';
-	import { canWebShare, share } from 'logic/webshare.js';
+	import { eventIsFuture } from 'logic/scheduling';
+	import { kioskMode } from 'logic/stores.svelte';
+	import { canWebShare, share } from 'logic/webshare';
 	import { onMount, tick } from 'svelte';
 
-	/** @type {import('./$types').PageData['events'][number]} */
-	export let event;
-	export let index = 0;
-	export let subscribed = false;
-	/** @type {(eventId: string, subscribed: boolean) => void} */
-	export let setEventSubscription;
-
-	$: console.log(event, subscribed);
+	let {
+		event,
+		index = 0,
+		subscribed = false,
+		setEventSubscription,
+	}: {
+		event: import('./$types').PageData['events'][number];
+		index?: number;
+		subscribed?: boolean;
+		setEventSubscription: (eventId: string, subscribed: boolean) => void;
+	} = $props();
 
 	const timeLabels = {
 		past: {
@@ -31,29 +34,28 @@
 			style: 'background: var(--green); color: var(--green-text);',
 		},
 	};
-	let timeLabel;
+	let timeLabel: (typeof timeLabels)[keyof typeof timeLabels] = $state(timeLabels.now);
 	if (!eventIsFuture(event)) timeLabel = timeLabels.past;
 	else if (new Date(event.time) > new Date()) timeLabel = timeLabels.future;
-	else timeLabel = timeLabels.now;
 
-	let targeted = false;
-	/** @type {HTMLDivElement} */
-	let div;
-	onMount(async () => {
-		targeted = browser && window.location?.hash === '#' + event.sys.id;
-		await tick();
-		if (browser && window.location?.hash === '#' + event.sys.id) {
+	let targeted = $state(browser && window.location?.hash === '#' + event.sys.id),
+		div: HTMLDivElement;
+
+	const scrollIntoView = () => {
+		if (window.location?.hash === '#' + event.sys.id) {
 			div.scrollIntoView({ behavior: 'instant' });
 		}
-	});
+	};
 </script>
 
 <div
 	bind:this={div}
-	class="container"
 	class:targeted
+	class="container"
 	id={event.sys.id}
 	style:animation-delay={Math.min(index, 15) * 0.05 + 's'}
+	onanimationstart={scrollIntoView}
+	onanimationend={scrollIntoView}
 >
 	<div class="top">
 		<h2>{event.title}</h2>
@@ -88,7 +90,7 @@
 			{#if $canWebShare}
 				<LinkButton
 					icon="share"
-					on:click={() => {
+					onclick={() => {
 						let loc = new URL(window.location.href);
 						loc.hash = event.sys.id;
 						share(event.title, loc.toString());
@@ -107,8 +109,9 @@
 					icon={subscribed ? 'notifications_active' : 'notifications_none'}
 					active={subscribed}
 					disabled={hasStarted}
-					props={{ 'aria-label': alt, 'title': alt }}
-					on:click={() => setEventSubscription(event.sys.id, !subscribed)}
+					aria-label={alt}
+					title={alt}
+					onclick={() => setEventSubscription(event.sys.id, !subscribed)}
 				/>
 			{/if}
 		</div>

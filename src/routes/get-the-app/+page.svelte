@@ -1,9 +1,9 @@
 <script>
 	import Layout from 'components/Layout.svelte';
-	import { menuOpen } from 'logic/stores.js';
+	import { menuOpen } from 'logic/stores.svelte';
 
 	let clickCount = 0;
-	const onClick = () => {
+	const onclick = () => {
 		if (++clickCount == 5) {
 			clickCount = 0;
 			menuOpen.set(true);
@@ -15,8 +15,8 @@
 	<div class="container">
 		<img src="/app-example.png" alt="A phone running the 4-H Fair App" />
 		<div class="getTheApp">
-			<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-			<h1 on:click={onClick} on:keydown={onClick}>Get the 4-H Fair App on your phone</h1>
+			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+			<h1 {onclick} onkeydown={onclick}>Get the 4-H Fair App on your phone</h1>
 			<svg
 				width="200px"
 				viewBox="80 80 580 580"

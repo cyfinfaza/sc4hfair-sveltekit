@@ -1,6 +1,6 @@
-<script>
+<script lang="ts">
 	import { browser } from '$app/environment';
-	import { navigating, page } from '$app/stores';
+	import { navigating, page } from '$app/state';
 	import Logo from 'assets/logo.svg?component';
 	import LoadingRing from 'components/LoadingRing.svelte';
 
@@ -52,14 +52,10 @@
 		<div
 			style="position: fixed; top:0.5em; left:0.5em; display: flex; align-items: center; justify-content: center; width: 2em; height 2em;"
 		>
-			<LoadingRing loading={browser && $navigating !== null} />
+			<LoadingRing loading={browser && navigating.type !== null} />
 		</div>
-		<a
-			href="/"
-			aria-label="Main page"
-			data-sveltekit-reload={true}
-			onclick="window.location.href = '/';"
-		>
+		<a href="/" aria-label="Main page" data-sveltekit-reload={true}>
+			<!-- todo: onclick="window.location.href = '/';" -->
 			<Logo />
 		</a>
 		<h3 style="text-align: center;">Welcome to the 4-H Fair! <br /> Select a screen below:</h3>
@@ -67,8 +63,8 @@
 		{#each links as link}
 			<a
 				href={link.path}
+				class:activePage={page.url.pathname == (link.match || link.path)}
 				class="bigLinkButton button"
-				class:activePage={$page.url.pathname == (link.match || link.path)}
 			>
 				<span class="material-icons icon" aria-hidden="true">{link.icon}</span>
 				<div>
@@ -77,9 +73,6 @@
 				</div>
 			</a>
 		{/each}
-	</div>
-	<div>
-		<!-- <LinkButton headerSmall icon="settings" href="/settings" /> -->
 	</div>
 </div>
 

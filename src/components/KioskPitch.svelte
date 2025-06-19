@@ -1,12 +1,19 @@
-<script>
-	export let box = true;
-	export let title = undefined;
+<script lang="ts">
+	let {
+		box = true,
+		title = undefined,
+		children,
+	}: {
+		box?: boolean;
+		title?: string;
+		children?: import('svelte').Snippet;
+	} = $props();
 </script>
 
 <div class:installBox={box} class:center={box}>
 	{#if box}<h2>{title || 'This feature is available in the app.'}</h2>{/if}
-	{#if $$slots.default}
-		<slot />
+	{#if children}
+		{@render children?.()}
 	{:else}
 		<p>Get it on your device for a better experience as you navigate the fair.</p>
 	{/if}

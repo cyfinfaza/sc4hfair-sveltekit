@@ -1,4 +1,4 @@
-import { getClubs } from 'logic/contentful.js';
+import { getClubs } from 'logic/contentful';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load() {

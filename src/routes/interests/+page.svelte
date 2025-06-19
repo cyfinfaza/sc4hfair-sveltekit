@@ -1,24 +1,25 @@
-<script>
+<script lang="ts">
 	import ClubBox from 'components/ClubBox.svelte';
 	import KioskPitch from 'components/KioskPitch.svelte';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import NoOffline from 'components/NoOffline.svelte';
 	import SignInButtons from 'components/SignInButtons.svelte';
-	import { logout, session } from 'logic/auth.js';
-	import { addInterest, initInterests, interestsSlugs, removeInterest } from 'logic/interests.js';
-	import { isOnline, kioskMode } from 'logic/stores.js';
+	import { logout, session } from 'logic/auth';
+	import { addInterest, initInterests, interestsSlugs, removeInterest } from 'logic/interests';
+	import { isOnline, kioskMode } from 'logic/stores.svelte';
 	import { onMount } from 'svelte';
 
-	export let data;
+	let { data } = $props();
 
-	/** @type {typeof data.clubs} */
-	let results = [];
-	$: if ($interestsSlugs)
-		results = data.clubs.filter((club) => $interestsSlugs.indexOf(club.slug) > -1);
+	let results = $derived(
+		$interestsSlugs ? data.clubs.filter((club) => $interestsSlugs.indexOf(club.slug) > -1) : []
+	);
 
-	let reqLoginMessage = false;
-	$: if ($session) reqLoginMessage = false;
+	let reqLoginMessage = $state(false);
+	$effect(() => {
+		if ($session) reqLoginMessage = false;
+	});
 
 	onMount(async () => {
 		initInterests();
@@ -30,9 +31,6 @@
 		if (remove) removeInterest(remove);
 		if (searcher.get('reqLoginMessage') && !$session) reqLoginMessage = true;
 	});
-
-	$: console.log('Interests:', $interestsSlugs);
-	$: console.log('Session:', $session);
 </script>
 
 <Layout title="Interest List">
@@ -52,20 +50,20 @@
 			{#if reqLoginMessage}
 				<p style="color: red;">Sign in to add this item to your interest list.</p>
 			{/if}
-			<p class="horizPanel" style="white-space: nowrap;">
+			<div class="horizPanel margin">
 				{#if $session}
 					<LinkButton
 						label={$isOnline ? 'Add Clubs to List' : 'View clubs'}
 						icon="open_in_new"
 						href="/clubs"
 					/>
-					<LinkButton label="Sign out" icon="logout" on:click={() => logout()} />
+					<LinkButton label="Sign out" icon="logout" onclick={() => logout()} />
 				{:else if !$isOnline}
 					<NoOffline />
 				{:else}
 					<SignInButtons redirect="/interests" />
 				{/if}
-			</p>
+			</div>
 		{/if}
 	</div>
 	<div class="columnCentered">

@@ -1,19 +1,18 @@
 import { writable } from 'svelte/store';
 
-/**
- * @typedef {Object} Session
- * @property {string} sub - user id
- * @property {string} email - attached email address
- * @property {number} exp - expiration timestamp
- */
+export interface Session {
+	sub: string;
+	email: string;
+	exp: number;
+}
+
+type SessionProvider = 'google';
 
 /**
  * Parses the session token from the cookie and returns the session object. Do not use for secure
  * reasons, as it is not signature verified.
- *
- * @returns {Session | null}
  */
-function getSession() {
+function getSession(): Session | null {
 	try {
 		const payload =
 			'document' in globalThis &&
@@ -28,13 +27,10 @@ function getSession() {
 	}
 }
 
+// todo: implement loading state
 export const session = writable(getSession());
 
-/**
- * @param {'google'} provider
- * @param {string} redirect
- */
-export function login(provider, redirect = globalThis?.location.pathname) {
+export function login(provider: SessionProvider, redirect = globalThis?.location.pathname) {
 	location.href = `/api/auth/${provider}-init?redirect=${encodeURIComponent(globalThis.location.origin + redirect)}`;
 }
 

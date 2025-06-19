@@ -220,6 +220,10 @@ hr {
 	flex-wrap: wrap;
 }
 
+p, .margin {
+	margin-block: 1em;
+}
+
 .tags {
 	gap: 4px;
 	display: flex;

@@ -15,11 +15,10 @@
 		collecting it and how it will be used.
 	</p>
 	<p>
-		If you create an account, your name, email address, and profile picture (from the external
-		account you use to create it) will be stored. Accounts are grouped by email address, so
-		different providers that share the same email address will always sign you in to the same
-		account. Additional user provided information may be managed in the
-		<a href="/settings">user settings</a>.
+		If you create an account, your name and email address will be stored. Accounts are grouped by
+		email address, so different providers that share the same email address will always sign you in
+		to the same account. Additional user provided information may be managed in the
+		<a href="/settings">user settings</a> and will be stored with your account.
 	</p>
 	<p>
 		Each page contains a client-side script that keeps track of your navigation through our site. We
@@ -41,10 +40,9 @@
 	<p>
 		We don't share any personally identifying information publicly or with third-parties besides
 		<a href="https://4histops.org">Somerset County 4‑H</a>, except when required to by law. If you
-		use the
-		<a href="/interests">club interest manager</a>, your provided name, email address, phone number,
-		and other relavent information will be shared with leaders of the clubs you marked as interested
-		in.
+		use the <a href="/interests">club interest manager</a>, your provided name, email address, phone
+		number, and other relavent information will be shared with leaders of the clubs you marked as
+		interested in.
 	</p>
 	<p>
 		Our website may link to external sites that are not operated by us. Please be aware that we have
@@ -56,5 +54,5 @@
 		and personal information. If you have any questions about how we handle user data and personal
 		information, feel free to <a href="/feedback">contact us</a>.
 	</p>
-	<p>This policy was last updated and effective as of April 6, 2024.</p>
+	<p>This policy was last updated and effective as of June 18, 2025.</p>
 </Layout>

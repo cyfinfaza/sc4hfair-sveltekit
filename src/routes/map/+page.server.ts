@@ -1,4 +1,4 @@
-import { queryContentful } from 'logic/contentful.js';
+import { queryContentful } from 'logic/contentful';
 
 const query = `{
 	scheduledEventCollection(order: time_ASC, limit: 500, where: {time_gt: "${new Date().toISOString()}"}) {
@@ -22,32 +22,25 @@ const query = `{
 }`;
 
 let loadedData = false,
-	/** @type {{ [tent: string]: { name: string; slug: string }[] }} */
-	clubsByTent = {},
-	/**
-	 * @type {{
-	 * 	[tent: string]: { id: string; title: string; time: string; endTime: string | null }[];
-	 * }}
-	 */
-	eventsByTent = {};
+	clubsByTent: { [tent: string]: { name: string; slug: string }[] } = {},
+	eventsByTent: {
+		[tent: string]: { id: string; title: string; time: string; endTime: string | null }[];
+	} = {};
 
-export async function load() {
+export const load: import('./$types').PageServerLoad = async () => {
 	if (!loadedData) {
-		/**
-		 * @type {{
-		 * 	scheduledEventCollection: {
-		 * 		items: {
-		 * 			sys: { id: string };
-		 * 			title: string;
-		 * 			time: string;
-		 * 			endTime: string | null;
-		 * 			tent: string;
-		 * 		}[];
-		 * 	};
-		 * 	clubCollection: { items: { name: string; slug: string; tent: string }[] };
-		 * }}
-		 */
-		const resp = await queryContentful(query);
+		const resp: {
+			scheduledEventCollection: {
+				items: {
+					sys: { id: string };
+					title: string;
+					time: string;
+					endTime: string | null;
+					tent: string;
+				}[];
+			};
+			clubCollection: { items: { name: string; slug: string; tent: string }[] };
+		} = await queryContentful(query);
 
 		// cleanup the data during build instead of at runtime on every client
 
@@ -69,4 +62,4 @@ export async function load() {
 	}
 
 	return { eventsByTent, clubsByTent };
-}
+};

@@ -1,24 +1,44 @@
-<script>
-	import { createEventDispatcher, onMount, tick } from 'svelte';
+<script lang="ts">
+	import { onMount, tick, type Snippet } from 'svelte';
 	import LinkButton from './LinkButton.svelte';
 
-	const dispatch = createEventDispatcher();
+	/** @type {Props} */
+	let {
+		show = $bindable(false),
+		danger = false,
+		confirmation = true,
+		closeText = undefined,
+		confirmText = 'Confirm',
+		children,
+		buttons,
+		onconfirm,
+		oncancel,
+		onclose,
+	}: {
+		show?: boolean;
+		/** when you're deleting something */
+		danger?: boolean;
+		/** false only shows the close button */
+		confirmation?: boolean;
+		closeText?: string | undefined;
+		confirmText?: string | undefined;
 
-	export let show = false;
-	export let danger = false; // when you're deleting something
-	export let confirmation = true; // false only shows the close button
-	/** @type {string | undefined} */
-	export let closeText = undefined;
-	/** @type {string | undefined} */
-	export let confirmText = 'Confirm';
+		children?: Snippet;
+		buttons?: Snippet;
 
-	/** @type {HTMLDialogElement} */
-	let dialog;
+		onconfirm?: (prevent: () => void) => void;
+		oncancel?: (prevent: () => void) => void;
+		onclose?: (returnValue: string) => void;
+	} = $props();
 
-	$: if (dialog) {
-		if (show) dialog.showModal();
-		else dialog.close();
-	}
+	let dialog: HTMLDialogElement;
+
+	$effect(() => {
+		if (dialog) {
+			if (show) dialog.showModal();
+			else dialog.close();
+		}
+	});
 
 	export const showModal = () => {
 		show = true;
@@ -44,47 +64,52 @@
 	});
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
 <dialog
 	bind:this={dialog}
-	on:close={(e) => {
-		let canceled = false;
-		const cancel = () => {
+	onclose={() => {
+		let prevented = false;
+		const prevent = () => {
 			dialog.showModal();
-			canceled = true;
+			prevented = true;
 		};
+
 		if (dialog.returnValue === 'confirm')
-			dispatch('confirm', { cancel }); // when explicitly confirming
-		else dispatch('cancel', { cancel }); // for any other reason (click out, etc.)
-		if (!canceled) {
+			onconfirm?.(prevent); // when explicitly confirming
+		else oncancel?.(prevent); // for any other reason (click out, etc.)
+		if (!prevented) {
 			console.log('close');
 			show = false;
-			dispatch('close', dialog.returnValue); // always (for resetting content or handling a custom return), DONE LAST
+			onclose?.(dialog.returnValue); // always (for resetting content or handling a custom return), DONE LAST
 		}
 		dialog.returnValue = '';
 	}}
-	on:click|self={() => dialog.close()}
+	onclick={(e) => {
+		if (e.target === dialog) dialog.close();
+	}}
 >
 	<form method="dialog">
 		<div class="content">
-			<slot />
+			{@render children?.()}
 		</div>
 		<div class="horizPanel" style="justify-content: flex-end;">
 			<LinkButton
 				icon="close"
 				label={closeText || (confirmation ? 'Cancel' : 'Close')}
-				props={{ autofocus: '', type: 'submit', formnovalidate: '' }}
+				autofocus={true}
+				type="submit"
+				formnovalidate={true}
 			/>
 			{#if confirmation}
 				<LinkButton
 					icon={danger ? 'delete' : 'check'}
 					label={confirmText}
-					props={{ type: 'submit', value: 'confirm' }}
-					{danger}
-					active={!danger}
+					active={!danger || 'danger'}
+					type="submit"
+					value="confirm"
 				/>
 			{/if}
-			<slot name="buttons" />
+			{@render buttons?.()}
 		</div>
 	</form>
 </dialog>

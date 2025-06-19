@@ -1,23 +1,23 @@
-<script>
+<script lang="ts">
 	import { browser } from '$app/environment';
-	import { navigating } from '$app/stores';
+	import { navigating } from '$app/state';
 	// import FourH from 'assets/4h.svg?component';
 	import Logo from 'assets/logo.svg?component';
 	import LinkButton from 'components/LinkButton.svelte';
 	import LoadingRing from 'components/LoadingRing.svelte';
 	import SponsorSpot from 'components/SponsorSpot.svelte';
 	import ThemeSwitcher from 'components/ThemeSwitcher.svelte';
-	import { isOnline, menuOpen } from 'logic/stores';
+	import { isOnline, menuOpen } from 'logic/stores.svelte';
 	import 'styles/button.css';
 
-	export let offsetContent = true;
+	let { offsetContent = true } = $props();
 </script>
 
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <nav
 	class="invisible"
 	style:height={offsetContent ? null : 0}
-	on:keydown={(e) => {
+	onkeydown={(e) => {
 		if (e.key === 'Escape') {
 			menuOpen.set(false);
 		}
@@ -33,7 +33,7 @@
 				href="/"
 				aria-label="Main page"
 				data-sveltekit-reload={true}
-				onclick="window.location.href = '/';"
+				onclick={() => (window.location.href = '/')}
 			>
 				<Logo />
 			</a>
@@ -41,17 +41,17 @@
 				{#if !$isOnline}
 					<span class="material-icons" aria-hidden="true">cloud_off</span>
 				{/if}
-				<LoadingRing loading={browser && $navigating !== null} />
-				<button type="button" class="menuButton button" on:click={() => ($menuOpen = !$menuOpen)}>
+				<LoadingRing loading={browser && navigating.type !== null} />
+				<button type="button" class="menuButton button" onclick={() => ($menuOpen = !$menuOpen)}>
 					<div class="menuIconContainer">
-						<i class="material-icons" aria-hidden="true" class:inactive={$menuOpen}>menu</i>
-						<i class="material-icons" aria-hidden="true" class:inactive={!$menuOpen}>close</i>
+						<i class:inactive={$menuOpen} class="material-icons" aria-hidden="true">menu</i>
+						<i class:inactive={!$menuOpen} class="material-icons" aria-hidden="true">close</i>
 					</div>
 					<span>Menu</span>
 				</button>
 			</div>
 		</div>
-		<div class="menuArea" id="menuArea" on:focusin={() => ($menuOpen = true)}>
+		<div class="menuArea" id="menuArea" onfocusin={() => ($menuOpen = true)}>
 			<div class="menuGrid">
 				<LinkButton header label="Latest" icon="home" href="/" />
 				<LinkButton header label="Map" icon="map" href="/map" />

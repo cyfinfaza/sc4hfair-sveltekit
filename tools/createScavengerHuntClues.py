@@ -21,9 +21,14 @@ rows = csv.reader(response.text.splitlines(), delimiter=',', quotechar='"')
 
 clues = []
 falseCodes = []
+destination = "info tent"
 
 for row in rows:
 	[appInclude, generatorInclude, hung, clue, hint, tent, moreSpecificLocation, code, descriptor] = row[:10]
+	if code == "destination":
+		destination = tent.strip()
+		continue
+
 	if hung == "TRUE" and appInclude == "FALSE":
 		falseCodes.append(code)
 	elif appInclude == "TRUE":
@@ -33,7 +38,7 @@ for row in rows:
 			"hint": hint,
 		})
 
-output = json.dumps({"year": datetime.now().year, "clues": clues, "falseCodes": falseCodes}, indent='\t')
+output = json.dumps({"year": datetime.now().year, "clues": clues, "falseCodes": falseCodes, "destination": destination}, indent='\t')
 
 with open("../src/data/shClues.json", "w") as f:
 	f.write(output)

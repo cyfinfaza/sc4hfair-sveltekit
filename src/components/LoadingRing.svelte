@@ -1,5 +1,5 @@
-<script>
-	export let loading = true;
+<script lang="ts">
+	let { loading = true } = $props();
 </script>
 
 <svg
@@ -8,8 +8,8 @@
 	xmlns="http://www.w3.org/2000/svg"
 	class="loadingRing"
 	class:loading
-	on:click={() => location.reload()}
-	on:keydown={(e) => {
+	onclick={() => location.reload()}
+	onkeydown={(e) => {
 		if (e.key === 'Enter') location.reload();
 	}}
 	role="button"

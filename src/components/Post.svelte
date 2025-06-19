@@ -1,35 +1,35 @@
-<script context="module">
-	/** @typedef {{ title: string; contentText: string; sys: { id: string; publishedAt: string } }} Post */
-</script>
-
-<script>
-	import { browser } from '$app/environment';
+<script lang="ts">
+	import SvelteMarkdown from '@humanspeak/svelte-markdown';
 	import ContentfulImage from 'components/ContentfulImage.svelte';
 	import DateTime from 'components/DateTime.svelte';
-	import { onMount, tick } from 'svelte';
-	import SvelteMarkdown from 'svelte-markdown';
+	import type { Post } from 'logic/contentful';
 
-	/** @type {Post} */
-	export let data;
-	export let index = 0;
+	let {
+		data,
+		index = 0,
+	}: {
+		data: Post;
+		index?: number;
+	} = $props();
 
-	/** @type {HTMLElement} */
-	let article;
-	onMount(async () => {
-		await tick();
-		if (browser && window.location?.hash === '#' + data.sys?.id) {
+	let article: HTMLElement;
+
+	const scrollIntoView = () => {
+		if (window.location?.hash === '#' + data.sys?.id) {
 			article.scrollIntoView({ behavior: 'instant' });
 		}
-	});
+	};
 </script>
 
-<article bind:this={article} style:animation-delay={index * 0.1 + 's'} id={data.sys?.id}>
+<article
+	bind:this={article}
+	style:animation-delay={index * 0.1 + 's'}
+	id={data.sys?.id}
+	onanimationstart={scrollIntoView}
+	onanimationend={scrollIntoView}
+>
 	<h3 class="title">{data.title}</h3>
-	<SvelteMarkdown
-		source={data.contentText}
-		renderers={{ image: ContentfulImage }}
-		options={{ mangle: false }}
-	/>
+	<SvelteMarkdown source={data.contentText} renderers={{ image: ContentfulImage }} />
 	<DateTime date={data.sys.publishedAt} fromNow withTitle />
 </article>
 

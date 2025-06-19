@@ -1,22 +1,18 @@
-<script>
+<script lang="ts">
 	import { version } from '$app/environment';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
-	import { session, getProfile } from 'logic/auth.js';
+	import { session, getProfile } from 'logic/auth';
 	import { BRANCH } from 'logic/constants';
-	import { isOnline } from 'logic/stores.js';
-	import { onMount } from 'svelte';
+	import { isOnline } from 'logic/stores.svelte';
 
-	let errorText = '',
-		formSubmitted = false,
-		/** @type {string} */
-		name,
-		/** @type {string} */
-		email,
-		/** @type {string} */
-		comment;
+	let errorText = $state(''),
+		formPrefilled = $state(false),
+		formSubmitted = $state(false),
+		name: string = $state(''),
+		email: string = $state(''),
+		comment: string = $state('');
 
-	let formPrefilled = false;
 	async function prefillForm() {
 		if (!formPrefilled) {
 			formPrefilled = true;
@@ -25,7 +21,9 @@
 			if (!email) email = profile?.preferredEmail || $session?.email;
 		}
 	}
-	$: if (!formPrefilled && $session) prefillForm();
+	$effect(() => {
+		if (!formPrefilled && $session) prefillForm();
+	});
 
 	function submit() {
 		if (!comment) {
@@ -43,6 +41,7 @@
 		formData.append('entry.1550740052', comment);
 		formData.append('entry.118251261', `${version}/${BRANCH}`);
 		formData.append('entry.87818926', navigator.userAgent);
+		// todo: if form integration broke send directly to discord?
 
 		fetch(
 			'https://docs.google.com/forms/u/0/d/e/1FAIpQLSeCrjrBodgfkJ1vFL5-fJl3k1RBx01jiF5w5V49Chc6uO_S5w/formResponse',
@@ -60,13 +59,13 @@
 		<p>Thank you for your feedback!</p>
 	{:else}
 		<h2>Name<span>*</span></h2>
-		<p placeholder="Type your name here" contenteditable bind:textContent={name} />
+		<p placeholder="Type your name here" contenteditable bind:textContent={name}></p>
 		<h2>Email</h2>
-		<p placeholder="Type your email here" contenteditable bind:textContent={email} />
+		<p placeholder="Type your email here" contenteditable bind:textContent={email}></p>
 		<h2>Comment<span>*</span></h2>
-		<p placeholder="Type your comment here" contenteditable bind:textContent={comment} />
+		<p placeholder="Type your comment here" contenteditable bind:textContent={comment}></p>
 		<p style:color="red">{errorText}</p>
-		<LinkButton label="Submit" icon="send" on:click={submit} disabled={!$isOnline} />
+		<LinkButton label="Submit" icon="send" onclick={submit} disabled={!$isOnline} />
 	{/if}
 </Layout>
 

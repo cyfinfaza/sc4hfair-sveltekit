@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { browser, dev, version } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import InstallInstructions from 'components/InstallInstructions.svelte';
@@ -10,81 +10,67 @@
 	import NoOffline from 'components/NoOffline.svelte';
 	import NotificationEnableButton from 'components/NotificationEnableButton.svelte';
 	import SignInButtons from 'components/SignInButtons.svelte';
-	import { session, logout } from 'logic/auth.js';
+	import { logout, session } from 'logic/auth';
 	import { BRANCH, BUILD_LOCATION, BUILD_TIME } from 'logic/constants';
 	import { interestsSlugs } from 'logic/interests';
-	import { isStandalone } from 'logic/platform.js';
-	import { isOnline, kioskMenuSize, kioskMode } from 'logic/stores.js';
+	import { isStandalone } from 'logic/platform';
+	import { isOnline, kioskMenuSize, kioskMode } from 'logic/stores.svelte';
 	import { getSubscription, notificationStatus, subscribe, unsubscribe } from 'logic/webpush';
-	import { onMount } from 'svelte';
-	import { writable } from 'svelte/store';
+	import { untrack } from 'svelte';
+	import { writable, type Writable } from 'svelte/store';
 
-	/**
-	 * @typedef {Partial<{
-	 * 	name: string;
-	 * 	preferred_email: string;
-	 * 	phone: string;
-	 * 	graduation: string;
-	 * }>} Form
-	 */
+	type Form = Partial<{
+		name: string;
+		preferred_email: string;
+		phone: string;
+		graduation: number | null;
+	}>;
 
-	/**
-	 * @param {Form} form
-	 * @param {Form} cloudForm
-	 */
-	function isInfoFormDisabled(form, cloudForm) {
-		if (!form || !cloudForm) return true;
-		// only check certain properties
-		console.log('isInfoFormDisabled', form, cloudForm);
-		return /** @type {const} */ (['name', 'preferred_email', 'phone', 'graduation']).every(
-			(key) => form[key] === cloudForm[key]
-		);
-	}
-
-	/** @type {import('svelte/store').Writable<Form>} */
-	const form = writable({
+	const form: Writable<Form> = writable({
 		name: '',
 		preferred_email: '',
 		phone: '',
-		graduation: '',
+		graduation: null,
 	});
-	/** @type {Form} */
-	let cloudForm;
+	let cloudForm: Form = $state({});
 
-	let confirmReset = ''; // modal for confirmation
+	let isInfoFormDisabled = $derived.by(() => {
+		if (!$form || !cloudForm) return true;
+		// only check certain properties
+		return (['name', 'preferred_email', 'phone', 'graduation'] as const).every(
+			(key) => $form[key] === cloudForm[key]
+		);
+	});
 
-	let showingAdditionalBuildInfo = dev,
-		showDebugModal = false,
-		showKioskSizeAdjuster = false;
+	let confirmReset: 'sh' | 'interests' | null = $state(null); // modal for confirmation
+
+	let showingAdditionalBuildInfo = $state(dev),
+		showDebugModal = $state(false),
+		showKioskSizeAdjuster = $state(false);
 
 	function toggleFullscreen() {
-		if (!document.fullscreenElement && !(/** @type {any} */ (document).webkitFullscreenElement)) {
+		if (!document.fullscreenElement && !(document as any).webkitFullscreenElement) {
 			if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
-			else {
-				/** @type {any} */ (document.documentElement).webkitRequestFullscreen();
-			}
-		} else if (document.exitFullscreen) {
-			if (document.fullscreenElement) document.exitFullscreen();
-			else {
-				/** @type {any} */ (document).webkitExitFullscreen();
-			}
+			else (document.documentElement as any).webkitRequestFullscreen();
+		} else {
+			if (document.exitFullscreen) document.exitFullscreen();
+			else (document as any).webkitExitFullscreen();
 		}
 	}
 
-	/** @param {import('logic/auth.js').Session | null} session */
-	async function init(session) {
-		if (session) {
-			const { profile } = await (
-				await fetch('/api/profile', {
-					credentials: 'include',
-				})
-			).json();
-			cloudForm = profile;
-			console.log('new cloudForm', cloudForm);
-			$form = { ...cloudForm };
-		}
-	}
-	$: init($session);
+	$effect(() => {
+		(async () => {
+			if ($session) {
+				const { profile } = await (
+					await fetch('/api/profile', {
+						credentials: 'include',
+					})
+				).json();
+				cloudForm = profile;
+				$form = { ...untrack(() => cloudForm) };
+			}
+		})();
+	});
 </script>
 
 <Layout title="Settings">
@@ -96,7 +82,7 @@
 		{#if $session}
 			<p>You are signed in as <strong>{$session?.email}</strong></p>
 			<p>
-				<LinkButton label="Sign out" icon="logout" on:click={() => logout()} />
+				<LinkButton label="Sign out" icon="logout" onclick={() => logout()} />
 			</p>
 			<h2>
 				Additional information <small>(optional)</small>
@@ -120,7 +106,7 @@
 			<LinkButton
 				label="Save"
 				icon="save"
-				on:click={async () => {
+				onclick={async () => {
 					const res = await fetch('/api/profile', {
 						method: 'PATCH',
 						headers: { 'Content-Type': 'application/json' },
@@ -129,14 +115,14 @@
 					});
 					if (res.ok) {
 						const { profile } = await res.json();
-						cloudForm = profile;
+						cloudForm = { ...profile };
 					} else {
 						const error = await res.json();
 						alert(error.message || 'Failed to save profile');
 					}
 				}}
-				disabled={isInfoFormDisabled($form, cloudForm) || !$isOnline}
-				alert={!isInfoFormDisabled($form, cloudForm)}
+				disabled={isInfoFormDisabled || !$isOnline}
+				alert={!isInfoFormDisabled}
 			/>
 		{:else if !$isOnline}
 			<NoOffline />
@@ -159,13 +145,13 @@
 		<p class="horizPanel2">
 			<LinkButton
 				label="Reset Scavenger Hunt"
-				on:click={() => (confirmReset = 'sh')}
+				onclick={() => (confirmReset = 'sh')}
 				icon="restart_alt"
 			/>
 			{#if $session}
 				<LinkButton
 					label="Clear Interest List"
-					on:click={() => (confirmReset = 'interests')}
+					onclick={() => (confirmReset = 'interests')}
 					icon="clear_all"
 				/>
 			{/if}
@@ -173,8 +159,8 @@
 		<Modal
 			show={!!confirmReset}
 			danger
-			on:close={() => (confirmReset = '')}
-			on:confirm={async () => {
+			onclose={() => (confirmReset = null)}
+			onconfirm={async () => {
 				switch (confirmReset) {
 					case 'sh':
 						for (let i = 0; i < localStorage.length; i++) {
@@ -224,12 +210,12 @@
 		<LinkButton label="Privacy Policy" href="/privacy-policy" icon="policy" />
 	</p>
 	<div style:opacity={0.5}>
-		<!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
+		<!-- svelte-ignore a11y_no_noninteractive_element_to_interactive_role -->
 		<code
 			role="button"
 			tabindex="0"
-			on:click={() => (showingAdditionalBuildInfo = !showingAdditionalBuildInfo)}
-			on:keydown={(e) =>
+			onclick={() => (showingAdditionalBuildInfo = !showingAdditionalBuildInfo)}
+			onkeydown={(e) =>
 				e.key === 'Enter' && (showingAdditionalBuildInfo = !showingAdditionalBuildInfo)}
 			style:cursor="pointer"
 		>
@@ -240,11 +226,11 @@
 			<br /><code>{BUILD_TIME}</code>
 			<br /><code>{BUILD_LOCATION}</code>
 			<div class="horizPanel2">
-				<LinkButton icon="engineering" label="Debug" on:click={() => (showDebugModal = true)} />
+				<LinkButton icon="engineering" label="Debug" onclick={() => (showDebugModal = true)} />
 				<LinkButton
 					icon="settings_suggest"
 					label="Unregister service worker"
-					on:click={() => {
+					onclick={() => {
 						navigator.serviceWorker.getRegistrations().then(function (registrations) {
 							for (let registration of registrations) {
 								registration.unregister();
@@ -255,7 +241,7 @@
 				<LinkButton
 					icon="update"
 					label="Check for update (sw)"
-					on:click={async () => {
+					onclick={async () => {
 						const swRegistration = await navigator.serviceWorker.getRegistration();
 						swRegistration?.update();
 					}}
@@ -263,7 +249,7 @@
 				<LinkButton
 					icon="cleaning_services"
 					label="Remove localStorage item"
-					on:click={() => {
+					onclick={() => {
 						let key = prompt('Key:');
 						if (key) localStorage.removeItem(key);
 					}}
@@ -271,7 +257,7 @@
 				<LinkButton
 					icon="autorenew"
 					label="Clear caches"
-					on:click={() => {
+					onclick={() => {
 						window.caches.keys().then(function (keys) {
 							for (let key of keys) {
 								window.caches.delete(key);
@@ -282,19 +268,19 @@
 				<LinkButton
 					icon="fullscreen"
 					label="Toggle FS"
-					on:click={() => {
+					onclick={() => {
 						toggleFullscreen();
 					}}
 				/>
 				{#if $kioskMode}
-					<LinkButton icon="logout" label="Exit Kiosk" on:click={() => ($kioskMode = false)} />
+					<LinkButton icon="logout" label="Exit Kiosk" onclick={() => ($kioskMode = false)} />
 					<LinkButton
 						icon="expand_content"
 						label="Kiosk Menu Size"
-						on:click={() => (showKioskSizeAdjuster = true)}
+						onclick={() => (showKioskSizeAdjuster = true)}
 					/>
 				{:else}
-					<LinkButton icon="tv" label="Enter Kiosk" on:click={() => ($kioskMode = true)} />
+					<LinkButton icon="tv" label="Enter Kiosk" onclick={() => ($kioskMode = true)} />
 				{/if}
 			</div>
 			<hr />
@@ -302,7 +288,7 @@
 				<LinkButton
 					icon="notifications_active"
 					label="Test notification"
-					on:click={async () => {
+					onclick={async () => {
 						new window.Notification('Fair Update', {
 							body: 'The fair has been closed due to test weather.',
 						});
@@ -311,7 +297,7 @@
 				<LinkButton
 					icon="notifications"
 					label="Get notification subscription"
-					on:click={async () => {
+					onclick={async () => {
 						console.log('getting subscription');
 						const sub = await getSubscription();
 						alert(JSON.stringify(sub));
@@ -322,15 +308,15 @@
 				<LinkButton
 					icon="notification_add"
 					label="Subscribe to notifications"
-					on:click={async () => {
-						console.log((await subscribe()).registered);
+					onclick={async () => {
+						alert((await subscribe()).registered);
 					}}
 				/>
 				<LinkButton
 					icon="notifications_off"
 					label="Unubscribe from notifications"
-					on:click={async () => {
-						console.log(!(await unsubscribe()).registered);
+					onclick={async () => {
+						alert(!(await unsubscribe()).registered);
 					}}
 				/>
 			</div>
@@ -342,35 +328,48 @@
 	{#if showDebugModal && typeof navigator !== 'undefined'}
 		{#key showDebugModal}
 			<table>
-				<tr>
-					<td>UA</td>
-					<td>{navigator.userAgent}</td>
-				</tr>
-				<tr>
-					<td>SW</td>
-					<td>
-						{#await navigator.serviceWorker?.getRegistration()}
-							...
-						{:then reg}
-							active: {reg?.active?.state}<br />
-							waiting: {reg?.waiting?.state}<br />
-							installing: {reg?.installing?.state}<br />
-						{:catch error}
-							{error.message}
-						{/await}
-					</td>
-				</tr>
-				<tr>
-					<td>Notif</td>
-					<td>
-						permission: {Notification.permission}<br />
-						subscriptionId: {$notificationStatus.subscriptionId}<br />
-					</td>
-				</tr>
-				<tr>
-					<td>Origin</td>
-					<td>{location?.origin}</td>
-				</tr>
+				<tbody>
+					<tr>
+						<td>UA</td>
+						<td>{navigator.userAgent}</td>
+					</tr>
+					<tr>
+						<td>SW</td>
+						<td>
+							{#await navigator.serviceWorker?.getRegistration()}
+								...
+							{:then reg}
+								active: {reg?.active?.state}<br />
+								waiting: {reg?.waiting?.state}<br />
+								installing: {reg?.installing?.state}<br />
+							{:catch error}
+								{error.message}
+							{/await}
+						</td>
+					</tr>
+					<tr>
+						<td>Notif</td>
+						<td>
+							permission: {Notification.permission}<br />
+							subscriptionId: {$notificationStatus.subscriptionId}<br />
+						</td>
+					</tr>
+					<tr>
+						<td>Auth</td>
+						<td>
+							{#if $session}
+								id: {$session.sub}<br />
+								exp: {new Date($session.exp * 1000).toISOString()}<br />
+							{:else}
+								not signed in
+							{/if}
+						</td></tr
+					>
+					<tr>
+						<td>Origin</td>
+						<td>{location?.origin}</td>
+					</tr>
+				</tbody>
 			</table>
 		{/key}
 	{/if}

@@ -1,22 +1,19 @@
-<script>
+<script lang="ts">
 	import LinkButton from 'components/LinkButton.svelte';
-	import { isOnline } from 'logic/stores.js';
-	import { notificationStatus, subscribe, unsubscribe } from 'logic/webpush.js';
+	import { isOnline } from 'logic/stores.svelte';
+	import { notificationStatus, subscribe, unsubscribe } from 'logic/webpush';
 
 	// initial state
-	/**
-	 * overrides button text, used while an operation (like fetch) is happening
-	 *
-	 * @type {string | null}
-	 */
-	let loading = 'Loading notification status…';
+	/** overrides button text, used while an operation (like fetch) is happening */
+	let loading: string | null = $state('Loading notification status…');
 
-	$: if ($notificationStatus.ready !== false) loading = null;
+	$effect(() => {
+		if ($notificationStatus.ready !== false) loading = null;
+	});
 
-	let active;
-	$: active = $notificationStatus?.available && $notificationStatus?.registered;
+	let active = $derived($notificationStatus?.available && $notificationStatus?.registered);
 
-	export const onClick = async () => {
+	export const onclick = async () => {
 		if (loading !== null || !$notificationStatus?.available) return;
 		try {
 			// await updateNotificationStatus();
@@ -35,7 +32,7 @@
 				message: data.message,
 				subscriptionId: data.subscriptionId,
 			}));
-		} catch (/** @type {any} */ e) {
+		} catch (e: any) {
 			notificationStatus.update((oldStatus) => ({ ...oldStatus, message: e?.message })); // we failed, revert with message
 		}
 		loading = null;
@@ -53,9 +50,8 @@
 			:	'Notifications unavailable')}
 		icon={active ? 'notifications' : 'notifications_off'}
 		disabled={loading !== null || !$notificationStatus?.available || !$isOnline}
-		{active}
-		on:click={onClick}
-		props={{ style: active ? null : 'background: var(--yellow); color: var(--yellow-text);' }}
+		active={active || 'warning'}
+		{onclick}
 	/>
 	{#if $notificationStatus?.message}
 		<p style="color: red; font-size: 0.9rem;">

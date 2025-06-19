@@ -33,7 +33,7 @@ def update_profile():
 			value = data[field]
 			if value is None or (isinstance(value, str) and not value.strip()):
 				continue
-			if (field == 'graduation') and (not isinstance(value, str) or not value.isdigit()) or field == 'email' and (not isinstance(value, str) or '@' not in value):
+			if (field == 'graduation') and (not isinstance(value, int)) or field == 'email' and ('@' not in value):
 				return error_json(f'Invalid {field}')
 			updates[field] = value
 

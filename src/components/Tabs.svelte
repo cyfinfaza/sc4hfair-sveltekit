@@ -1,20 +1,27 @@
-<script>
-	/** @type {{ key: string; enabled: boolean; name: string }[]} */
-	export let tabs;
+<script lang="ts" generics="const T extends string">
+	import type { Snippet } from 'svelte';
 
-	let actualTabs = tabs.filter((tab) => tab.enabled ?? true);
-	let selectedTab = 0;
+	let {
+		tabs,
+		...children
+	}: {
+		tabs: { key: T; enabled?: boolean; name: string }[];
+	} & { [key in T]: Snippet } = $props();
+
+	let actualTabs = $derived(tabs.filter((tab) => tab.enabled ?? true));
+	let selectedTab = $state(0);
+	let snippet = $derived(children?.[actualTabs[selectedTab]?.key as keyof typeof children]);
 </script>
 
 {#if actualTabs.length > 0}
 	<div class="container">
-		{#each tabs as { name: tab }, i}
-			<button class="tab" class:selected={i === selectedTab} on:click={() => (selectedTab = i)}>
+		{#each actualTabs as { name: tab }, i}
+			<button class:selected={i === selectedTab} class="tab" onclick={() => (selectedTab = i)}>
 				{tab}
 			</button>
 		{/each}
 	</div>
-	<slot key={tabs[selectedTab]?.key} />
+	{@render snippet()}
 {/if}
 
 <style lang="scss">

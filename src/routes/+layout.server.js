@@ -1,4 +1,4 @@
-import { getSponsors } from 'logic/contentful.js';
+import { getSponsors } from 'logic/contentful';
 
 export async function load() {
 	const resp = await getSponsors();

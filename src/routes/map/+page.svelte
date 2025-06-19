@@ -1,17 +1,17 @@
-<script>
+<script lang="ts">
 	import { goto } from '$app/navigation';
 	import DateTime from 'components/DateTime.svelte';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
 	import Tabs from 'components/Tabs.svelte';
-	import { eventIsFuture } from 'logic/scheduling.js';
+	import type { Polygon } from 'geojson';
+	import { eventIsFuture } from 'logic/scheduling';
 	import mapboxgl from 'mapbox-gl';
 	import 'mapbox-gl/dist/mapbox-gl.css';
 	import polylabel from 'polylabel';
 	import { onMount, tick } from 'svelte';
 
-	/** @type {import('./$types').PageData} */
-	export let data;
+	let { data } = $props();
 
 	// the source/layer that contains our features
 	const style = 'mapbox://styles/cyfinfaza/clzirddmw003s01pcgelxbpx9',
@@ -28,65 +28,70 @@
 		fairZoom = 17;
 
 	// mapbox
-	let /** @type {HTMLDivElement} */ mapContainer,
-		/** @type {mapboxgl.Map} */ map,
-		isMapLoaded = false;
+	let mapContainer: HTMLDivElement,
+		map: mapboxgl.Map,
+		isMapLoaded = $state(false);
 
 	// user locating
-	let /** @type {mapboxgl.GeolocateControl} */ geolocate,
-		trackUserLocationActive = false,
-		trackUserLocationRecenter = false;
+	let geolocate: mapboxgl.GeolocateControl,
+		trackUserLocationActive = $state(false),
+		trackUserLocationRecenter = $state(false);
 
 	// feature popup info
-	let /** @type {mapboxgl.GeoJSONFeature | null} */ selectedFeature = null,
-		/** @type {mapboxgl.GeoJSONFeature | null} */ previouslySelectedFeature = null,
-		filteredEventData = null,
-		filteredClubData = null;
+	let selectedFeature: mapboxgl.GeoJSONFeature | null = $state(null),
+		previouslySelectedFeature: mapboxgl.GeoJSONFeature | null = $state(null),
+		filteredEventData: (typeof data.eventsByTent)[string] | null = $state(null),
+		filteredClubData: (typeof data.clubsByTent)[string] | null = $state(null);
 
-	let easterEggCount = 0;
+	let easterEggCount = $state(0);
 
-	$: try {
-		if (isMapLoaded) {
-			if (previouslySelectedFeature && previouslySelectedFeature.id) {
-				map.setFeatureState(
-					{
-						source: previouslySelectedFeature.source,
-						id: previouslySelectedFeature.id,
-						sourceLayer: previouslySelectedFeature.sourceLayer,
-					},
-					{
-						click: false,
-					}
-				);
+	$effect(() => {
+		try {
+			if (isMapLoaded) {
+				if (
+					previouslySelectedFeature &&
+					previouslySelectedFeature.id &&
+					previouslySelectedFeature.source
+				) {
+					map.setFeatureState(
+						{
+							id: previouslySelectedFeature.id,
+							source: previouslySelectedFeature.source,
+							sourceLayer: previouslySelectedFeature.sourceLayer,
+						},
+						{
+							click: false,
+						}
+					);
+				}
+				if (selectedFeature && selectedFeature.id && selectedFeature.source) {
+					map.setFeatureState(
+						{
+							id: selectedFeature.id,
+							source: selectedFeature.source,
+							sourceLayer: selectedFeature.sourceLayer,
+						},
+						{
+							click: true,
+						}
+					);
+					previouslySelectedFeature = selectedFeature;
+					// todo: center on the feature?
+
+					let slug = selectedFeature?.properties?.slug;
+					filteredEventData = data.eventsByTent[slug]?.filter((event) => eventIsFuture(event));
+					filteredClubData = data.clubsByTent[slug];
+				} else {
+					previouslySelectedFeature = null;
+				}
 			}
-			if (selectedFeature && selectedFeature.id) {
-				map.setFeatureState(
-					{
-						source: selectedFeature.source,
-						id: selectedFeature.id,
-						sourceLayer: selectedFeature.sourceLayer,
-					},
-					{
-						click: true,
-					}
-				);
-				previouslySelectedFeature = selectedFeature;
-
-				let slug = selectedFeature?.properties?.slug;
-				console.log(data);
-				filteredEventData = data.eventsByTent[slug]?.filter((event) => eventIsFuture(event));
-				filteredClubData = data.clubsByTent[slug];
-			} else {
-				previouslySelectedFeature = null;
-			}
+		} catch (e) {
+			console.error(e);
+			if (confirm('Unhandled error while selecting feature, reload?')) location?.reload();
 		}
-	} catch (e) {
-		console.error(e);
-		if (confirm('Unhandled error while selecting feature, reload?')) location?.reload();
-	}
+	});
 
-	/** @param {string} slug */
-	async function selectFeature(slug) {
+	async function selectFeature(slug: string) {
 		let zoom = map.getZoom();
 		map.setZoom(13);
 		await new Promise((resolve) => setTimeout(resolve, 200));
@@ -102,16 +107,10 @@
 
 			if ('coordinates' in element.geometry) {
 				console.log(element, element.geometry, element.geometry.type, element.geometry.coordinates);
-				console.log(JSON.stringify(element.geometry.coordinates));
 				map.flyTo({
-					center: /** @type {[number, number]} */ (
-						typeof element.geometry.coordinates[0] === 'number' ?
-							element.geometry.coordinates
-						:	polylabel(
-								/** @type {import('geojson').Polygon} */ (element.geometry).coordinates,
-								0.0001
-							)
-					), // use the center of the feature
+					center: (typeof element.geometry.coordinates[0] === 'number' ?
+						element.geometry.coordinates
+					:	polylabel((element.geometry as Polygon).coordinates, 0.0001)) as [number, number], // use the center of the feature
 					zoom: 18.5,
 					speed: 2.7, // this is done once on page load so make it go fast
 				});
@@ -129,7 +128,7 @@
 	}
 
 	onMount(() => {
-		if (map) return; // Initialize map only once
+		if (map) return; // initialize map only once
 
 		let toLocate = new URLSearchParams(window.location.search).get('locate');
 
@@ -152,7 +151,7 @@
 
 		map.on('click', [sourceLayerId, 'Labels'], (e) => {
 			const feature = e.features?.[0] || null;
-			console.log(selectedFeature, feature);
+			console.log('click', selectedFeature, feature);
 			selectedFeature = feature;
 		});
 
@@ -200,7 +199,7 @@
 		<LinkButton
 			label="Center on fair"
 			icon="place"
-			on:click={() => {
+			onclick={() => {
 				easterEggCount++;
 				map.flyTo({
 					center: [fairLng, fairLat],
@@ -217,18 +216,18 @@
 			icon={trackUserLocationRecenter ? 'gps_not_fixed'
 			: trackUserLocationActive ? 'gps_off'
 			: 'gps_fixed'}
-			on:click={() => {
+			onclick={() => {
 				geolocate.trigger();
 			}}
 			lightFont
 			acrylic
 		/>
 	</div>
-	<div class="mapContainer" class:easterEgg={easterEggCount >= 50} bind:this={mapContainer} />
+	<div class:easterEgg={easterEggCount >= 50} class="mapContainer" bind:this={mapContainer}></div>
 	<div class="bottomRight">
 		<LinkButton
 			icon="refresh"
-			on:click={async () => {
+			onclick={async () => {
 				if (await caches.has('offline-cache-v2')) {
 					const cache = await caches.open('offline-cache-v2');
 					await Promise.all(
@@ -247,23 +246,24 @@
 		/>
 	</div>
 	<div
-		class="tentInfo"
 		class:hidden={!selectedFeature}
 		aria-hidden={!selectedFeature}
 		class:short={!filteredEventData?.length && !filteredClubData?.length}
+		class="tentInfo"
 	>
 		<div>
 			<h2>
 				{selectedFeature?.properties?.name || selectedFeature?.properties?.slug || '-'}
 				<div>
 					{#if selectedFeature?.properties?.slug === 'food'}
-						<LinkButton label="Menu" icon="fastfood" on:click={() => goto('/food')} acrylic />
+						<LinkButton label="Menu" icon="fastfood" onclick={() => goto('/food')} acrylic />
 					{/if}
 					<LinkButton
 						label="Close"
 						icon="close"
-						on:click={() => {
+						onclick={() => {
 							selectedFeature = null;
+							(document.activeElement as HTMLElement)?.blur?.(); // allow aria-hidden to work
 						}}
 						acrylic
 					/>
@@ -272,12 +272,11 @@
 			{#key selectedFeature}
 				<Tabs
 					tabs={[
-						{ key: 'events', enabled: filteredEventData?.length > 0, name: 'Events' },
-						{ key: 'clubs', enabled: filteredClubData?.length > 0, name: 'Clubs' },
+						{ key: 'events', enabled: (filteredEventData?.length || 0) > 0, name: 'Events' },
+						{ key: 'clubs', enabled: (filteredClubData?.length || 0) > 0, name: 'Clubs' },
 					]}
-					let:key
 				>
-					{#if key === 'events'}
+					{#snippet events()}
 						{#if filteredEventData?.length}
 							<ul>
 								{#each filteredEventData as event (event.id)}
@@ -290,7 +289,8 @@
 						{:else}
 							<p>No future events found</p>
 						{/if}
-					{:else if key === 'clubs'}
+					{/snippet}
+					{#snippet clubs()}
 						{#if filteredClubData?.length}
 							<ul>
 								{#each filteredClubData as club (club.slug)}
@@ -302,7 +302,7 @@
 						{:else}
 							<p>No clubs found</p>
 						{/if}
-					{/if}
+					{/snippet}
 				</Tabs>
 			{/key}
 		</div>

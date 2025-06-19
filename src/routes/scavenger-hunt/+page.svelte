@@ -1,4 +1,15 @@
-<script>
+<script module lang="ts">
+	export interface Context {
+		atIndex: import('svelte/store').Writable<number>;
+		hintsUsed: import('svelte/store').Writable<string[]>;
+		addHintUsed: (code: string) => void;
+		clues: { code: string; clue: string; hint: string }[];
+		startScanning: () => void;
+		destination: string;
+	}
+</script>
+
+<script lang="ts">
 	// If you look at the source code to cheat and get to the end, then congrats
 	// I'm not going to try and do a fancy thing or whatever to prevent it
 	// You win, come join the 4-H Computer Club
@@ -13,48 +24,50 @@
 	import { SCAVENGER_HUNT_CODE, SCAVENGER_HUNT_HINTS } from 'logic/constants';
 	import { getPlatform, isStandalone } from 'logic/platform';
 	import { pvtUpdate } from 'logic/pvt';
-	import { kioskMode, pushPoprxUpdate } from 'logic/stores';
+	import { kioskMode, pushPoprxUpdate } from 'logic/stores.svelte';
 	import QrScanner from 'qr-scanner';
 	import { onMount, setContext, tick } from 'svelte';
-	import { writable } from 'svelte/store';
+	import { writable, type Writable } from 'svelte/store';
 	import ClueBox from './ClueBox.svelte';
 	import InstallInstructions from 'components/InstallInstructions.svelte';
 
-	/** @typedef {{ code: string; clue: string; hint: string }} Clue */
+	type Clue = { code: string; clue: string; hint: string };
 
-	const clues = /** @type {Clue[]} */ (_clueData.clues);
-	const falseCodes = /** @type {string[]} */ (_clueData.falseCodes);
-	const year = _clueData.year;
+	const clues: Clue[] = _clueData.clues;
+	const falseCodes: string[] = _clueData.falseCodes;
+	const year: number = _clueData.year;
+	const destination: string = _clueData.destination || 'info tent';
 
 	const currentYear = new Date().getFullYear();
 	const enabled = clues.length && year === currentYear && !$kioskMode;
 
-	/** @param {string | null} code */
-	const getIndexFromCode = (code) => clues.findIndex((clue) => clue.code === code);
-	/** @param {string | null} code */
-	const getOffsetIndexFromCode = (code) => getIndexFromCode(code) + 1;
+	const getIndexFromCode = (code: string | null) => clues.findIndex((clue) => clue.code === code);
+	const getOffsetIndexFromCode = (code: string | null) => getIndexFromCode(code) + 1;
 
 	let atIndex = writable(0);
-	$: if ($atIndex > 0) localStorage.setItem(SCAVENGER_HUNT_CODE, clues[$atIndex - 1].code);
-
-	let hintsUsed = writable([]);
-	$: if ($hintsUsed.length) localStorage.setItem(SCAVENGER_HUNT_HINTS, JSON.stringify($hintsUsed));
-
-	setContext('sh', {
-		atIndex,
-		hintsUsed,
-		addHintUsed: (/** @type {string} */ code) => ($hintsUsed = [...$hintsUsed, code]),
-		clues,
-		startScanning: () => (scanning = true),
+	$effect(() => {
+		if ($atIndex > 0) localStorage.setItem(SCAVENGER_HUNT_CODE, clues[$atIndex - 1].code);
 	});
 
-	/** @type {HTMLVideoElement} */
-	let videoElement,
-		/** @type {QrScanner} */
-		qrScanner,
-		compatible = false,
-		scanning = false,
-		scannerMessage = '';
+	let hintsUsed: Writable<string[]> = writable([]);
+	$effect(() => {
+		if ($hintsUsed.length) localStorage.setItem(SCAVENGER_HUNT_HINTS, JSON.stringify($hintsUsed));
+	});
+
+	setContext<Context>('sh', {
+		atIndex,
+		hintsUsed,
+		addHintUsed: (code: string) => ($hintsUsed = [...$hintsUsed, code]),
+		clues,
+		startScanning: () => (scanning = true),
+		destination,
+	});
+
+	let videoElement: HTMLVideoElement,
+		qrScanner: QrScanner,
+		compatible = $state(false),
+		scanning = $state(false),
+		scannerMessage = $state('');
 
 	onMount(async () => {
 		if (!enabled) return;
@@ -106,37 +119,35 @@
 	onMount(() => {
 		if (!browser || !enabled) return;
 		let removeCallback = () => {};
-		window.navigator.permissions
-			.query({ name: /** @type {any} */ ('camera') })
-			.then((permissionStatus) => {
-				// let the library figure it out the first time
-				const handleChange = () => {
-					console.log(`camera permission state has changed to ${permissionStatus.state}`);
-					compatible = permissionStatus.state === 'granted';
-				};
-				permissionStatus.addEventListener('change', handleChange);
-				removeCallback = () => permissionStatus.removeEventListener('change', handleChange);
-			});
+		window.navigator.permissions.query({ name: 'camera' }).then((permissionStatus) => {
+			// let the library figure it out the first time
+			const handleChange = () => {
+				console.log(`camera permission state has changed to ${permissionStatus.state}`);
+				compatible = permissionStatus.state === 'granted';
+			};
+			permissionStatus.addEventListener('change', handleChange);
+			removeCallback = () => permissionStatus.removeEventListener('change', handleChange);
+		});
 		return () => removeCallback();
 	});
 
-	$: if (compatible) {
-		if (scanning) {
-			qrScanner.start().catch((e) => {
-				console.error(e);
-				compatible = false;
-			});
-		} else {
-			scannerMessage = '';
-			qrScanner.stop();
+	$effect(() => {
+		if (compatible) {
+			if (scanning) {
+				qrScanner.start().catch((e) => {
+					console.error(e);
+					compatible = false;
+				});
+			} else {
+				scannerMessage = '';
+				qrScanner.stop();
+			}
 		}
-	}
+	});
 
-	/** @type {ReturnType<typeof setTimeout>} */
-	let scannerMessageTimeout;
+	let scannerMessageTimeout: ReturnType<typeof setTimeout> | undefined;
 
-	/** @param {string | null} code */
-	function checkCode(code, fromUrl = false) {
+	function checkCode(code: string | null, fromUrl = false) {
 		let index = getIndexFromCode(code);
 		console.table({ fromUrl, $atIndex });
 		const clueIsInFalseList = code && falseCodes.includes(code);
@@ -173,8 +184,8 @@
 		});
 	}
 
-	let showEnterManuallyPrompt = false,
-		manualCode = '';
+	let showEnterManuallyPrompt = $state(false),
+		manualCode = $state('');
 </script>
 
 <Layout title="Scavenger Hunt">
@@ -205,77 +216,6 @@
 			You can reset the scavenger hunt in <a href="/settings">settings</a>, but only one prize may
 			be claimed per group.
 		</p>
-
-		<!-- this div needs to always be rendered so the qr library doesn't die -->
-		<div
-			class="scanner"
-			class:hidden={!scanning || !compatible}
-			aria-hidden={!scanning || !compatible}
-		>
-			<div>
-				<!-- svelte-ignore a11y-media-has-caption -->
-				<video bind:this={videoElement} />
-				<div class="scannerOverlay showSquare">
-					<div class="scannerButtons">
-						<LinkButton
-							label="Enter manually"
-							icon="keyboard"
-							on:click={() => (showEnterManuallyPrompt = true)}
-							acrylic
-						/>
-						<LinkButton label="Close" icon="close" on:click={() => (scanning = false)} acrylic />
-					</div>
-					<p class="scannerMessage">
-						{scannerMessage ||
-							"Try changing the angle to remove any glare. If the code won't scan, click the top left button to manually enter the code."}
-					</p>
-				</div>
-			</div>
-		</div>
-		<!-- copy of scanner box for uncompatible devices -->
-		<div
-			class="scanner fallback"
-			class:hidden={!scanning || compatible}
-			aria-hidden={!scanning || compatible}
-		>
-			<div class="scannerOverlay">
-				<LinkButton label="Close" icon="close" on:click={() => (scanning = false)} acrylic />
-				<div class="scannerMessage">
-					<p>{scannerMessage}</p>
-					{#if getPlatform() === 'ios' && !$isStandalone}
-						<p>To use the QR scanner, you may need to install this as an app.</p>
-						<small>
-							Note: Your progress might be reset. If you have already completed multiple clues,
-							please see the 4-H Computers booth for assistance.
-						</small>
-						<InstallInstructions />
-					{:else}
-						<p>
-							The scavenger hunt recommends a QR scanner. Check that your browser is allowing the
-							app camera access to use the built-in one, or use an external scanner.
-						</p>
-					{/if}
-					<LinkButton
-						label="Retry permission"
-						icon="flip_camera_ios"
-						on:click={async () => {
-							try {
-								compatible = typeof navigator === 'object' && (await QrScanner.hasCamera());
-								window.location.reload();
-							} catch (_) {
-								compatible = false;
-							}
-						}}
-					/>
-					<p>Alternatively, you can manually enter the code:</p>
-					<LinkButton
-						label="Enter manually"
-						icon="keyboard"
-						on:click={() => (showEnterManuallyPrompt = true)}
-					/>
-				</div>
-			</div>
-		</div>
 	{:else}
 		<div class="center">
 			<h1>{currentYear} Scavenger Hunt</h1>
@@ -292,21 +232,92 @@
 			{/if}
 		</div>
 	{/if}
+
+	<!-- this div needs to always be rendered so the qr library doesn't die -->
+	<div
+		class:hidden={!scanning || !compatible}
+		aria-hidden={!scanning || !compatible}
+		class="scanner"
+	>
+		<div>
+			<!-- svelte-ignore a11y_media_has_caption -->
+			<video bind:this={videoElement}></video>
+			<div class="scannerOverlay showSquare">
+				<div class="scannerButtons">
+					<LinkButton
+						label="Enter manually"
+						icon="keyboard"
+						onclick={() => (showEnterManuallyPrompt = true)}
+						acrylic
+					/>
+					<LinkButton label="Close" icon="close" onclick={() => (scanning = false)} acrylic />
+				</div>
+				<p class="scannerMessage">
+					{scannerMessage ||
+						"Try changing the angle to remove any glare. If the code won't scan, click the top left button to manually enter the code."}
+				</p>
+			</div>
+		</div>
+	</div>
+	<!-- copy of scanner box for uncompatible devices -->
+	<div
+		class="scanner fallback"
+		class:hidden={!scanning || compatible}
+		aria-hidden={!scanning || compatible}
+	>
+		<div class="scannerOverlay">
+			<LinkButton label="Close" icon="close" onclick={() => (scanning = false)} acrylic />
+			<div class="scannerMessage">
+				<p>{scannerMessage}</p>
+				{#if getPlatform() === 'ios' && !$isStandalone}
+					<p>To use the QR scanner, you may need to install this as an app.</p>
+					<small>
+						Note: Your progress might be reset. If you have already completed multiple clues, please
+						see the 4-H Computers booth for assistance.
+					</small>
+					<InstallInstructions />
+				{:else}
+					<p>
+						The scavenger hunt recommends a QR scanner. Check that your browser is allowing the app
+						camera access to use the built-in one, or use an external scanner.
+					</p>
+				{/if}
+				<LinkButton
+					label="Retry permission"
+					icon="flip_camera_ios"
+					onclick={async () => {
+						try {
+							compatible = typeof navigator === 'object' && (await QrScanner.hasCamera());
+							window.location.reload();
+						} catch (_) {
+							compatible = false;
+						}
+					}}
+				/>
+				<p>Alternatively, you can manually enter the code:</p>
+				<LinkButton
+					label="Enter manually"
+					icon="keyboard"
+					onclick={() => (showEnterManuallyPrompt = true)}
+				/>
+			</div>
+		</div>
+	</div>
 </Layout>
 
 <Modal
 	show={showEnterManuallyPrompt}
-	on:close={() => {
+	onclose={() => {
 		showEnterManuallyPrompt = false;
 		manualCode = '';
 	}}
-	on:confirm={() => {
+	onconfirm={() => {
 		checkCode(manualCode?.toLowerCase(), false);
 	}}
 >
 	<p>Enter the 8 character code found in the bottom left corner of the sheet.</p>
 	<!-- todo: little diagram showing where the code is? -->
-	<!-- svelte-ignore a11y-autofocus -->
+	<!-- svelte-ignore a11y_autofocus -->
 	<input
 		class="enterManually"
 		autofocus

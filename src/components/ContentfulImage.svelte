@@ -1,7 +1,13 @@
-<script>
-	export let href = '';
-	export let title = undefined;
-	export let text = '';
+<script lang="ts">
+	let {
+		href = '',
+		title = undefined,
+		text = '',
+	}: {
+		href?: string;
+		title?: any;
+		text?: string;
+	} = $props();
 
 	let isContentfulCdn = href.match(/^(https?:)?\/\/images.ctfassets.net\//),
 		originalSrcset = [],

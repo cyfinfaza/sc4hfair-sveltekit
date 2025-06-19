@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
 	import Layout from 'components/Layout.svelte';
 	import SponsorSpot from 'components/SponsorSpot.svelte';
 
-	export let data;
+	let { data } = $props();
 </script>
 
 <Layout title="Sponsors">

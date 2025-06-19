@@ -1,50 +1,33 @@
-<script>
+<script lang="ts">
 	import LinkButton from 'components/LinkButton.svelte';
 	import { theme, themes } from 'logic/theming';
 
-	export let header = false;
+	let { header = false } = $props();
 
-	/** @type {import('logic/theming').ThemeId} */
-	let nextThemeID,
-		/** @type {import('logic/theming').themes[number]} */
-		currentTheme,
-		/** @type {HTMLSpanElement} */
-		themeIcon;
-	$: {
-		currentTheme =
-			themes.filter((item, index) => {
-				if (item.id === $theme) {
-					nextThemeID = themes.length - 1 === index ? themes[0].id : themes[index + 1].id;
-					return true;
-				}
-				return false;
-			})[0] || themes[0];
-		if (themeIcon) {
-			themeIcon.classList.remove('animate');
-			themeIcon.classList.add('animate');
-		}
-	}
+	let currentTheme = $derived(themes.find((item) => item.id === $theme) || themes[0]);
+
+	let nextThemeID = $derived.by(() => {
+		const currentIndex = themes.indexOf(currentTheme);
+		return currentIndex === -1 || currentIndex === themes.length - 1 ?
+				themes[0].id
+			:	themes[currentIndex + 1].id;
+	});
 </script>
 
 <LinkButton
-	on:click={() => ($theme = nextThemeID)}
+	onclick={() => ($theme = nextThemeID)}
 	label="Switch theme"
 	lightFont
 	noCloseHeader
 	headerSmall={header}
 >
-	<svelte:fragment slot="iconElement">
+	{#snippet iconElement()}
 		{#key $theme}
-			<span
-				class="material-icons icon"
-				aria-hidden="true"
-				aria-label={currentTheme.name}
-				bind:this={themeIcon}
-			>
+			<span class="material-icons icon" aria-hidden="true" aria-label={currentTheme.name}>
 				{currentTheme.icon}
 			</span>
 		{/key}
-	</svelte:fragment>
+	{/snippet}
 </LinkButton>
 
 <style>

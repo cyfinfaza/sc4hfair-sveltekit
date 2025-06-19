@@ -1,5 +1,6 @@
 import adapter from '@sveltejs/adapter-static';
-import { sveltePreprocess } from 'svelte-preprocess';
+import autoprefixer from 'autoprefixer';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { versionKey } from './vite.config.js';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -27,8 +28,10 @@ const config = {
 		},
 	},
 	preprocess: [
-		sveltePreprocess({
-			postcss: true,
+		vitePreprocess({
+			postcss: {
+				plugins: [autoprefixer()],
+			},
 		}),
 	],
 };

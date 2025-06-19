@@ -1,42 +1,44 @@
-<script>
+<script lang="ts">
 	import FourH from 'assets/4h.svg?component';
 	import LinkButton from 'components/LinkButton.svelte';
-	import { sponsorTierName } from 'logic/contentful';
-	import { isOnline } from 'logic/stores.js';
+	import { sponsorTierName, type Sponsor } from 'logic/contentful';
+	import { isOnline } from 'logic/stores.svelte';
 	import { getContext } from 'svelte';
 
-	export let listMode = false;
-	/** @type {import('logic/contentful').Sponsor | undefined} */
-	export let sponsor = undefined;
+	let {
+		listMode = false,
+		sponsor: specificSponsor = $bindable(undefined),
+	}: {
+		listMode?: boolean;
+		sponsor?: Sponsor | undefined;
+	} = $props();
 
-	/** @type {import('logic/contentful').Sponsor[] | undefined} */
-	let sponsors = getContext('sponsors');
+	let sponsors: Sponsor[] | undefined = getContext('sponsors');
 
 	const DEFAULT_SPONSOR_DESCRIPTION = 'The 4‑H fair is made possible by our sponsors.';
 
-	$: {
-		if (!sponsor) {
-			let random = Math.random(),
-				/** @type {string[]} */
-				chosenTier;
+	let sponsor = $derived.by(() => {
+		if (specificSponsor) return specificSponsor;
 
-			// // because not all tiers are used this year, split into the mainer ones
-			// if (random < 0.25)
-			// 	chosenTier = ['clover', 'sky']; // 25% but from one
-			// else if (random < 0.8)
-			// 	chosenTier = ['gold', 'silver', 'bronze']; // 55% the rest
-			// else chosenTier = ['copper', 'custom', 'automobile', 'friends-family']; // 20% but from many
-			// let filteredSponsors = sponsors?.filter((ad) => chosenTier.includes(ad.tier));
+		// let random = Math.random(),
+		// 	chosenTier: string[];
 
-			let filteredSponsors = sponsors; // 2024: no point in doing weighting
+		// // because not all tiers are used this year, split into the mainer ones
+		// if (random < 0.25)
+		// 	chosenTier = ['clover', 'sky']; // 25% but from one
+		// else if (random < 0.8)
+		// 	chosenTier = ['gold', 'silver', 'bronze']; // 55% the rest
+		// else chosenTier = ['copper', 'custom', 'automobile', 'friends-family']; // 20% but from many
+		// let filteredSponsors = sponsors?.filter((ad) => chosenTier.includes(ad.tier));
 
-			sponsor = filteredSponsors?.[Math.floor(Math.random() * filteredSponsors.length)];
-		}
-	}
+		let filteredSponsors = sponsors; // 2024: no point in doing weighting
+
+		return filteredSponsors?.[Math.floor(Math.random() * filteredSponsors.length)];
+	});
 </script>
 
 {#if sponsor}
-	<div class="container" class:listMode>
+	<div class:listMode class="container">
 		{#if sponsor.image}
 			<picture>
 				<source srcset={`${sponsor.image.url}?w=100&fm=webp`} type="image/webp" />

@@ -2,11 +2,7 @@ import { writable } from 'svelte/store';
 
 export const canWebShare = writable(false);
 
-/**
- * @param {string} title
- * @param {string} url
- */
-export function share(title, url) {
+export function share(title: string, url: string) {
 	if (navigator.share) {
 		navigator.share({ title, url }).catch(() => console.error('Share failed'));
 	} else {

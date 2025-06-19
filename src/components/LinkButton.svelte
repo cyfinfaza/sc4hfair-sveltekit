@@ -1,72 +1,116 @@
-<script>
-	import { menuOpen } from 'logic/stores';
-	import { createEventDispatcher } from 'svelte';
-
+<script lang="ts">
+	import { menuOpen } from 'logic/stores.svelte';
 	import 'styles/button.css';
+	import type {
+		HTMLAnchorAttributes,
+		HTMLButtonAttributes,
+		MouseEventHandler,
+	} from 'svelte/elements';
 
-	/** @type {string | undefined} */
-	export let label = undefined; // text displayed on button
-	/** @type {string | undefined} */
-	export let href = undefined; // navigates to a url, use on:click for custom js
-	/** @type {string | undefined} */
-	export let icon = undefined; // material icon name, use slot="iconElement" for a custom element
-	export let header = false; // large header button (for main pages)
-	export let headerSmall = false; // normal button size with header color
-	export let noCloseHeader = false; // don't close the header when clicked
-	export let acrylic = false; // translucent and blurred backdrop
-	export let lightFont = false; // light font weight (not bold)
-	export let disabled = false; // prevent click and navigation
-	export let alert = false; // blinking yellow border
-	export let active = false; // green background
-	export let danger = false; // red background
-	export let external = false; // open link in new tab
-	/** @type {Record<string, any>} */
-	export let props = {}; // additional props for the element
-	let className = '';
-	export { className as class }; // additional classes for the button element
+	type FullProps = HTMLAnchorAttributes & HTMLButtonAttributes;
 
-	const dispatch = createEventDispatcher();
+	type Props = FullProps & {
+		/** navigates to a url, use on:click for custom js */
+		href?: string;
+		/** click handler, use href for navigation */
+		onclick?: MouseEventHandler<HTMLButtonElement>;
 
-	let elementType = href ? 'a' : 'button';
-	$: {
+		/** text displayed on button */
+		label?: string;
+		/** material icon name, use slot="iconElement" for a custom element */
+		icon?: string;
+
+		acrylic?: boolean;
+		/** light font weight (not bold) */
+		lightFont?: boolean;
+		/** prevent click and navigation */
+		disabled?: boolean | null;
+
+		/** background green/yellow/red */
+		active?: boolean | 'warning' | 'danger';
+		/** blinking yellow border */
+		alert?: boolean;
+
+		/** large header button (for main pages) */
+		header?: boolean;
+		/** normal button size with header color */
+		headerSmall?: boolean;
+		/** don't close the header when clicked */
+		noCloseHeader?: boolean;
+		/** translucent and blurred backdrop */
+
+		/** open link in new tab */
+		external?: boolean;
+
+		iconElement?: import('svelte').Snippet;
+	};
+
+	let {
+		label = undefined,
+		href = undefined,
+		onclick = undefined,
+		icon = undefined,
+		header = false,
+		headerSmall = false,
+		noCloseHeader = false,
+		acrylic = false,
+		lightFont = false,
+		disabled = false,
+		alert = false,
+		active = false,
+		external = false,
+		iconElement,
+		...additionalProps
+	}: Props = $props();
+
+	let elementType = $derived(href ? 'a' : 'button');
+
+	let fullProps = $derived.by(() => {
+		let p: FullProps = { ...additionalProps };
+
 		if (elementType === 'a') {
-			props.href = href;
-			props.target = external ? '_blank' : null;
+			p.href = href;
+			p.target = external ? '_blank' : null;
 		} else {
-			delete props.href;
-			delete props.target;
+			delete p.href;
+			delete p.target;
 		}
-	}
-	$: if (elementType === 'button' && !props.type) props.type = 'button';
-	$: props.disabled = disabled ? true : undefined;
+
+		if (elementType === 'button' && !p.type) p.type = 'button';
+
+		p.disabled = disabled ? true : undefined;
+
+		return p;
+	});
 </script>
 
 <svelte:element
 	this={elementType}
 	role="button"
 	tabindex="0"
-	on:click={(e) => {
+	{...fullProps}
+	onclick={(e) => {
 		if (disabled) {
 			e.preventDefault();
 		} else {
 			if ((header || headerSmall) && !noCloseHeader) $menuOpen = false;
-			dispatch('click');
+			onclick?.(e);
 		}
 	}}
-	class={`container button ${className || ''}`}
-	class:alert
+	class={`container button ${fullProps.class || ''}`}
+	class:acrylic
 	class:header
 	class:headerSmall
-	class:acrylic
-	class:active
-	class:danger
-	{...props}
+	class:alert
+	class:warning={active === 'warning'}
+	class:danger={active === 'danger'}
+	class:active={active === true}
 >
 	{#if icon}
 		<span class="material-icons icon" aria-hidden="true">{icon}</span>
 	{:else}
 		<div class="iconElementContainer">
-			<slot name="iconElement" />
+			{@render iconElement?.()}
 		</div>
 	{/if}
 	{#if label}

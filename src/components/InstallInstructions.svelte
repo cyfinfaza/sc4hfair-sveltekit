@@ -1,6 +1,6 @@
-<script>
+<script lang="ts">
 	import { browser } from '$app/environment';
-	import { getPlatform } from 'logic/platform.js';
+	import { getPlatform } from 'logic/platform';
 	const platform = getPlatform();
 </script>
 

@@ -1,5 +1,5 @@
 import { browser } from '$app/environment';
-import { writable } from 'svelte/store';
+import { writable, type Writable } from 'svelte/store';
 
 export const menuOpen = writable(false);
 
@@ -26,5 +26,4 @@ kioskMenuSize.subscribe(
 	(state) => browser && localStorage.setItem('kioskMenuSize', state.toString())
 );
 
-/** @type {import('svelte/store').Writable<(() => void) | undefined>} */
-export const pushPoprxUpdate = writable(undefined);
+export const pushPoprxUpdate: Writable<(() => void) | undefined> = writable(undefined);

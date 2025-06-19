@@ -1,9 +1,4 @@
-/**
- * @template {Record<string, any>} T
- * @param {string} query
- * @returns {Promise<T>}
- */
-export async function queryContentful(query) {
+export async function queryContentful<T extends Record<string, any>>(query: string): Promise<T> {
 	const res = await fetch(
 		'https://graphql.contentful.com/content/v1/spaces/e34g9w63217k/?query=' +
 			encodeURIComponent(query),
@@ -20,22 +15,29 @@ export async function queryContentful(query) {
 	return (await res.json()).data;
 }
 
-/**
- * @typedef {object} Club
- * @property {string} slug
- * @property {string} name
- * @property {string | null} tent
- * @property {string | null} description
- * @property {string | null} meetingLocation
- * @property {string | null} meetingWhen
- * @property {string | null} grades
- * @property {string | null} clubWebsite
- * @property {string | null} listingWebsite
- * @property {string[] | null} tags
- */
+export interface Post {
+	title: string;
+	contentText: string;
+	sys: {
+		id: string;
+		publishedAt: string;
+	};
+}
 
-/** @type {Club[]} */
-let clubs = [];
+export interface Club {
+	slug: string;
+	name: string;
+	tent: string | null;
+	description: string | null;
+	meetingLocation: string | null;
+	meetingWhen: string | null;
+	grades: string | null;
+	clubWebsite: string | null;
+	listingWebsite: string | null;
+	tags: string[] | null;
+}
+
+let clubs: Club[] = [];
 const clubQuery = `{
 	clubCollection(order: name_ASC) {
 		items {
@@ -59,7 +61,7 @@ export async function getClubs() {
 	return clubs;
 }
 
-export const sponsorTiers = /** @type {const} */ ([
+export const sponsorTiers = [
 	'clover',
 	'sky',
 	'gold',
@@ -71,26 +73,23 @@ export const sponsorTiers = /** @type {const} */ ([
 	'friends-family',
 	'business-card',
 	'inkind',
-]);
+] as const;
 
-/** @param {(typeof sponsorTiers)[number]} tier */
-export const sponsorTierName = (tier) =>
+export const sponsorTierName = (tier: (typeof sponsorTiers)[number]) =>
 	tier === 'friends-family' ? 'Friends & Family'
 	: tier === 'business-card' ? 'Business Card'
 	: tier === 'inkind' ? 'In-Kind Donation'
 	: tier.substring(0, 1).toUpperCase() + tier.substring(1);
 
-/**
- * @typedef {object} Sponsor
- * @property {string} heading
- * @property {{ url: string } | null} image
- * @property {string | null} description
- * @property {string | null} link
- * @property {(typeof sponsorTiers)[number]} tier
- */
+export interface Sponsor {
+	heading: string;
+	image: { url: string } | null;
+	description: string | null;
+	link: string | null;
+	tier: (typeof sponsorTiers)[number];
+}
 
-/** @type {Sponsor[]} */
-let sponsors = [];
+let sponsors: Sponsor[] = [];
 const sponsorQuery = `{
 	sponsorSpotCollection {
 		items {

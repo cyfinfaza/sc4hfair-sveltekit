@@ -1,28 +1,27 @@
-<script>
+<script lang="ts">
 	import { browser, version } from '$app/environment';
 	import { afterNavigate, replaceState } from '$app/navigation';
-	import { updated } from '$app/stores';
+	import { updated } from '$app/state';
 	import KioskPitch from 'components/KioskPitch.svelte';
 	import Modal from 'components/Modal.svelte';
-	import { pvtUpdate } from 'logic/pvt.js';
-	import { kioskMode, pushPoprxUpdate } from 'logic/stores.js';
-	import { canWebShare } from 'logic/webshare.js';
+	import { pvtUpdate } from 'logic/pvt';
+	import { kioskMode, pushPoprxUpdate } from 'logic/stores.svelte';
+	import { canWebShare } from 'logic/webshare';
 	import { onMount, setContext } from 'svelte';
 
 	import 'styles/fonts.css';
 	import 'styles/global.css';
 	import 'styles/material-icons.css';
 
-	export let data;
-	setContext('sponsors', data?.sponsors || []);
+	let { data, children } = $props();
+	setContext('sponsors', data?.sponsors || []); // todo: does this duplicate data per page
 
-	/** @type {ServiceWorkerRegistration | undefined} */
-	let swRegistration;
+	let swRegistration: ServiceWorkerRegistration | undefined = $state();
 	// const skipWaiting = () => swRegistration?.waiting?.postMessage({ type: 'SKIP_WAITING' }); // ask for the new sw to take over & reload us
 
-	let controllerChangeOccurred = false;
-	let newVersionVerified = false;
-	$: {
+	let controllerChangeOccurred = $state(false);
+	let newVersionVerified = $state(false);
+	$effect(() => {
 		if (controllerChangeOccurred) {
 			console.log('controller change occurred, verifying new version');
 			fetch('/_app/version.json', {
@@ -37,13 +36,13 @@
 				})
 				.catch((e) => console.error('failed to verify new version', e));
 		}
-	}
+	});
 
-	$: {
-		if ($updated && swRegistration) {
+	$effect(() => {
+		if (updated && swRegistration) {
 			swRegistration.update();
 		}
-	}
+	});
 
 	onMount(async () => {
 		if (!browser) return;
@@ -109,8 +108,7 @@
 	});
 
 	onMount(() => {
-		/** @param {string} addr */
-		function start_poprx(addr) {
+		function start_poprx(addr: string) {
 			let txid = window.localStorage.getItem('poprx-txid');
 			if (!txid) {
 				txid = (Math.floor(Math.random() * 900000) + 100000).toString();
@@ -166,50 +164,31 @@
 	// 	}
 	// });
 
-	$: $canWebShare = browser && 'share' in navigator && !$kioskMode;
+	$effect(() => {
+		$canWebShare = browser && 'share' in navigator && !$kioskMode;
+	});
 
 	/** @type {Modal} */
-	let externalLinkModal;
+	let externalLinkModal = $state();
 </script>
 
-<svelte:window
-	on:error={(e) => {
-		e.preventDefault();
-		console.error(e, e.error);
-		if (parseInt(localStorage.getItem('lastError') || '') - Date.now() < 1000) {
-			// just crashed and reloaded, prevent reload loop
-		} else {
-			window.location.reload();
-		}
-		localStorage.setItem('lastError', Date.now().toString());
-	}}
-	on:unhandledrejection={(e) => {
-		e.preventDefault();
-		console.error(e);
-		if (parseInt(localStorage.getItem('lastError') || '') - Date.now() < 1000) {
-			// just crashed and reloaded, prevent reload loop
-		} else {
-			window.location.reload();
-		}
-		localStorage.setItem('lastError', Date.now().toString());
-	}}
-	on:click={(e) => {
+<!-- <svelte:window
+	onclick={(e) => {
 		const target = e.target instanceof Element && e.target.closest('a');
 		if (!target) return;
-		console.log('hi');
 		// const url = new URL(target.href, window.location.origin);
 		// if (url.origin !== window.location.origin) {
 		// 	e.preventDefault();
 		// 	externalLinkModal.showModal();
 		// }
 	}}
-/>
+/> -->
 
-<slot />
+{@render children?.()}
 
 <Modal
 	show={newVersionVerified}
-	on:confirm={() => window.location.reload()}
+	onconfirm={() => window.location.reload()}
 	closeText="Later"
 	confirmText="Refresh now"
 >

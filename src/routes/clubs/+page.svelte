@@ -1,23 +1,26 @@
-<script>
+<script lang="ts">
 	import { browser } from '$app/environment';
 	import ClubBox from 'components/ClubBox.svelte';
 	import Layout from 'components/Layout.svelte';
-	import { exactSearch } from 'logic/search.js';
-	import { isOnline, kioskMode } from 'logic/stores.js';
+	import { exactSearch } from 'logic/search';
+	import { isOnline, kioskMode } from 'logic/stores.svelte';
 
-	export let data;
+	let { data } = $props();
 
-	let searchQuery = (browser && window.sessionStorage.getItem('clubs_searchQuery')) || '';
-	$: if (browser) window.sessionStorage.setItem('clubs_searchQuery', searchQuery);
+	let searchQuery = $state((browser && window.sessionStorage.getItem('clubs_searchQuery')) || '');
+	$effect(() => {
+		if (browser) window.sessionStorage.setItem('clubs_searchQuery', searchQuery);
+	});
 
-	let results = [];
-	$: results = exactSearch(searchQuery, data.clubs, 'name', [
-		'description',
-		'meetingWhen',
-		'meetingLocation',
-		'grades',
-		'tags',
-	]);
+	let results = $derived(
+		exactSearch(searchQuery, data.clubs, 'name', [
+			'description',
+			'meetingWhen',
+			'meetingLocation',
+			'grades',
+			'tags',
+		])
+	);
 </script>
 
 <Layout title="Clubs">
@@ -32,7 +35,7 @@
 	</div>
 	<div class="filterOptions">
 		<input type="text" placeholder="Search" bind:value={searchQuery} />
-		<button style:display={searchQuery ? null : 'none'} on:click={() => (searchQuery = '')}
+		<button style:display={searchQuery ? null : 'none'} onclick={() => (searchQuery = '')}
 			>Clear</button
 		>
 	</div>

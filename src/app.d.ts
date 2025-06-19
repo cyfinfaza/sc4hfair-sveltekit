@@ -8,10 +8,3 @@ declare namespace App {
 	// interface PageData {}
 	// interface Platform {}
 }
-
-declare namespace svelteHTML {
-	interface HTMLAttributes {
-		'on:error'?: (event: ErrorEvent) => void;
-		'onclick'?: string; // make extra sure to run if js fails to load
-	}
-}

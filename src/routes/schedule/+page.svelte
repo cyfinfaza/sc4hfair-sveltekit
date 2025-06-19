@@ -1,26 +1,22 @@
-<script>
+<script lang="ts">
 	import { browser } from '$app/environment';
 	import Layout from 'components/Layout.svelte';
 	import Modal from 'components/Modal.svelte';
 	import NotificationEnableButton from 'components/NotificationEnableButton.svelte';
 	import ToggleButton from 'components/ToggleButton.svelte';
 	import tentSlugs from 'data/tentSlugs.json';
-	import { eventIsFuture, MINUTES_BEFORE_NOTIFICATION } from 'logic/scheduling.js';
-	import { exactSearch } from 'logic/search.js';
-	import { kioskMode } from 'logic/stores.js';
-	import { getSubscription, notificationStatus } from 'logic/webpush.js';
+	import { eventIsFuture, MINUTES_BEFORE_NOTIFICATION } from 'logic/scheduling';
+	import { exactSearch } from 'logic/search';
+	import { kioskMode } from 'logic/stores.svelte';
+	import { getSubscription, notificationStatus } from 'logic/webpush';
 	import EventBox from './EventBox.svelte';
 
-	/** @type {import('./$types').PageData} */
-	export let data;
+	let { data } = $props();
 
-	/** @type {string[]} */
-	let subscribedEvents = [];
+	let subscribedEvents: string[] = $state([]);
 
-	/** @type {Modal} */
-	let subscribeModal;
-	/** @type {() => Promise<void>} */
-	let toggleNotificationEnabledClick;
+	let subscribeModal: Modal;
+	let notificationEnableButton: NotificationEnableButton;
 
 	const loadScheduledNotifications = async () => {
 		const sub = await getSubscription();
@@ -34,15 +30,12 @@
 			return;
 		}
 
-		/**
-		 * @type {{
-		 * 	type: 'success' | 'error';
-		 * 	message: string?;
-		 * 	subscriptionId: string;
-		 * 	eventIds: string[];
-		 * }}
-		 */
-		const data = await res.json();
+		const data: {
+			type: 'success' | 'error';
+			message: string | null;
+			subscriptionId: string;
+			eventIds: string[];
+		} = await res.json();
 		if (data.type === 'error') {
 			console.error('error loading scheduled notifications:', data);
 			subscribedEvents = [];
@@ -68,9 +61,8 @@
 		}
 	};
 
-	/** @type {boolean | undefined} */
-	let lastRegistered = undefined;
-	$: {
+	let lastRegistered: boolean | undefined = $state(undefined);
+	$effect(() => {
 		// only update on registration change
 		if ($notificationStatus.registered !== lastRegistered) {
 			// $notificationStatus also will retrigger on online
@@ -80,16 +72,11 @@
 			} else subscribedEvents = [];
 			lastRegistered = $notificationStatus.registered;
 		}
-	}
+	});
 
-	/** @type {[string, boolean]?} */
-	let pendingEventSubscription = null;
+	let pendingEventSubscription: [string, boolean] | null = null;
 
-	/**
-	 * @param {string} eventId
-	 * @param {boolean} subscribed
-	 */
-	const setEventSubscription = async (eventId, subscribed) => {
+	const setEventSubscription = async (eventId: string, subscribed: boolean) => {
 		if ($notificationStatus.registered === false) {
 			pendingEventSubscription = [eventId, subscribed];
 			subscribeModal.showModal();
@@ -129,23 +116,26 @@
 		}
 	};
 
-	let selectedTent = 'All';
-	let showingPast = false;
-	let searchQuery = '';
-	let showingOnlySubscribedEvents = false;
+	let selectedTent = $state('All');
+	let showingPast = $state(false);
+	let searchQuery = $state('');
+	let showingOnlySubscribedEvents = $state(false);
 
-	let results = [];
-	$: results = exactSearch(
-		searchQuery,
-		data.events.filter(
-			(element) =>
-				((selectedTent === 'All' || selectedTent === element.tent) &&
-					(eventIsFuture(element) || showingPast)) ||
-				(browser && window.location?.hash === '#' + element.sys.id)
-		),
-		'title',
-		['tentName']
-	).filter((element) => !showingOnlySubscribedEvents || subscribedEvents?.includes(element.sys.id));
+	let results = $derived(
+		exactSearch(
+			searchQuery,
+			data.events.filter(
+				(element) =>
+					((selectedTent === 'All' || selectedTent === element.tent) &&
+						(eventIsFuture(element) || showingPast)) ||
+					(browser && window.location?.hash === '#' + element.sys.id)
+			),
+			'title',
+			['tentName']
+		).filter(
+			(element) => !showingOnlySubscribedEvents || subscribedEvents?.includes(element.sys.id)
+		)
+	);
 </script>
 
 <Layout title="Schedule">
@@ -190,10 +180,10 @@
 	show={false}
 	bind:this={subscribeModal}
 	confirmation
-	on:confirm={({ detail }) => {
+	onconfirm={(prevent) => {
 		if (!$notificationStatus.registered) {
-			detail.cancel();
-			toggleNotificationEnabledClick().then(() => {
+			prevent();
+			notificationEnableButton.onclick().then(() => {
 				if ($notificationStatus.registered) subscribeModal.close();
 			});
 		}
@@ -205,7 +195,7 @@
 		before the event starts.
 	</p>
 	<p>You will also receive fair news and emergency alerts.</p>
-	<NotificationEnableButton bind:onClick={toggleNotificationEnabledClick} />
+	<NotificationEnableButton bind:this={notificationEnableButton} />
 </Modal>
 
 <style>

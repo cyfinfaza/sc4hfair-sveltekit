@@ -1,14 +1,13 @@
-<script>
+<script lang="ts">
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
-	import { isOnline, kioskMode } from 'logic/stores';
-	import { addInterest, initInterests, interestsSlugs, removeInterest } from 'logic/interests.js';
-	import { canWebShare, share } from 'logic/webshare.js';
+	import { isOnline, kioskMode } from 'logic/stores.svelte';
+	import { addInterest, initInterests, interestsSlugs, removeInterest } from 'logic/interests';
+	import { canWebShare, share } from 'logic/webshare';
 	import { onMount } from 'svelte';
-	import SvelteMarkdown from 'svelte-markdown';
+	import SvelteMarkdown from '@humanspeak/svelte-markdown';
 
-	/** @type {import('./$types').PageData} */
-	export let data;
+	let { data } = $props();
 	const club = data.club;
 
 	onMount(initInterests);
@@ -39,7 +38,7 @@
 					label="Remove from interest list"
 					disabled={!$isOnline}
 					icon="remove"
-					on:click={() => removeInterest(club.slug)}
+					onclick={() => removeInterest(club.slug)}
 					lightFont
 				/>
 			{:else}
@@ -47,7 +46,7 @@
 					label="Add to interest list"
 					disabled={!$isOnline}
 					icon="add"
-					on:click={() => addInterest(club.slug)}
+					onclick={() => addInterest(club.slug)}
 					lightFont
 				/>
 			{/if}
@@ -64,7 +63,7 @@
 			<LinkButton
 				label="Share"
 				icon="share"
-				on:click={() => share(`${club.name}`, window.location.href)}
+				onclick={() => share(`${club.name}`, window.location.href)}
 				lightFont
 			/>
 		{/if}
@@ -74,7 +73,7 @@
 	</div>
 	{#if club.description}
 		<div class="clubDescription">
-			<SvelteMarkdown source={club.description} options={{ mangle: false }} />
+			<SvelteMarkdown source={club.description} />
 		</div>
 	{/if}
 	{#if club.meetingLocation}<p><strong>Where:</strong> {club.meetingLocation}</p>{/if}

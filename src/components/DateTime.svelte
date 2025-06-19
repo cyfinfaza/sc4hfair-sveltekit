@@ -1,12 +1,36 @@
-<script context="module">
+<script module>
 	import { writable } from 'svelte/store';
 	const updateStore = writable(false);
-	setInterval(() => updateStore.update((value) => !value), 30000); // ticker to periodically refresh relative times
+	setInterval(() => updateStore.update((value) => !value), 1000); // ticker to periodically refresh relative times
 </script>
 
-<script>
+<script lang="ts">
 	// inspired by react-moment
 	import { DateTime, Duration } from 'luxon';
+
+	let {
+		date,
+		format = "EEEE, MMMM d, y 'at' t",
+		calendar = false,
+		duration = undefined,
+		fromNow = false,
+		withTitle = false,
+	}: {
+		/** iso string */
+		date: string;
+
+		/** displays time between date and duration */
+		duration?: string;
+
+		format?: string;
+		/** use relative time strings like "today" instead of "monday", periodically refreshes */
+		calendar?: boolean;
+		/** use relative durations like "1 minute ago", periodically refreshes */
+		fromNow?: boolean;
+
+		/** show original formatted date on hover */
+		withTitle?: boolean;
+	} = $props();
 
 	const calendarStrings = {
 		lastDay: "'Yesterday at' t",
@@ -15,8 +39,8 @@
 		nextWeek: "EEEE 'at' t",
 		sameElse: "MMMM d 'at' t", // more than 1 week away
 	};
-	/** @param {DateTime} myDateTime */
-	function getCalendarFormat(myDateTime) {
+
+	function getCalendarFormat(myDateTime: DateTime) {
 		// https://stackoverflow.com/a/53715763/9985371
 		var diff = myDateTime.diff(DateTime.local().startOf('day'), 'days').as('days');
 		return myDateTime.toFormat(
@@ -32,34 +56,11 @@
 		);
 	}
 
-	export let date; // iso string
-	export let format = "EEEE, MMMM d, y 'at' t";
-	export let calendar = false; // use relative time strings like "today" instead of "monday", periodically refreshes
-	export let duration = undefined; // displays time between date and duration
-	export let fromNow = false; // use relative durations like "1 minute ago", periodically refreshes
-	export let withTitle = false; // show original formatted date on hover
+	let relative = $derived(calendar || fromNow);
 
-	/** @type {DateTime} */
-	let dateObj,
-		/** @type {string | null} */
-		timeString,
-		/** @type {string} */
-		durationString,
-		/** @type {boolean} */
-		relative;
-	$: {
-		dateObj = DateTime.fromISO(date);
-		relative = calendar || fromNow;
+	let dateObj = $derived(DateTime.fromISO(date));
 
-		const updateTimeString = () => {
-			if (calendar) timeString = getCalendarFormat(dateObj);
-			else if (fromNow) timeString = dateObj.toRelative();
-		};
-		if (relative) {
-			updateTimeString();
-			updateStore.subscribe(updateTimeString);
-		}
-
+	let durationString = $derived.by(() => {
 		if (duration) {
 			let d = DateTime.fromISO(duration);
 			if (d.isValid === true) {
@@ -71,17 +72,25 @@
 				durationString = durationObj.toHuman();
 			}
 		}
-	}
+		return '';
+	});
+
+	let timeString = $derived.by(() => {
+		if (relative) {
+			$updateStore; // trigger reactivity
+
+			if (calendar) return getCalendarFormat(dateObj);
+			else if (fromNow) return dateObj.toRelative();
+		} else {
+			return dateObj.toFormat(format);
+		}
+	});
 </script>
 
 <time datetime={dateObj?.toISO()} title={withTitle ? dateObj?.toFormat(format) : null}>
-	{#if relative}
-		{#key $updateStore}
-			{timeString}
-		{/key}
-	{:else if duration}
+	{#if duration}
 		{durationString}
 	{:else}
-		{dateObj.toFormat(format)}
+		{timeString}
 	{/if}
 </time>

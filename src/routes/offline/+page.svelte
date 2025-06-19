@@ -12,8 +12,8 @@
 	</div>
 
 	<div class="horizPanel">
-		<LinkButton on:click={() => window.location.reload()} label="Try again" icon="refresh" />
-		<LinkButton on:click={() => (window.location.href = '/')} label="Go home" icon="home" />
+		<LinkButton onclick={() => window.location.reload()} label="Try again" icon="refresh" />
+		<LinkButton onclick={() => (window.location.href = '/')} label="Go home" icon="home" />
 	</div>
 </div>
 

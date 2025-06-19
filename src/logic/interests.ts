@@ -1,21 +1,23 @@
 import { browser } from '$app/environment';
-import { get, writable } from 'svelte/store';
-import { session } from './auth';
-import { isOnline } from './stores';
+import { get, writable, type Writable } from 'svelte/store';
+import { session, type Session } from './auth';
+import { isOnline } from './stores.svelte';
 import { goto } from '$app/navigation';
 
-/** @type {import('svelte/store').Writable<string[]>} */
-export const interestsSlugs = writable([]);
+export const interestsSlugs: Writable<string[]> = writable([]);
 
-/** @param {import('./auth').Session?} sess */
-export async function refresh(sess) {
+interface CIMAction {
+	action: 'add' | 'remove';
+	slug: string;
+}
+
+export async function refresh(sess: Session | null) {
 	if (sess) {
 		try {
 			let intent = localStorage.getItem('cim_intent');
 			if (intent) {
 				localStorage.removeItem('cim_intent');
-				/** @type {CIMAction} */
-				let intentData = JSON.parse(intent);
+				let intentData: CIMAction = JSON.parse(intent);
 				if (intentData.action === 'add') await addInterest(intentData.slug);
 				else if (intentData.action === 'remove') await removeInterest(intentData.slug);
 			}
@@ -50,14 +52,7 @@ export function initInterests() {
 	initialized = true;
 }
 
-/**
- * @typedef {object} CIMAction
- * @property {'add' | 'remove'} action
- * @property {string} slug
- */
-
-/** @param {CIMAction} action */
-export async function verifySession(action) {
+export async function verifySession(action: CIMAction) {
 	const sess = get(session);
 	if (!sess) {
 		localStorage.setItem('cim_intent', JSON.stringify(action));
@@ -67,8 +62,7 @@ export async function verifySession(action) {
 	return true;
 }
 
-/** @param {string} slug */
-export async function removeInterest(slug) {
+export async function removeInterest(slug: string) {
 	if (!verifySession({ action: 'remove', slug: slug })) return;
 
 	const res = await fetch(`/api/interests/${slug}`, {
@@ -79,8 +73,7 @@ export async function removeInterest(slug) {
 	if (res.ok) interestsSlugs.update((slugs) => slugs.filter((s) => s !== slug));
 }
 
-/** @param {string} slug */
-export async function addInterest(slug) {
+export async function addInterest(slug: string) {
 	if (!verifySession({ action: 'add', slug: slug })) return;
 
 	const res = await fetch(`/api/interests/${slug}`, {
