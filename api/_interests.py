@@ -5,7 +5,7 @@ from ._util import auth_required, mongo, success_json, error_json
 
 bp = Blueprint('interests', __name__, url_prefix='/interests')
 
-db = mongo.interests
+db = mongo.users
 interests = db.interests
 
 @bp.before_request

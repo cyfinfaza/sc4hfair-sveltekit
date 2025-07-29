@@ -11,7 +11,7 @@ INCLUDE_DEVS = True
 load_dotenv()
 
 mongo = MongoClient(environ.get('MONGODB_SECRET'))
-db = mongo.interests
+db = mongo.users
 interests = db.interests
 
 def query_contentful(query):

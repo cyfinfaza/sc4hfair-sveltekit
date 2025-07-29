@@ -5,7 +5,7 @@ from ._util import auth_required, mongo, success_json, error_json
 
 bp = Blueprint('profile', __name__, url_prefix='/profile')
 
-db = mongo.interests
+db = mongo.users
 users = db.users
 
 editable_fields = ['name', 'preferred_email', 'phone', 'graduation']

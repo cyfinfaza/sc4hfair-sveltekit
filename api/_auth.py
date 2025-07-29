@@ -12,7 +12,7 @@ from ._util import mongo, success_json, error_json, JWT_SECRET
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
-db = mongo.interests
+db = mongo.users
 users = db.users
 
 # these are whitelisted in google oauth2
