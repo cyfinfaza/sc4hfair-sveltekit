@@ -23,6 +23,7 @@ primary_hosts = (
 all_hosts = primary_hosts + (
 	r'(?:[\w-]+\.)?sc4hfair\.app',
 	r'sc4hfair-sveltekit-[\w-]+-cys-projects-c57b2204\.vercel\.app',
+	# todo: admin panel
 	r'localhost:\d+',
 )
 def validate_host(host: str):
@@ -125,7 +126,7 @@ def google_auth_callback():
 			'$set': {
 				'email': email, # could theoretically change
 				'last_login': datetime.now(UTC),
-				# 'role': 'dev',
+				# 'roles': ['dev'],
 			},
 			'$setOnInsert': {
 				'provider': 'google',
@@ -144,8 +145,9 @@ def google_auth_callback():
 	session_token = jwt.encode({
 		'sub': str(user['_id']),
 		'email': email, # used for display
+		'roles': user.get('roles', []),
 		'exp': exp
-	}, JWT_SECRET, algorithm='HS256')
+	}, JWT_SECRET, algorithm='HS256') # todo: use RS256
 
 	query = {
 		'redirect': final_redirect,
@@ -169,6 +171,8 @@ def set_session():
 	res = redirect(final_redirect, code=302)
 	res.set_cookie('session_token', session_token, path='/', httponly=False, secure=request.is_secure, samesite='Strict', expires=exp)
 	return res
+
+# todo: add renew route to refresh the session token if it is close to expiring
 
 # consider adding facebook if google auth is not enough
 # https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow

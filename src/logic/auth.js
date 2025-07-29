@@ -4,6 +4,7 @@ import { writable } from 'svelte/store';
  * @typedef {Object} Session
  * @property {string} sub - user id
  * @property {string} email - attached email address
+ * @property {string[]} roles - user roles
  * @property {number} exp - expiration timestamp
  */
 

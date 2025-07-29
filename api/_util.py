@@ -34,6 +34,8 @@ def auth_required(f):
 			return error_json('Session expired', status=401)
 		except jwt.InvalidTokenError:
 			return error_json('Invalid session token', status=401)
+		except Exception as e:
+			return error_json(f'Error decoding session token: {str(e)}', status=401)
 
 		g.user_id = ObjectId(payload['sub'])
 
