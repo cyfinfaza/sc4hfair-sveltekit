@@ -22,8 +22,8 @@ primary_hosts = (
 )
 all_hosts = primary_hosts + (
 	r'(?:[\w-]+\.)?sc4hfair\.app',
-	r'sc4hfair-sveltekit-[\w-]+-cys-projects-c57b2204\.vercel\.app',
-	# todo: admin panel
+	r'sc4hfair-sveltekit(?:-[\w-]+-cys-projects-c57b2204)?\.vercel\.app',
+	r'sc4hfair-admin(?:-[\w-]+-caburums-projects)?\.vercel\.app',
 	r'localhost:\d+',
 )
 def validate_host(host: str):
