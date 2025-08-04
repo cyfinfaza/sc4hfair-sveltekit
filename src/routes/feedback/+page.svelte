@@ -62,6 +62,7 @@
 		<h2>Name<span>*</span></h2>
 		<p placeholder="Type your name here" contenteditable bind:textContent={name} />
 		<h2>Email</h2>
+		<p>If you would like us to follow up, please include a contact method.</p>
 		<p placeholder="Type your email here" contenteditable bind:textContent={email} />
 		<h2>Comment<span>*</span></h2>
 		<p placeholder="Type your comment here" contenteditable bind:textContent={comment} />
