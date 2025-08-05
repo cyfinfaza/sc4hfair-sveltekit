@@ -45,6 +45,7 @@
 		hintsUsed,
 		addHintUsed: (/** @type {string} */ code) => ($hintsUsed = [...$hintsUsed, code]),
 		clues,
+		finalInstructions: _clueData.finalInstructions,
 		startScanning: () => (scanning = true),
 	});
 
