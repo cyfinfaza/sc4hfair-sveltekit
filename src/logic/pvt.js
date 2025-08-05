@@ -2,6 +2,7 @@
 
 import { SCAVENGER_HUNT_CODE } from 'logic/constants';
 import { checkIsStandalone } from 'logic/platform';
+import { version } from '$app/environment';
 
 /**
  * @param {object} obj
@@ -21,6 +22,7 @@ export function pvtUpdate(
 				[SCAVENGER_HUNT_CODE]: localStorage.getItem(SCAVENGER_HUNT_CODE) || undefined,
 				referrer: referrer || undefined,
 				kiosk: localStorage.getItem('kiosk') === '1' || undefined,
+				version,
 			},
 		}),
 		credentials: 'include',
