@@ -8,8 +8,8 @@
 	export let winner = false;
 	if (winner) index = clues.length;
 
-	const destination = '4‑H Computers booth';
-	// const destination = 'info tent';
+	// const destination = '4‑H Computers booth';
+	const destination = 'info tent';
 </script>
 
 <div class="card" class:disabled={index > $atIndex} class:winner>
@@ -26,7 +26,7 @@
 				<p>
 					You've finished the scavenger hunt {$hintsUsed.length ?
 						`with ${$hintsUsed.length === 1 ? 'only 1 hint' : `${$hintsUsed.length} hints`}`
-					:	'without any hints'}! Go back to the {destination} to claim your prize!
+					:	'without any hints'}! Go visit the {destination} to claim your prize!
 				</p>
 			{:else}
 				<p>{clues[index].clue}</p>
