@@ -2,7 +2,7 @@
 
 Generate clues JSON file from the scavenger hunt Google Sheet:
 
-python3 ./createScavengerHuntClues.py 1bZOR5OJGdfSsDHBrOQ8M8MLmdpF-C8HQhxqs43qVWMo
+python ./createScavengerHuntClues.py 1bZOR5OJGdfSsDHBrOQ8M8MLmdpF-C8HQhxqs43qVWMo
 
 """
 
@@ -10,12 +10,12 @@ import requests
 import json
 import sys
 import csv
-from datetime import datetime
+from contentful import currentYear
 
 sheetId = sys.argv[1] if len(sys.argv) > 1 else input("Sheet ID: ")
 
 print("Fetching sheet data...")
-response = requests.get(f"https://docs.google.com/spreadsheets/d/{sheetId}/export?format=csv")
+response = requests.get(f"https://docs.google.com/spreadsheets/d/{sheetId}/gviz/tq?tqx=out:csv&sheet={currentYear}")
 
 rows = csv.reader(response.text.splitlines(), delimiter=',', quotechar='"')
 
@@ -33,7 +33,7 @@ for row in rows:
 			"hint": hint,
 		})
 
-output = json.dumps({"year": datetime.now().year, "clues": clues, "falseCodes": falseCodes}, indent='\t')
+output = json.dumps({"year": currentYear, "clues": clues, "falseCodes": falseCodes}, indent='\t')
 
 with open("../src/data/shClues.json", "w") as f:
 	f.write(output)

@@ -1,0 +1,1671 @@
+{
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "italian-ice"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.676712,
+              40.578069
+            ],
+            [
+              -74.676697,
+              40.578028
+            ],
+            [
+              -74.676643,
+              40.578041
+            ],
+            [
+              -74.676658,
+              40.578082
+            ],
+            [
+              -74.676712,
+              40.578069
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "0b5ec0a35cdd3a3a9794d4e1af4165fc"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "food"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.676989,
+              40.577618
+            ],
+            [
+              -74.677073,
+              40.577827
+            ],
+            [
+              -74.676314,
+              40.578005
+            ],
+            [
+              -74.676229,
+              40.577794
+            ],
+            [
+              -74.676989,
+              40.577618
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "0de732a5f76286eaa5ebb2b0b6c0c44c"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "rvcc-lot-5"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.688045,
+          40.61492
+        ],
+        "type": "Point"
+      },
+      "id": "13c7561d11f96a7be5135ee652687a00"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "dairy-beef"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.678,
+              40.577444
+            ],
+            [
+              -74.677494,
+              40.577538
+            ],
+            [
+              -74.677532,
+              40.577647
+            ],
+            [
+              -74.678035,
+              40.577556
+            ],
+            [
+              -74.678,
+              40.577444
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "17c80a069e10acbf12c375b3beafbd64"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "ted-blum-center"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.674042,
+          40.575597
+        ],
+        "type": "Point"
+      },
+      "id": "1955a91112df1d0edf890499524cb8c4"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "commercial"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.676168,
+              40.578308
+            ],
+            [
+              -74.676018,
+              40.578343
+            ],
+            [
+              -74.675874,
+              40.577968
+            ],
+            [
+              -74.676022,
+              40.577933
+            ],
+            [
+              -74.676168,
+              40.578308
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "1cd4bed9346d8b5babd5b17c9a0a6163"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "sheriff-k9-demos"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.676369,
+          40.578773
+        ],
+        "type": "Point"
+      },
+      "id": "22511fb18053da2acfed76c29d8a62ba"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "horses"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.67646,
+              40.577284
+            ],
+            [
+              -74.676387,
+              40.577302
+            ],
+            [
+              -74.67643,
+              40.577407
+            ],
+            [
+              -74.676501,
+              40.577391
+            ],
+            [
+              -74.67646,
+              40.577284
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "25060da5c837800b4d12af76c2831891"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "herpetology"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.677,
+              40.577208
+            ],
+            [
+              -74.676927,
+              40.57722
+            ],
+            [
+              -74.676941,
+              40.577276
+            ],
+            [
+              -74.677014,
+              40.577264
+            ],
+            [
+              -74.677,
+              40.577208
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "2d4c90392a8dae414f0849e383010409"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "info"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.676791,
+              40.578466
+            ],
+            [
+              -74.676715,
+              40.578307
+            ],
+            [
+              -74.676608,
+              40.578335
+            ],
+            [
+              -74.676687,
+              40.578494
+            ],
+            [
+              -74.676791,
+              40.578466
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "3279dcf27a25de44f0fcad7b87484ac4"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "herdsman"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.677684,
+              40.577892
+            ],
+            [
+              -74.677613,
+              40.577908
+            ],
+            [
+              -74.677629,
+              40.577963
+            ],
+            [
+              -74.677701,
+              40.577949
+            ],
+            [
+              -74.677684,
+              40.577892
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "35a726580fc995646a2f77da363015d6"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "board-of-ag"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.676812,
+              40.577403
+            ],
+            [
+              -74.676605,
+              40.577456
+            ],
+            [
+              -74.676643,
+              40.577563
+            ],
+            [
+              -74.676848,
+              40.577508
+            ],
+            [
+              -74.676812,
+              40.577403
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "3655deacae1578a03394e1346adf89af"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "emergency-responders"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.676029,
+          40.577392
+        ],
+        "type": "Point"
+      },
+      "id": "3a221d94a81ec4e6c5a0cfba5e7a0e60"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "garden-bees"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.676905,
+              40.577381
+            ],
+            [
+              -74.676941,
+              40.577489
+            ],
+            [
+              -74.67687,
+              40.577504
+            ],
+            [
+              -74.676833,
+              40.577395
+            ],
+            [
+              -74.676905,
+              40.577381
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "3ca9ade5de8e032fd1524d8e23a6ac74"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "parking-handicapped"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.677497,
+          40.579336
+        ],
+        "type": "Point"
+      },
+      "id": "3e3d5dc81c876e5627eb04d8d5134cb3"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "park-commission"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.676773,
+              40.578713
+            ],
+            [
+              -74.67675,
+              40.57866
+            ],
+            [
+              -74.676612,
+              40.578694
+            ],
+            [
+              -74.676634,
+              40.578746
+            ],
+            [
+              -74.676773,
+              40.578713
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "3f60b3c2e8421d1dbc7fa4b562c4f04c"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "poultry"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.676873,
+              40.57718
+            ],
+            [
+              -74.67691,
+              40.577288
+            ],
+            [
+              -74.676777,
+              40.577315
+            ],
+            [
+              -74.676734,
+              40.57721
+            ],
+            [
+              -74.676873,
+              40.57718
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "44009b9bb7d62520a01155b8a904ae60"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "somerset-county-government"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.676548,
+              40.578493
+            ],
+            [
+              -74.676489,
+              40.578328
+            ],
+            [
+              -74.676063,
+              40.578427
+            ],
+            [
+              -74.676125,
+              40.578586
+            ],
+            [
+              -74.676548,
+              40.578493
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "469abdbb8b7ef2cc5bb9ff0163c1f0ae"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "dogs"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.677712,
+              40.577044
+            ],
+            [
+              -74.67735,
+              40.577095
+            ],
+            [
+              -74.677375,
+              40.577209
+            ],
+            [
+              -74.677737,
+              40.577159
+            ],
+            [
+              -74.677712,
+              40.577044
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "49ccb01c90110e7fd0ac1dc00efeee3d"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "arts-sciences"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.67723,
+              40.578344
+            ],
+            [
+              -74.677156,
+              40.578188
+            ],
+            [
+              -74.676747,
+              40.578301
+            ],
+            [
+              -74.67682,
+              40.578456
+            ],
+            [
+              -74.67723,
+              40.578344
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "4a6506846cd7df312b3536d4cc9fac5e"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "rc-cars-track"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.67873,
+          40.578117
+        ],
+        "type": "Point"
+      },
+      "id": "4b7c3cc7f1366a789ec4e73dec4a0e3e"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "touch-a-truck"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.678247,
+          40.578291
+        ],
+        "type": "Point"
+      },
+      "id": "4fbdd1bd596ae942365b6739699561c4"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "model-airplanes"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.677507,
+              40.578073
+            ],
+            [
+              -74.677435,
+              40.57809
+            ],
+            [
+              -74.677459,
+              40.578144
+            ],
+            [
+              -74.677529,
+              40.578127
+            ],
+            [
+              -74.677507,
+              40.578073
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "510752d003bf2a1611e38a2bf4681420"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "goats"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.677764,
+              40.577229
+            ],
+            [
+              -74.677403,
+              40.577294
+            ],
+            [
+              -74.677438,
+              40.577406
+            ],
+            [
+              -74.677796,
+              40.577339
+            ],
+            [
+              -74.677764,
+              40.577229
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "55aa9a13ff941330a39c39d006b2cfe1"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "drop-off"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.677255,
+          40.576208
+        ],
+        "type": "Point"
+      },
+      "id": "56ca4bd05b8412dd1c317f1474d46f11"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "rvcc-lot-1"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.686374,
+          40.608453
+        ],
+        "type": "Point"
+      },
+      "id": "58f1e17c16eb45cc09df27d157287b0a"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "parking-general"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.676872,
+          40.579466
+        ],
+        "type": "Point"
+      },
+      "id": "5d26da7ed85f5c41bfd886d96f58b04a"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "small-animals"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.676699,
+              40.577221
+            ],
+            [
+              -74.676743,
+              40.577327
+            ],
+            [
+              -74.676542,
+              40.577379
+            ],
+            [
+              -74.676495,
+              40.577272
+            ],
+            [
+              -74.676699,
+              40.577221
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "5d66d496390da5369b22eba6bac1e527"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "dog-show"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.677112,
+              40.577019
+            ],
+            [
+              -74.676973,
+              40.577046
+            ],
+            [
+              -74.67704,
+              40.577261
+            ],
+            [
+              -74.67718,
+              40.577233
+            ],
+            [
+              -74.677112,
+              40.577019
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "5e9d7e13034904eb259d27de8599d619"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "gallery"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.676548,
+              40.578163
+            ],
+            [
+              -74.67651,
+              40.578055
+            ],
+            [
+              -74.676224,
+              40.578112
+            ],
+            [
+              -74.67626,
+              40.57822
+            ],
+            [
+              -74.676548,
+              40.578163
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "5ecd3cdf944f4bde27074506145cf977"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "car-seat"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.677077,
+          40.579903
+        ],
+        "type": "Point"
+      },
+      "id": "71338460e9054bec1103178e18435242"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "archery"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.676377,
+              40.577301
+            ],
+            [
+              -74.676416,
+              40.57741
+            ],
+            [
+              -74.676342,
+              40.577425
+            ],
+            [
+              -74.676303,
+              40.577316
+            ],
+            [
+              -74.676377,
+              40.577301
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "75f4506269275c742a9770c8a50af677"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "helps-van"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.677195,
+          40.57864
+        ],
+        "type": "Point"
+      },
+      "id": "80e91376b692c513eade109eaf0d0248"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "cotton-candy"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.676855,
+              40.578172
+            ],
+            [
+              -74.676814,
+              40.578062
+            ],
+            [
+              -74.676744,
+              40.578079
+            ],
+            [
+              -74.676784,
+              40.578186
+            ],
+            [
+              -74.676855,
+              40.578172
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "83decee605416a247b726d76ce9708d5"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "ohh-van"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.677126,
+          40.578657
+        ],
+        "type": "Point"
+      },
+      "id": "89c12a79f018067de8a9abf70d2ba3ac"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "wash-rack-1"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.67731,
+          40.576607
+        ],
+        "type": "Point"
+      },
+      "id": "97a88e6e40b3798072f1781e721b86fd"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "agriculture-open-division"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.677453,
+              40.577821
+            ],
+            [
+              -74.677242,
+              40.577867
+            ],
+            [
+              -74.677253,
+              40.577896
+            ],
+            [
+              -74.677464,
+              40.57785
+            ],
+            [
+              -74.677453,
+              40.577821
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "9c335dc03527e7db8ed11c4c5e574f8c"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "food-central"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.67649,
+              40.577604
+            ],
+            [
+              -74.676475,
+              40.577564
+            ],
+            [
+              -74.67642,
+              40.577576
+            ],
+            [
+              -74.676435,
+              40.577616
+            ],
+            [
+              -74.67649,
+              40.577604
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "9dcbd306602629d1da1c3b53c7911622"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "first-aid"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.675751,
+              40.577462
+            ],
+            [
+              -74.675671,
+              40.57748
+            ],
+            [
+              -74.675693,
+              40.577534
+            ],
+            [
+              -74.675771,
+              40.577517
+            ],
+            [
+              -74.675751,
+              40.577462
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "a1fec61aa8a3d1bb1ce221ee66656dbd"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "somerset-county-bridge-division"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.677499,
+          40.578669
+        ],
+        "type": "Point"
+      },
+      "id": "a2e3b0587fd46539ac212e96f3db9ccd"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "alpacas"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.677262,
+              40.577312
+            ],
+            [
+              -74.677116,
+              40.57734
+            ],
+            [
+              -74.677167,
+              40.577502
+            ],
+            [
+              -74.67731,
+              40.577476
+            ],
+            [
+              -74.677262,
+              40.577312
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "a53a82dbd83b70fd417079f757cf8e2b"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "horse-ring-1"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.676357,
+              40.577142
+            ],
+            [
+              -74.676331,
+              40.577168
+            ],
+            [
+              -74.675838,
+              40.577259
+            ],
+            [
+              -74.675811,
+              40.577235
+            ],
+            [
+              -74.675651,
+              40.576753
+            ],
+            [
+              -74.675684,
+              40.576728
+            ],
+            [
+              -74.676178,
+              40.576638
+            ],
+            [
+              -74.676212,
+              40.576694
+            ],
+            [
+              -74.676357,
+              40.577142
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "a5dacce0471b786ff1396bd774bc5daa"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "parking-combined"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.677996,
+          40.576098
+        ],
+        "type": "Point"
+      },
+      "id": "a66c7296aeaffebaf9456807b61d0c91"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "sheriff"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.676571,
+              40.578556
+            ],
+            [
+              -74.676557,
+              40.578516
+            ],
+            [
+              -74.67645,
+              40.578542
+            ],
+            [
+              -74.676466,
+              40.578582
+            ],
+            [
+              -74.676571,
+              40.578556
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "a7fab334a3bccc042d16d7c3491ffc15"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "restrooms-porta-potty"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.676886,
+              40.578929
+            ],
+            [
+              -74.676759,
+              40.578954
+            ],
+            [
+              -74.676763,
+              40.578965
+            ],
+            [
+              -74.676889,
+              40.57894
+            ],
+            [
+              -74.676886,
+              40.578929
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "aa8d588422bb9981f461b3c58f8e9bb6"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "restrooms-inside"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.67742,
+              40.576746
+            ],
+            [
+              -74.677345,
+              40.576767
+            ],
+            [
+              -74.677376,
+              40.576824
+            ],
+            [
+              -74.677354,
+              40.576831
+            ],
+            [
+              -74.677391,
+              40.576897
+            ],
+            [
+              -74.677409,
+              40.57689
+            ],
+            [
+              -74.677444,
+              40.576951
+            ],
+            [
+              -74.677517,
+              40.576924
+            ],
+            [
+              -74.677482,
+              40.57686
+            ],
+            [
+              -74.677474,
+              40.576829
+            ],
+            [
+              -74.677448,
+              40.576798
+            ],
+            [
+              -74.67742,
+              40.576746
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "ab9e323152e07b134a1de3cd848413d0"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "wash-rack-2"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.678311,
+          40.577538
+        ],
+        "type": "Point"
+      },
+      "id": "ad123580608fa2de2d95a76b685ebd97"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "sensory-friendly"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.677029,
+              40.576834
+            ],
+            [
+              -74.677042,
+              40.57689
+            ],
+            [
+              -74.67697,
+              40.576901
+            ],
+            [
+              -74.676956,
+              40.576846
+            ],
+            [
+              -74.677029,
+              40.576834
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "afd6941d5f68570d9c9a1d9dafe3d835"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "showmobile-stage"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.677876,
+          40.578654
+        ],
+        "type": "Point"
+      },
+      "id": "b5b4f211a6a2f789181cb9403ff544e5"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "show"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.677324,
+              40.577491
+            ],
+            [
+              -74.677114,
+              40.577536
+            ],
+            [
+              -74.677234,
+              40.57785
+            ],
+            [
+              -74.677443,
+              40.577804
+            ],
+            [
+              -74.677324,
+              40.577491
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "b9b1316d86fc40a1e49aa6fd2050757c"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "shuttle-bus-drop"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.677175,
+          40.578982
+        ],
+        "type": "Point"
+      },
+      "id": "c299d7638f35c3afabfe6ecdd3b914c3"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "sheep"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.677971,
+              40.577589
+            ],
+            [
+              -74.677536,
+              40.577666
+            ],
+            [
+              -74.677574,
+              40.577777
+            ],
+            [
+              -74.678007,
+              40.5777
+            ],
+            [
+              -74.677971,
+              40.577589
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "c2b3f9832f3faabd384fe5f86f1e59b0"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "bridge"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.677023,
+          40.578778
+        ],
+        "type": "Point"
+      },
+      "id": "cf072e897f4527211c7af1ff4d36b50e"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "somerset-county-road-division"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.678155,
+          40.578516
+        ],
+        "type": "Point"
+      },
+      "id": "dad07e1717105a808856992fdc4e246e"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "rc-cars"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.677942,
+              40.577929
+            ],
+            [
+              -74.677989,
+              40.578036
+            ],
+            [
+              -74.677712,
+              40.578105
+            ],
+            [
+              -74.677665,
+              40.578
+            ],
+            [
+              -74.677942,
+              40.577929
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "dc5c0afe229a5ceb26542cb6376ab5d7"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "rvcc-lot-2"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.690592,
+          40.609622
+        ],
+        "type": "Point"
+      },
+      "id": "e08b8f4e7a76045b8cfabb31fc5442c7"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "go-kart-track"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.679462,
+          40.577591
+        ],
+        "type": "Point"
+      },
+      "id": "e0d0079c7f5d5d3d2c83d52f572e65dd"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "prep"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.677188,
+              40.578093
+            ],
+            [
+              -74.677127,
+              40.577934
+            ],
+            [
+              -74.676815,
+              40.578006
+            ],
+            [
+              -74.676877,
+              40.578164
+            ],
+            [
+              -74.677188,
+              40.578093
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "e40b43b82f4f5e5e40c0697a35d5a535"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "model-trains"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.677836,
+              40.577343
+            ],
+            [
+              -74.677458,
+              40.577417
+            ],
+            [
+              -74.67749,
+              40.577526
+            ],
+            [
+              -74.677871,
+              40.577454
+            ],
+            [
+              -74.677836,
+              40.577343
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "e6cce26d08219095443020aec1266e7e"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "picnic-area-2"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.6774,
+          40.577983
+        ],
+        "type": "Point"
+      },
+      "id": "eaf526ae96d638dc5e656477bcd9ab1f"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "flying-field"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.678929,
+          40.579799
+        ],
+        "type": "Point"
+      },
+      "id": "f3abb549a1ec5a0fdd856a18757495f1"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "picnic-area"
+      },
+      "geometry": {
+        "coordinates": [
+          -74.676274,
+          40.577653
+        ],
+        "type": "Point"
+      },
+      "id": "f705fc0e465858247d17b8956f333a66"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "slug": "clover-theater-cafe"
+      },
+      "geometry": {
+        "coordinates": [
+          [
+            [
+              -74.676009,
+              40.577911
+            ],
+            [
+              -74.675947,
+              40.577748
+            ],
+            [
+              -74.675803,
+              40.577781
+            ],
+            [
+              -74.675859,
+              40.577939
+            ],
+            [
+              -74.676009,
+              40.577911
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "id": "fcc18cf96d9b51504d061561a13b51ab"
+    }
+  ],
+  "type": "FeatureCollection"
+}

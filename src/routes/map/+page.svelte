@@ -14,13 +14,13 @@
 	export let data;
 
 	// the source/layer that contains our features
-	const style = 'mapbox://styles/cyfinfaza/clzirddmw003s01pcgelxbpx9',
+	const style = 'mapbox://styles/4hcomputers/cmdxtrs22015y01s200c5eo4h',
 		source = 'composite',
-		sourceLayer = 'Fair_Tents_2024_with_names', // the name of the tileset
-		sourceLayerId = 'Tents Flat'; // the name of the layer in the style that has the tileset
+		sourceLayer = 'Fair_Tents_2025_with_names', // the name of the tileset
+		sourceLayerId = 'Tents Flat'; // the name of the layer in the style with the click interaction
 
 	mapboxgl.accessToken =
-		'pk.eyJ1IjoiY3lmaW5mYXphIiwiYSI6ImNrYXBwN2N4ZTEyd3gycHF0bHhzZXIwcWEifQ.8Dx5dx27ity49fAGyZNzPQ';
+		'pk.eyJ1IjoiNGhjb21wdXRlcnMiLCJhIjoiY21keHdqcjlyMWsyZTJrb29razB2eThiayJ9.RBL6prZa_aBtfX9gg34NnQ';
 
 	// location of the fair to center to
 	const fairLng = -74.677043,
