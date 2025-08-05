@@ -1,7 +1,9 @@
 <script>
 	import { browser } from '$app/environment';
+	import FourH from 'assets/4h.svg?component';
 	import ClubBox from 'components/ClubBox.svelte';
 	import Layout from 'components/Layout.svelte';
+	import LinkButton from 'components/LinkButton.svelte';
 	import { exactSearch } from 'logic/search.js';
 	import { isOnline, kioskMode } from 'logic/stores.js';
 
@@ -24,9 +26,21 @@
 	<div class="center">
 		<h1>Clubs</h1>
 		{#if !$kioskMode}
-			<p>
-				Tap the +Add button to add a club to your interest list.
-				{#if $isOnline}<a href="/interests">View interest list</a>{/if}
+			<p>Tap the +Add button to add a club to your interest list.</p>
+			<p class="horizPanel">
+				<LinkButton
+					disabled={!$isOnline}
+					icon="list_alt"
+					label="View interest list"
+					href="/interests"
+				/>
+				<LinkButton disabled={!$isOnline} label="Join 4‑H" href="https://4histops.org/membership">
+					<svelte:fragment slot="iconElement">
+						<FourH
+							style="height: 100%; fill: currentColor; transition: fill var(--theme-transition);"
+						/>
+					</svelte:fragment>
+				</LinkButton>
 			</p>
 		{/if}
 	</div>
