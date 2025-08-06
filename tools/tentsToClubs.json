@@ -9,20 +9,11 @@
 	"dogs": ["k9-leaders-seeing-eye-club", "wags-whiskers", "woof"],
 	"alpacas": ["alpaca-club"],
 	"show": [],
-	"robotics": [
-		"area14-robotics-club",
-		"4h-bananabots-robotics-club",
-		"4h-beacon-bots",
-		"programming-trolls",
-		"servos-4h-robotics-club",
-		"monster-mechanics",
-		"broken-props-model-airplane",
-		"somerset-sentinels-rocket-club"
-	],
+	"robotics": [],
 	"herpetology": ["sidewinders-club", "something-fishy-aquatic-science"],
 	"garden-bees": ["4h-beekeeping-club", "garden-and-bee-club"],
 	"poultry": ["wattles-snood"],
-	"small-animals": ["hippity-hoppity-happy-handlers"],
+	"small-animals": ["hippity-hoppity-happy-handlers", "huggable-hares"],
 	"prep": [
 		"crafty-clovers",
 		"critter-club",
@@ -38,7 +29,11 @@
 		"prep-chefs",
 		"puppet-design-prep-club",
 		"lego-masters",
-		"mad-scientists-prep-club"
+		"mad-scientists-prep-club",
+		"lego-club",
+		"chess",
+		"cooking-club",
+		"4h-gokart-juniors"
 	],
 	"arts-sciences": [
 		"4h-anime-manga-club",
@@ -72,7 +67,23 @@
 		"thats-sew-crafty",
 		"dollar-data",
 		"hip-hop-hoppers",
-		"outdoor-club"
+		"outdoor-club",
+		"4-h-coding-step",
+		"quilting",
+		"the-business-club",
+		"farm-to-fork",
+		"4-h-homeschool-club",
+		"penguin-step",
+		"birding-step",
+
+		"area14-robotics-club",
+		"4h-bananabots-robotics-club",
+		"4h-beacon-bots",
+		"programming-trolls",
+		"servos-4h-robotics-club",
+		"monster-mechanics",
+		"broken-props-model-airplane",
+		"somerset-sentinels-rocket-club"
 	],
 	"go-kart-track": ["4h-gokart-club"],
 	"archery": ["on-target-archery-club", "hawkeye-archers"]

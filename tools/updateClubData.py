@@ -19,11 +19,7 @@ clubDataOverrides = {
 	'computer-club': {
 		"slug": "4h-computers",
 		"name": "4‑H Computers",
-		"grades": "Mainly 7-12",
 		"clubWebsite": "https://4hcomputers.club"
-	},
-	'prep-lego-maniacs': {
-		"grades": "K-3",
 	}
 }
 
@@ -46,9 +42,6 @@ def cleanTag(tag: bs4.element.Tag, inParentheses=False):
 
 for clubListing in ['https://4histops.org/clubs', 'https://4histops.org/4-h-prep-club']:
 	content = requests.get(clubListing).content.decode('utf-8')
-
-	# fix some issues with the 4h site
-	content = re.sub(r'\/technomaniacs(?=\">WATTLES)', '/wattles-snood', content)
 
 	soup = bs4.BeautifulSoup(content, 'html.parser')
 
