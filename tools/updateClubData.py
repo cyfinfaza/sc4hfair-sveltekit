@@ -20,6 +20,9 @@ clubDataOverrides = {
 		"slug": "4h-computers",
 		"name": "4‑H Computers",
 		"clubWebsite": "https://4hcomputers.club"
+	},
+	'4h-anime-manga-club': {
+		"clubWebsite": "https://4-hclovercon.com/",
 	}
 }
 

@@ -1,56 +1,55 @@
-heading,tierName,link
-"4-H Anime & Manga Club","Silver","https://sc4hfair.app/club/4h-anime-manga-club"
-"Amalgamated Transit Union Local 726","Bronze","https://www.atu726.com/"
-"Dave's Suburban Disposal Services, LLC","Bronze","https://www.davesdisposalservice.com/"
-"Fraternal Order of the Eagles Aeries 2137","Bronze","https://www.2137foe.org/"
-"Luigi's Masonry","Bronze","https://luigimasonry.com/"
-"Alstede Farms","Copper","https://www.alstedefarms.com"
-"Belle Mead CO-OP","Copper","https://bellemeadcoop.com/"
-"Hunterdon Dermatology LLC","Copper","https://www.hunterdondermatology.com/"
-"Just Subs of Hillsborough","Copper","https://www.justsubs.com/"
-"Kingwood Foreign Auto Service","Copper","https://maps.app.goo.gl/WEz3abTENoJGEdqt9"
-"Laufer, Dalena, Jensen & Doran, L. L. C","Copper","https://www.lauferfamilylaw.com/"
-"Loew & Patel Orthodontics","Copper","https://www.loewandpatelorthos.com/"
-"Premier Energy Group LLC","Copper","https://premierenergygroup.com/"
-"4-H The Clover Ensemble Club","Copper","https://sc4hfair.app/club/clover-ensemble"
-"Somerville Elks Lodge #1068","Copper","https://www.elks.org/lodges/home.cfm?LodgeNumber=1068"
-"The Delaney of Bridgewater","Copper","https://thedelaneyofbridgewater.com/"
-"Crown Trophy","Custom","https://www.crowntrophy.com/"
-"Unity Bank Of Somerville","Custom","https://www.unitybank.com/"
-"Verve Bistro, Bar & Lounge","Custom","https://vervestyle.com/"
-"A Peace of Om Yoga","Business Card","https://www.apeaceofomyoga.com/"
-"Bagel Garden - Kenefic Inc.","Business Card","https://www.facebook.com/BagelGardenBranchburg/"
-"Basil Bandwagon Natural Market","Business Card","http://www.basilbandwagon.com"
-"Beatrice Chiropractic Care","Business Card","https://beatricechiropractic.net/"
-"Black River Veterinary Hospital","Business Card","https://www.brvh-nj.com/"
-"Bobbi's Canine Coiffures, LLC","Business Card","https://maps.app.goo.gl/uswfpdZogpodJ8Fo7"
-"Carrabba's Italian Restaurant - Coupon!","Business Card","https://www.carrabbas.com/"
-"Chiang & Jones Family Dentistry","Business Card","https://www.candjfamilydental.com/"
-"Dante Zeller Tuxedo by Sarno","Business Card","https://www.tuxedobysarno.com/"
-"Dr. Nickolas Oakley, DUM","Business Card",
-"FIT Wealth Management","Business Card","https://www.fitwmgt.com/"
-"Gentle Dental Branchburg","Business Card","https://www.darrenbrenner.com/"
-"Golden Corner Restaurant","Business Card","https://www.thegoldencornerdiner.com/"
-"Gray's Florist","Business Card","https://www.graysflorist.com/"
-"Jeff Errick","Business Card",
-"La Fontaine & Budd inc - Michael A. McCurry","Business Card","https://www.lafontainebudd.com/"
-"LaFontaine & Budd inc - James T. Rick, Jr.","Business Card","https://www.lafontainebudd.com/"
-"Leonard C Sitrin, PHD","Business Card",
-"Peter & Pam Hurley","Business Card",
-"Riverwalk Physical Therapy","Business Card","https://www.riverwalkpt.com/"
-"Round Valley Animal Hospital (Dr. Lorraine Marks)","Business Card","https://www.roundvalleyanimalhospital.com/"
-"Scotts Florist","Business Card","https://www.scottsflorist.net/"
-"Shimon and Sara Birnbaum Jewish Community Center","Business Card","https://ssbjcc.org/"
-"4-H Chaps & Spurs Club","Business Card","https://sc4hfair.app/club/chaps-spurs"
-"4-H Furry Friends Club","Business Card","https://sc4hfair.app/club/furry-friends"
-"4-H Master Chefs Club","Business Card","https://sc4hfair.app/club/4h-master-chef"
-"4-H On Target Archery Club","Business Card","https://sc4hfair.app/club/on-target-archery-club"
-"4-H Trainmasters Club","Business Card","https://sc4hfair.app/club/somerset-4h-trainmasters"
-"Talk Of The Town Barber Shop","Business Card","https://www.talkofthetownbarbershop.com/"
-"The Center School","Business Card","https://www.thecenterschool.com/"
-"The Highland Vet House Calls","Business Card","https://www.thehighlandvet.com/"
-"Time to Eat Diner","Business Card","https://www.timetoeatdiner.com/"
-"Woodbridge Deli","Business Card","https://www.woodbridgedeli.com/"
-"Hionis Greenhouses","Inkind Donation","https://www.hionisgreenhouses.com/"
-"Tractor Supply of Hillsborough","Inkind Donation","https://www.tractorsupply.com/tsc/store_HILLSBOROUGH-NJ-08844_2039"
-"Wegmans","Inkind Donation","https://www.wegmans.com/"
+heading,tierName,link,City
+Amalgamated Transit Union Local 726,Bronze,https://www.atu726.com/index.cfm,Staten Island
+"Dave's Suburban Disposal Services, LLC",Bronze,www.davesdisposalservice.com,Flagtown
+Fraternal Order of the Eagles Aeries 2137,Bronze,www.2137foe.com,Bridgewater
+Luigi's Masonry,Bronze,www.LuigisMasonry.com,Hasbrouck Heights
+A Peace of Om Yoga,Business Card,www.APeaceOfOmYoga.com,Raritan
+Bagel Garden - Kenefic Inc.,Business Card,,Branchburg
+Basil Bandwagon Natural Market,Business Card,www.BasilBandwagon.Com,Flemington
+Beatrice Chiropractic Care,Business Card,www.beatricechiropractic.net,Raritan
+Black River Veterinary Hospital,Business Card,https://brvh-nj.com/,Chester
+"Bobbi's Canine Coiffures, LLC",Business Card,https://maps.app.goo.gl/uswfpdZogpodJ8Fo7,Raritan
+Carrabba's Italian Restaurant,Business Card,https://locations.carrabbas.com/new-jersey/greenbrook/200-us-hwy-route-22-west,Bound Brook
+Chiang & Jones Family Dentistry,Business Card,http://CANDJFAMILYDENTAL.COM,Bridgewater
+Dante Zeller Tuxedo by Sarno,Business Card,www.tuxedobysarno.com,Somerville
+"Dr. Nickolas Oakley, DVM",Business Card,HarlingenVeterinaryClinic.com,Belle Mead
+FIT Wealth Management,Business Card,www.fitwmgt.com,Whitehouse Station
+Gentle Dental Branchburg,Business Card,DarrenBrenner.com,Branchburg
+Golden Corner Restaurant,Business Card,,Bound Brook
+Gray's Florist,Business Card,www.graysflorist.com,Bridgewater
+La Fontaine & Budd inc - Michael A. McCurry,Business Card,www.laFontaineandbudd.com,Somerville
+"LaFontaine & Budd inc - James T. Rick, Jr.",Business Card,www.laFontaineandbudd.com,Somerville
+"Leonard C Sitrin, PHD",Business Card,https://www.psychologytoday.com/us/therapists/leonard-craig-sitrin-warren-nj/142768,Warren
+Peter & Pam Hurley,Business Card,,Pawleys Point
+Riverwalk Physical Therapy,Business Card,https://www.riverwalkpt.com/,Raritan
+Round Valley Animal Hospital (Dr. Lorraine Marks),Business Card,www.roundvalleyanimalhospital.com,Bridgewater
+Scotts Florist,Business Card,www.scottsflorist.net,Raritan
+Shimon and Sara Birnbaum Jewish Community Center,Business Card,Https://www.SSBJCC.org,Bridgewater
+Somerset County 4-H Anime & Manga Club,Business Card,www.4-HCloverCon.com,Bridgewater
+Somerset County 4-H Chaps & Spurs,Business Card,https://sc4hfair.app/club/chaps-spurs,Hillsborough
+Somerset County 4-H Furry Friends,Business Card,https://sc4hfair.app/club/furry-friends,Peapack
+Somerset County 4-H Master Chefs,Business Card,https://sc4hfair.app/club/4h-master-chef,Bridgewater
+Somerset County 4-H On Target Archery,Business Card,https://sc4hfair.app/club/on-target-archery-club,Bridgewater
+Somerset County 4-H Trainmasters Club,Business Card,https://sc4hfair.app/club/somerset-4h-trainmasters,Bridgewater
+Talk Of The Town Barber Shop,Business Card,https://www.talkofthetownbarbershop.com/,Martinsville
+The Center School,Business Card,www.thecenterschool.com,Somerset
+The Highland Vet House Calls,Business Card,https://www.thehighlandvet.com/,Peapack
+Time to Eat Diner,Business Card,www.timetoeatdiner.com,Bridgewater
+Woodbridge Deli,Business Card,https://www.facebook.com/WoodbridgeDeli/,Woodbridge
+Alstede Farms,Copper,www.Alstedefarms.com,Chester
+Belle Mead CO-OP,Copper,https://www.bellemeadcoop.com/,Hillsborough
+Hunterdon Dermatology LLC,Copper,www.HunterdonDermatology.com,Flemington
+Just Subs,Copper,https://www.just-subs.com/hillsborough/,Hillsborough
+Kingwood Foreign Auto Service,Copper,https://maps.app.goo.gl/WEz3abTENoJGEdqt9,Frenchtown
+"Laufer, Dalena, Jensen & Doran, L.L.C",Copper,https://www.lauferfamilylaw.com/,Morristown
+Loew & Patel Orthodontics,Copper,www.loewandpatelorthodontics.com,Bridgewater
+Premier Energy Group LLC,Copper,http://premierenergygroup.com,Middlesex
+Somerset County 4-H The Clover Ensemble,Copper,https://sc4hfair.app/club/clover-ensemble,
+Somerville Elks Lodge #1068,Copper,"https://www.elks.org/lodges/home.cfm?LodgeNumber=1068",Bridgewater
+The Delaney of Bridgewater,Copper,www.TheDelaneyOfBridgewater.com,Bridgewater
+Crown Trophy,Custom,https://www.facebook.com/crowntrophyofflemington/,Flemington
+Unity Bank Of Somerville,Custom,www.unitybank.com,Somerville
+"Verve Bistro, Bar & Lounge",Custom,https://www.vervestyle.com/,Somerville
+YOUR AD HERE,Custom,https://4histops.org/sponsors,
+Tractor Supply Of Hillsborough,Inkind Donation,www.tractorsupply.com,Hillsborough
+Somerset County 4-H Anime & Manga Club,Silver,www.4-HCloverCon.com,Bridgewater
