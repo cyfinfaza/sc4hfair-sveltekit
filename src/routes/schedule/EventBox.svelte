@@ -15,7 +15,7 @@
 	/** @type {(eventId: string, subscribed: boolean) => void} */
 	export let setEventSubscription;
 
-	$: console.log(event, subscribed);
+	// $: console.log(event, subscribed);
 
 	const timeLabels = {
 		past: {

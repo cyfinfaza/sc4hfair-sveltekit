@@ -46,7 +46,7 @@
 	}
 
 	onMount(async () => {
-		if (!browser) return;
+		if (!browser || !('serviceWorker' in navigator)) return;
 
 		swRegistration = await navigator.serviceWorker.getRegistration();
 		if (!swRegistration) return;
@@ -111,7 +111,8 @@
 	onMount(() => {
 		/** @param {string} addr */
 		function start_poprx(addr) {
-			let txid = window.localStorage.getItem('poprx-txid');
+			let txid = window.localStorage.getItem('poprx-txid'),
+				start = performance.now();
 			if (!txid) {
 				txid = (Math.floor(Math.random() * 900000) + 100000).toString();
 				window.localStorage.setItem('poprx-txid', txid);
@@ -130,6 +131,7 @@
 				);
 				$pushPoprxUpdate = () => {
 					try {
+						console.log('pushing poprx update', txid, window.location.pathname);
 						client.send(
 							JSON.stringify({
 								type: 'pathupdate',
@@ -141,9 +143,12 @@
 					}
 				};
 			};
+			client.onclose = function () {
+				console.log('poprx client closed', performance.now() - start, 'ms');
+			};
 			return client;
 		}
-		let client = start_poprx('wss://fair-app-poprx.4hcomputers.club');
+		let client = start_poprx('wss://fair-app-poprx.4hcomputers.club/txonly');
 		document.addEventListener('visibilitychange', () => {
 			if (
 				document.visibilityState === 'visible' &&
@@ -185,7 +190,7 @@
 	}}
 	on:unhandledrejection={(e) => {
 		e.preventDefault();
-		console.error(e);
+		console.error(e, e.reason);
 		if (parseInt(localStorage.getItem('lastError') || '') - Date.now() < 1000) {
 			// just crashed and reloaded, prevent reload loop
 		} else {

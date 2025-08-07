@@ -51,7 +51,7 @@
 
 	/** @type {HTMLVideoElement} */
 	let videoElement,
-		/** @type {QrScanner} */
+		/** @type {QrScanner | undefined} */
 		qrScanner,
 		compatible = false,
 		scanning = false,
@@ -67,8 +67,14 @@
 			let hints = JSON.parse(localStorage.getItem(SCAVENGER_HUNT_HINTS) || '[]');
 			if (hints && hints.length > 0) $hintsUsed = hints;
 
-			checkCode(new URLSearchParams(window.location.search).get('code'), true); // Code from a scanned URL bringing them here
-			replaceState(window.location.pathname, {});
+			try {
+				checkCode(new URLSearchParams(window.location.search).get('code'), true); // Code from a scanned URL bringing them here
+				// crashes the app?? TypeError: Cannot read properties of undefined (reading '$set')
+				// replaceState(window.location.pathname, {});
+				history.replaceState({}, '', window.location.pathname);
+			} catch (e) {
+				console.error('error checking code from URL:', e);
+			}
 		}
 
 		try {
@@ -101,7 +107,7 @@
 			compatible = false;
 		}
 
-		() => qrScanner.destroy();
+		() => qrScanner?.destroy();
 	});
 
 	onMount(() => {
@@ -121,7 +127,7 @@
 		return () => removeCallback();
 	});
 
-	$: if (compatible) {
+	$: if (compatible && qrScanner) {
 		if (scanning) {
 			qrScanner.start().catch((e) => {
 				console.error(e);
