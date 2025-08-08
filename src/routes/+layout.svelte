@@ -94,10 +94,21 @@
 		const kioskSwitch = to?.url.searchParams.get('kiosk');
 		if (kioskSwitch === 'enable') $kioskMode = true;
 		else if (kioskSwitch === 'disable') $kioskMode = false;
+		to?.url.searchParams.delete('kiosk');
 
-		const referrer = to?.url.searchParams.get('referrer');
+		let referrer = to?.url.searchParams.get('referrer');
+		if (referrer === 'sh') {
+			// todo: use full referrer in new printouts
+			const code = to?.url.searchParams.get('code');
+			if (code) referrer = `sh-${code}`;
+			// this runs after onMount, so we can remove the code param
+			to?.url.searchParams.delete('code');
+		}
+		console.log('referrer:', referrer);
+		to?.url.searchParams.delete('referrer');
 
-		if (to && (kioskSwitch || referrer)) replaceState(to.url.pathname, {});
+		// only remove specific keys
+		if (to && (kioskSwitch || referrer)) replaceState(to.url, {});
 
 		if (typeof $pushPoprxUpdate === 'function') $pushPoprxUpdate();
 

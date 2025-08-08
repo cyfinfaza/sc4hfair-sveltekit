@@ -4,7 +4,6 @@
 	// You win, come join the 4-H Computer Club
 
 	import { browser } from '$app/environment';
-	import { replaceState } from '$app/navigation';
 	import KioskPitch from 'components/KioskPitch.svelte';
 	import Layout from 'components/Layout.svelte';
 	import LinkButton from 'components/LinkButton.svelte';
@@ -58,30 +57,31 @@
 		scannerMessage = '';
 
 	onMount(async () => {
-		if (!enabled) return;
+		if (!browser || !enabled) return;
 
-		if (browser) {
-			let tmpIndex = getOffsetIndexFromCode(localStorage.getItem(SCAVENGER_HUNT_CODE));
-			if (tmpIndex) $atIndex = tmpIndex;
+		let tmpIndex = getOffsetIndexFromCode(localStorage.getItem(SCAVENGER_HUNT_CODE));
+		if (tmpIndex) $atIndex = tmpIndex;
 
-			let hints = JSON.parse(localStorage.getItem(SCAVENGER_HUNT_HINTS) || '[]');
-			if (hints && hints.length > 0) $hintsUsed = hints;
+		let hints = JSON.parse(localStorage.getItem(SCAVENGER_HUNT_HINTS) || '[]');
+		if (hints && hints.length > 0) $hintsUsed = hints;
 
-			try {
-				checkCode(new URLSearchParams(window.location.search).get('code'), true); // Code from a scanned URL bringing them here
-				// crashes the app?? TypeError: Cannot read properties of undefined (reading '$set')
-				// replaceState(window.location.pathname, {});
-				history.replaceState({}, '', window.location.pathname);
-			} catch (e) {
-				console.error('error checking code from URL:', e);
-			}
+		try {
+			checkCode(new URLSearchParams(window.location.search).get('code'), true); // Code from a scanned URL bringing them here
+			// replaceState handled by +layout.svelte
+		} catch (e) {
+			console.error('error checking code from URL:', e);
 		}
+	});
+
+	onMount(async () => {
+		if (!enabled) return;
 
 		try {
 			compatible = typeof navigator === 'object' && (await QrScanner.hasCamera());
 		} catch (_) {
 			compatible = false;
 		}
+		console.log('camera compatible?', compatible);
 		if (!compatible) return;
 
 		try {
