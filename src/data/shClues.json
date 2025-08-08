@@ -22,11 +22,6 @@
 			"hint": "They're like fluffy llamas, but even softer."
 		},
 		{
-			"code": "0rxlk3z1",
-			"clue": "If the fair's energy feels too loud, seek out this quiet haven for a peaceful pause.",
-			"hint": "It's a calm spot to recharge your senses."
-		},
-		{
 			"code": "1gaeqwkv",
 			"clue": "Enjoy a show from our talented ensembles, and grab a snack or drink from this 4-H run spot.",
 			"hint": "It's where the Clover Ensemble performs."
@@ -77,13 +72,6 @@
 			"hint": "It's the central point for all fair knowledge."
 		}
 	],
-	"falseCodes": [
-		"dtijjfy0",
-		"5f9lnsp9",
-		"6i936v1s",
-		"zd1wjidv",
-		"52twfi84",
-		"dbqx6skg"
-	],
+	"falseCodes": ["dtijjfy0", "5f9lnsp9", "6i936v1s", "zd1wjidv", "52twfi84", "dbqx6skg"],
 	"finalInstructions": "Visit the info tent desk to claim your prize!"
 }
